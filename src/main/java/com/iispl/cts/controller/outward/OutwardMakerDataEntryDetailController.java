@@ -10,6 +10,7 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Decimalbox;
+import org.zkoss.zul.Image;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
@@ -22,6 +23,7 @@ public class OutwardMakerDataEntryDetailController
         extends SelectorComposer<Component> {
 
     private static final long serialVersionUID = 1L;
+  
 
     @Wire
     private Label batchIdLabel;
@@ -43,6 +45,26 @@ public class OutwardMakerDataEntryDetailController
 
     @Wire
     private Button nextButton;
+    @Wire
+    private Image frontImage;
+
+    @Wire
+    private Image backImage;
+    @Wire
+    private Button frontImageButton;
+
+    @Wire
+    private Button backImageButton;
+
+    @Wire
+    private Button zoomInButton;
+
+    @Wire
+    private Button zoomOutButton;
+
+    private boolean showingBackImage = false;
+
+    private int zoomLevel = 100;
 
     private OutwardMakerDataEntryDetailService service;
 
@@ -98,6 +120,10 @@ public class OutwardMakerDataEntryDetailController
 
         OutwardCheque cheque =
                 cheques.get(currentIndex);
+        showingBackImage = false;
+        zoomLevel = 100;
+
+        showFrontImage();
 
         batchIdLabel.setValue(
                 cheque.getBatchId());
@@ -382,5 +408,85 @@ public class OutwardMakerDataEntryDetailController
         Executions.sendRedirect(
                 "outward-maker-data-entry.zul"
         );
+    }
+    private void showFrontImage() {
+
+        showingBackImage = false;
+
+        // Show front
+        frontImage.setVisible(true);
+
+        // Hide back
+        backImage.setVisible(false);
+
+        zoomLevel = 100;
+
+        applyZoom();
+    }
+
+    private void showBackImage() {
+
+        showingBackImage = true;
+
+        // Hide front
+        frontImage.setVisible(false);
+
+        // Show back
+        backImage.setVisible(true);
+
+        zoomLevel = 100;
+
+        applyZoom();
+    }
+
+
+    private void applyZoom() {
+
+        Image currentImage;
+
+        if (showingBackImage) {
+            currentImage = backImage;
+        } else {
+            currentImage = frontImage;
+        }
+
+        currentImage.setStyle(
+                "object-fit:contain;"
+                + "transform:scale("
+                + (zoomLevel / 100.0)
+                + ");"
+                + "transform-origin:center center;"
+                + "transition:transform 0.2s ease;"
+        );
+    }
+    @Listen("onClick = #frontImageButton")
+    public void frontImage() {
+
+        showFrontImage();
+    }
+    @Listen("onClick = #backImageButton")
+    public void backImage() {
+
+        showBackImage();
+    }
+    @Listen("onClick = #zoomInButton")
+    public void zoomIn() {
+
+        if (zoomLevel < 200) {
+
+            zoomLevel += 20;
+
+            applyZoom();
+        }
+    }
+    @Listen("onClick = #zoomOutButton")
+    public void zoomOut() {
+
+        if (zoomLevel > 60) {
+
+            zoomLevel -= 20;
+
+            applyZoom();
+        }
     }
 }

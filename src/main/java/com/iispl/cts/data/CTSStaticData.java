@@ -934,7 +934,7 @@ public class CTSStaticData {
 
         cheque.setChequeId(
                 String.valueOf(
-                        rs.getLong("cheque_id")));
+                        rs.getString("cheque_id")));
 
         cheque.setBatchId(
                 rs.getString("batch_id"));
