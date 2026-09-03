@@ -19,15 +19,17 @@ public class CTSStaticData {
     // =========================================================
     // DATABASE CONNECTION
     // =========================================================
+	 public static final String DRIVER =
+	            "org.postgresql.Driver";
 
-    private static final String DB_URL =
-            "jdbc:postgresql://localhost:5432/superDB";
+	    public static final String   DB_URL =
+	            "jdbc:postgresql://db.bijnscklhxftxritxdrc.supabase.co:5432/postgres";
 
-    private static final String DB_USER =
-            "postgres";
+	    public static final String DB_USER =
+	            "postgres";
 
-    private static final String DB_PASSWORD =
-            "12345";
+	    public static final String  DB_PASSWORD=
+	            "Sushmabandari@123";
 
     static {
         try {
