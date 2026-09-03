@@ -1,35 +1,69 @@
+
 package com.iispl.cts.model.outward;
 
 public class OutwardCheque {
 
     private String batchId;
+
     private String chequeId;
+
     private String chequeNumber;
 
     private String accountNumber;
+
     private String chequeDate;
+
     private String amount;
 
+    /*
+     * Original MICR value coming from outward_cheque.scanned_micr
+     */
+    private String micr;
+
+    /*
+     * Kept for compatibility with existing code.
+     *
+     * IMPORTANT:
+     * Validation will no longer depend on errorType.
+     * Error type will be determined from actual cheque values.
+     */
     private String errorType;
 
     private String frontImage;
+
     private String backImage;
 
+    /*
+     * Corrected values entered during repair.
+     */
     private String correctAccountNumber;
+
     private String correctChequeDate;
+
     private String correctAmount;
+
     private String correctMicr;
 
     private String repairReason;
+
     private String remarks;
+
     private String rejectReason;
 
     private boolean micrCorrected;
+
     private boolean frontVerified;
+
     private boolean backVerified;
 
     private boolean saved;
+
     private boolean rejected;
+
+
+    // =========================================================
+    // BATCH ID
+    // =========================================================
 
     public String getBatchId() {
         return batchId;
@@ -39,6 +73,11 @@ public class OutwardCheque {
         this.batchId = batchId;
     }
 
+
+    // =========================================================
+    // CHEQUE ID
+    // =========================================================
+
     public String getChequeId() {
         return chequeId;
     }
@@ -46,6 +85,11 @@ public class OutwardCheque {
     public void setChequeId(String chequeId) {
         this.chequeId = chequeId;
     }
+
+
+    // =========================================================
+    // CHEQUE NUMBER
+    // =========================================================
 
     public String getChequeNumber() {
         return chequeNumber;
@@ -55,6 +99,11 @@ public class OutwardCheque {
         this.chequeNumber = chequeNumber;
     }
 
+
+    // =========================================================
+    // ACCOUNT NUMBER
+    // =========================================================
+
     public String getAccountNumber() {
         return accountNumber;
     }
@@ -62,6 +111,11 @@ public class OutwardCheque {
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
     }
+
+
+    // =========================================================
+    // CHEQUE DATE
+    // =========================================================
 
     public String getChequeDate() {
         return chequeDate;
@@ -71,6 +125,11 @@ public class OutwardCheque {
         this.chequeDate = chequeDate;
     }
 
+
+    // =========================================================
+    // AMOUNT
+    // =========================================================
+
     public String getAmount() {
         return amount;
     }
@@ -78,6 +137,24 @@ public class OutwardCheque {
     public void setAmount(String amount) {
         this.amount = amount;
     }
+
+
+    // =========================================================
+    // ORIGINAL MICR
+    // =========================================================
+
+    public String getMicr() {
+        return micr;
+    }
+
+    public void setMicr(String micr) {
+        this.micr = micr;
+    }
+
+
+    // =========================================================
+    // ERROR TYPE
+    // =========================================================
 
     public String getErrorType() {
         return errorType;
@@ -87,6 +164,11 @@ public class OutwardCheque {
         this.errorType = errorType;
     }
 
+
+    // =========================================================
+    // FRONT IMAGE
+    // =========================================================
+
     public String getFrontImage() {
         return frontImage;
     }
@@ -94,6 +176,11 @@ public class OutwardCheque {
     public void setFrontImage(String frontImage) {
         this.frontImage = frontImage;
     }
+
+
+    // =========================================================
+    // BACK IMAGE
+    // =========================================================
 
     public String getBackImage() {
         return backImage;
@@ -103,6 +190,11 @@ public class OutwardCheque {
         this.backImage = backImage;
     }
 
+
+    // =========================================================
+    // CORRECT ACCOUNT NUMBER
+    // =========================================================
+
     public String getCorrectAccountNumber() {
         return correctAccountNumber;
     }
@@ -110,6 +202,11 @@ public class OutwardCheque {
     public void setCorrectAccountNumber(String value) {
         this.correctAccountNumber = value;
     }
+
+
+    // =========================================================
+    // CORRECT CHEQUE DATE
+    // =========================================================
 
     public String getCorrectChequeDate() {
         return correctChequeDate;
@@ -119,6 +216,11 @@ public class OutwardCheque {
         this.correctChequeDate = value;
     }
 
+
+    // =========================================================
+    // CORRECT AMOUNT
+    // =========================================================
+
     public String getCorrectAmount() {
         return correctAmount;
     }
@@ -126,6 +228,11 @@ public class OutwardCheque {
     public void setCorrectAmount(String value) {
         this.correctAmount = value;
     }
+
+
+    // =========================================================
+    // CORRECT MICR
+    // =========================================================
 
     public String getCorrectMicr() {
         return correctMicr;
@@ -135,6 +242,11 @@ public class OutwardCheque {
         this.correctMicr = value;
     }
 
+
+    // =========================================================
+    // REPAIR REASON
+    // =========================================================
+
     public String getRepairReason() {
         return repairReason;
     }
@@ -142,6 +254,11 @@ public class OutwardCheque {
     public void setRepairReason(String value) {
         this.repairReason = value;
     }
+
+
+    // =========================================================
+    // REMARKS
+    // =========================================================
 
     public String getRemarks() {
         return remarks;
@@ -151,6 +268,11 @@ public class OutwardCheque {
         this.remarks = value;
     }
 
+
+    // =========================================================
+    // REJECT REASON
+    // =========================================================
+
     public String getRejectReason() {
         return rejectReason;
     }
@@ -158,6 +280,11 @@ public class OutwardCheque {
     public void setRejectReason(String value) {
         this.rejectReason = value;
     }
+
+
+    // =========================================================
+    // MICR CORRECTED
+    // =========================================================
 
     public boolean isMicrCorrected() {
         return micrCorrected;
@@ -167,6 +294,11 @@ public class OutwardCheque {
         this.micrCorrected = value;
     }
 
+
+    // =========================================================
+    // FRONT VERIFIED
+    // =========================================================
+
     public boolean isFrontVerified() {
         return frontVerified;
     }
@@ -174,6 +306,11 @@ public class OutwardCheque {
     public void setFrontVerified(boolean value) {
         this.frontVerified = value;
     }
+
+
+    // =========================================================
+    // BACK VERIFIED
+    // =========================================================
 
     public boolean isBackVerified() {
         return backVerified;
@@ -183,6 +320,11 @@ public class OutwardCheque {
         this.backVerified = value;
     }
 
+
+    // =========================================================
+    // SAVED
+    // =========================================================
+
     public boolean isSaved() {
         return saved;
     }
@@ -190,6 +332,11 @@ public class OutwardCheque {
     public void setSaved(boolean value) {
         this.saved = value;
     }
+
+
+    // =========================================================
+    // REJECTED
+    // =========================================================
 
     public boolean isRejected() {
         return rejected;
@@ -199,3 +346,4 @@ public class OutwardCheque {
         this.rejected = value;
     }
 }
+
