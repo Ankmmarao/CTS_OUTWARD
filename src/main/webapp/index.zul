@@ -1,0 +1,54 @@
+<?page title="CTS Application"?>
+
+<zk>
+
+    <window border="normal"
+            width="100%"
+            height="100%"
+            style="padding:40px;">
+
+        <vlayout spacing="15px">
+
+            <label value="CTS Application"
+                   style="font-size:30px;font-weight:bold;"/>
+
+            <label value="Outward Maker Flow"
+                   style="font-size:20px;font-weight:bold;"/>
+
+            <button label="Maker Dashboard"
+                    width="250px"
+                    onClick='Executions.sendRedirect("outward-maker-dashboard.zul")'/>
+
+            <button label="Data Entry"
+                    width="250px"
+                    onClick='Executions.sendRedirect("outward-maker-data-entry.zul")'/>
+
+            <button label="Data Entry Detail"
+                    width="250px"
+                    onClick='Executions.sendRedirect("outward-maker-data-entry-detail.zul")'/>
+
+            <button label="MICR Repair"
+                    width="250px"
+                    onClick='Executions.sendRedirect("outward-maker-micr-repair.zul")'/>
+
+            <button label="MICR Repair Detail"
+                    width="250px"
+                    onClick='Executions.sendRedirect("outward-maker-micr-repair-detail.zul")'/>
+
+            <button label="Amount &amp; Account"
+                    width="250px"
+                    onClick='Executions.sendRedirect("outward-maker-amount-account.zul")'/>
+
+            <button label="Amount &amp; Account Detail"
+                    width="250px"
+                    onClick='Executions.sendRedirect("outward-maker-amount-account-detail.zul")'/>
+
+            <button label="Send to Checker"
+                    width="250px"
+                    onClick='Executions.sendRedirect("outward-maker-send-to-checker.zul")'/>
+
+        </vlayout>
+
+    </window>
+
+</zk>

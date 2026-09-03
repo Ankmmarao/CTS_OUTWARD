@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk>
+
+    <vlayout width="280px"
+             height="100%"
+             spacing="5px"
+             style="background:#081B33;
+                    padding-top:18px;">
+
+        <button label="⌂   Dashboard"
+                width="270px"
+                height="52px"
+                style="background:#075BC8;
+                       color:white;
+                       border:none;
+                       text-align:left;
+                       padding-left:22px;
+                       font-size:16px;"
+                onClick='Executions.sendRedirect("outward-checker-dashboard.zul")'/>
+
+
+        <button label="☷   Batches Queue"
+                width="270px"
+                height="52px"
+                style="background:transparent;
+                       color:#C4D1E5;
+                       border:none;
+                       text-align:left;
+                       padding-left:22px;
+                       font-size:16px;"
+                onClick='Executions.sendRedirect("outward-checker-verification.zul")'/>
+
+
+        <button label="▥   Reports"
+                width="270px"
+                height="52px"
+                style="background:transparent;
+                       color:#C4D1E5;
+                       border:none;
+                       text-align:left;
+                       padding-left:22px;
+                       font-size:16px;"/>
+
+
+        <button label="➤   Send to NPCI"
+                width="270px"
+                height="52px"
+                style="background:transparent;
+                       color:#C4D1E5;
+                       border:none;
+                       text-align:left;
+                       padding-left:22px;
+                       font-size:16px;"
+                onClick='Executions.sendRedirect("outward-checker-send-to-npci.zul")'/>
+
+    </vlayout>
+
+</zk>

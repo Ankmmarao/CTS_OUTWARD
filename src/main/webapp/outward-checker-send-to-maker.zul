@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Send to Maker"?>
+
+<zk>
+
+    <borderlayout width="100%"
+                  height="100%"
+                  style="background:#F4F7FB;">
+
+        <!-- HEADER -->
+
+        <north size="62px">
+            <include src="/header.zul"/>
+        </north>
+
+
+        <!-- SIDEBAR -->
+
+        <west size="280px">
+            <include src="/checkersidebar.zul"/>
+        </west>
+
+
+        <!-- CONTENT -->
+
+        <center>
+
+            <vlayout spacing="20px"
+                     style="padding:30px;">
+
+                <!-- TITLE -->
+
+                <label value="Send to Maker"
+                       style="font-size:30px;
+                              font-weight:bold;
+                              color:#122B49;"/>
+
+
+                <!-- INFORMATION -->
+
+                <groupbox width="100%"
+                          style="background:white;
+                                 border:1px solid #DCE5F0;
+                                 border-radius:8px;">
+
+                    <vlayout spacing="5px"
+                             style="padding:20px;">
+
+                        <label value="Send to Maker Queue"
+                               style="font-size:19px;
+                                      font-weight:bold;
+                                      color:#122B49;"/>
+
+                        <label value="Select a batch that needs correction or re-verification by the Maker."
+                               style="font-size:14px;
+                                      color:#667085;"/>
+
+                    </vlayout>
+
+                </groupbox>
+
+
+                <!-- BATCH TABLE -->
+
+                <groupbox width="100%"
+                          style="background:white;
+                                 border:1px solid #DCE5F0;
+                                 border-radius:8px;">
+
+                    <listbox width="100%"
+                             emptyMessage="No batches available to send to Maker.">
+
+                        <listhead>
+
+                            <listheader label="Batch ID"
+                                        width="15%"/>
+
+                            <listheader label="Total Cheques"
+                                        width="15%"/>
+
+                            <listheader label="Rejected / Error Cheques"
+                                        width="20%"/>
+
+                            <listheader label="Reason"
+                                        width="25%"/>
+
+                            <listheader label="Status"
+                                        width="15%"/>
+
+                            <listheader label="Action"
+                                        width="10%"/>
+
+                        </listhead>
+
+
+                        <!-- BATCH -->
+
+                        <listitem>
+
+                            <listcell label="B006"/>
+
+                            <listcell label="12"/>
+
+                            <listcell label="2"/>
+
+
+                            <listcell>
+
+                                <label value="Cheque verification failed"
+                                       style="font-size:13px;
+                                              color:#667085;"/>
+
+                            </listcell>
+
+
+                            <listcell>
+
+                                <label value="Needs Correction"
+                                       style="background:#FEF3F2;
+                                              color:#D92D20;
+                                              padding:7px 12px;
+                                              border-radius:5px;
+                                              font-weight:bold;"/>
+
+                            </listcell>
+
+
+                            <listcell>
+
+                                <button label="Open"
+                                        width="90px"
+                                        onClick='Executions.sendRedirect("outward-checker-verification.zul")'/>
+
+                            </listcell>
+
+                        </listitem>
+
+                    </listbox>
+
+                </groupbox>
+
+            </vlayout>
+
+        </center>
+
+    </borderlayout>
+
+</zk>

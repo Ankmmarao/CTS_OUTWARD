@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Data Entry Detail"?>
+
+<zk>
+
+    <window width="100%"
+            height="100%"
+            border="none"
+            apply="com.iispl.cts.controller.outward.OutwardMakerDataEntryDetailController">
+
+        <borderlayout width="100%"
+                      height="100%"
+                      style="background:#F4F7FB;">
+
+            <!-- HEADER -->
+
+            <north size="62px">
+                <include src="/header.zul"/>
+            </north>
+
+
+            <!-- SIDEBAR -->
+
+            <west size="280px">
+                <include src="/makersidebar.zul"/>
+            </west>
+
+
+            <!-- CENTER -->
+
+            <center>
+
+                <vlayout spacing="15px"
+                         style="padding:28px;">
+
+
+                    <!-- BATCH HEADER -->
+
+                    <groupbox width="100%"
+                              style="background:white;border:1px solid #DCE5F0;">
+
+                        <hlayout width="100%"
+                                 style="padding:15px 20px;">
+
+                            <label value="Batch ID : "
+                                   style="font-size:18px;font-weight:bold;"/>
+
+                            <label id="batchIdLabel"
+                                   value=""
+                                   style="font-size:22px;font-weight:bold;color:#175CD3;"/>
+
+                            <space hflex="1"/>
+
+                            <label id="chequeProgressLabel"
+                                   value=""
+                                   style="font-size:18px;font-weight:bold;color:#175CD3;"/>
+
+                        </hlayout>
+
+                    </groupbox>
+
+
+                    <!-- MAIN AREA -->
+
+                    <hlayout width="100%"
+                             spacing="25px">
+
+
+                        <!-- LEFT IMAGE -->
+
+                        <vlayout hflex="1"
+                                 spacing="12px">
+
+                            <label value="Scanned Cheque"
+                                   style="font-size:20px;font-weight:bold;color:#122B49;"/>
+
+                            <groupbox width="100%"
+                                      height="450px"
+                                      style="background:white;border:1px solid #DCE5F0;">
+
+                                <vlayout width="100%"
+                                         spacing="12px"
+                                         style="text-align:center;">
+
+                                    <hlayout spacing="10px">
+
+                                        <button label="Zoom In"
+                                                width="110px"/>
+
+                                        <button label="Zoom Out"
+                                                width="110px"/>
+
+                                        <button label="Rotate"
+                                                width="100px"/>
+
+                                        <button label="Back"
+                                                width="100px"
+                                                onClick='Executions.sendRedirect("outward-maker-data-entry.zul")'/>
+
+                                    </hlayout>
+
+                                    <image src="https://placehold.co/900x400?text=Cheque+Front"
+                                           width="95%"
+                                           height="340px"/>
+
+                                </vlayout>
+
+                            </groupbox>
+
+                        </vlayout>
+
+
+                        <!-- RIGHT DATA -->
+
+                        <vlayout width="450px"
+                                 spacing="15px">
+
+                            <groupbox width="450px"
+                                      height="500px"
+                                      style="background:white;border:1px solid #DCE5F0;">
+
+                                <caption label="Scanned / Extracted Data"/>
+
+                                <vlayout spacing="12px"
+                                         style="padding:15px;">
+
+                                    <label value="Data Entry Error Fields"
+                                           style="font-size:14px;color:#667085;"/>
+
+
+                                    <!-- ACCOUNT -->
+
+                                    <label value="Account Number *"
+                                           style="font-size:15px;font-weight:bold;"/>
+
+                                    <label value="Account Number Error"
+                                           style="color:#D92D20;background:#FEF3F2;padding:5px;"/>
+
+                                    <label value="Scanned Value"
+                                           style="color:#667085;"/>
+
+                                    <textbox value="123456789011"
+                                             width="100%"
+                                             readonly="true"
+                                             style="background:#F2F4F7;"/>
+
+                                    <label value="Correct Value *"
+                                           style="font-weight:bold;"/>
+
+                                    <textbox id="accountNumberTextbox"
+                                             width="100%"/>
+
+
+                                    <!-- DATE -->
+
+                                    <label value="Cheque Date *"
+                                           style="font-size:15px;font-weight:bold;margin-top:10px;"/>
+
+                                    <label value="Date Error"
+                                           style="color:#D92D20;background:#FEF3F2;padding:5px;"/>
+
+                                    <label value="Scanned Value"
+                                           style="color:#667085;"/>
+
+                                    <textbox value="16-06-2025"
+                                             width="100%"
+                                             readonly="true"/>
+
+                                    <label value="Correct Value *"
+                                           style="font-weight:bold;"/>
+
+                                    <textbox id="chequeDateTextbox"
+                                             width="100%"/>
+
+
+                                    <!-- AMOUNT -->
+
+                                    <label value="Amount *"
+                                           style="font-size:15px;font-weight:bold;margin-top:10px;"/>
+
+                                    <label value="Amount Error"
+                                           style="color:#D92D20;background:#FEF3F2;padding:5px;"/>
+
+                                    <label value="Scanned Value"
+                                           style="color:#667085;"/>
+
+                                    <textbox value="50649.01"
+                                             width="100%"
+                                             readonly="true"/>
+
+                                    <label value="Correct Value *"
+                                           style="font-weight:bold;"/>
+
+                                    <decimalbox id="amountTextbox"
+                                                width="100%"
+                                                placeholder="Enter correct amount"/>
+
+                                </vlayout>
+
+                            </groupbox>
+
+                        </vlayout>
+
+                    </hlayout>
+
+
+                    <!-- BOTTOM BUTTONS -->
+
+                    <hlayout width="100%"
+                             valign="middle"
+                             style="padding-top:10px;">
+
+                        <button id="backButton"
+                                label="Back to List"
+                                width="140px"/>
+
+                        <button id="prevButton"
+                                label="Prev"
+                                width="100px"/>
+
+                        <button id="nextButton"
+                                label="Next"
+                                width="100px"/>
+
+                        <space hflex="1"/>
+
+                        <button id="rejectButton"
+                                label="Reject"
+                                width="120px"
+                                style="background:white;color:#D92D20;border:1px solid #D92D20;"/>
+
+                        <button id="saveNextButton"
+                                label="Save &amp; Next"
+                                width="155px"
+                                style="background:#2457D6;color:white;border:none;"/>
+
+                    </hlayout>
+
+                </vlayout>
+
+            </center>
+
+        </borderlayout>
+
+    </window>
+
+</zk>

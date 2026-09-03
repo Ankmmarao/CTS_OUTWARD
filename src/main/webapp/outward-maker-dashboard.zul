@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Outward Maker Dashboard"?>
+
+<zk>
+
+    <window
+        width="100%"
+        height="100%"
+        border="none"
+        apply="com.iispl.cts.controller.outward.OutwardMakerDashboardController">
+
+        <borderlayout
+            width="100%"
+            height="100%"
+            style="background:#F4F7FB;">
+
+            <!-- ================= HEADER ================= -->
+
+            <north size="62px">
+
+                <include src="/header.zul"/>
+
+            </north>
+
+            <!-- ================= SIDEBAR ================= -->
+
+            <west size="280px">
+
+                <include src="/makersidebar.zul"/>
+
+            </west>
+
+            <!-- ================= CENTER ================= -->
+
+            <center>
+
+                <vlayout
+                    spacing="22px"
+                    width="100%"
+                    height="100%"
+                    style="padding:32px;">
+
+                    <!-- ================= TITLE ================= -->
+
+                    <label
+                        value="Outward Maker Dashboard"
+                        style="font-size:30px;
+                               font-weight:bold;
+                               color:#122B49;"/>
+
+
+                    <!-- ================= SUMMARY CARDS ================= -->
+
+                    <hlayout
+                        spacing="20px"
+                        width="100%">
+
+                        <!-- DATA ENTRY -->
+
+                        <groupbox
+                            width="300px"
+                            height="130px"
+                            style="background:white;
+                                   border:1px solid #DCE5F0;
+                                   border-radius:8px;">
+
+                            <vlayout
+                                spacing="10px"
+                                style="padding:20px;
+                                       text-align:center;">
+
+                                <label
+                                    value="Pending Data Entry"
+                                    style="font-size:17px;
+                                           color:#51657D;"/>
+
+                                <label
+                                    value="8"
+                                    style="font-size:34px;
+                                           font-weight:bold;
+                                           color:#F39A00;"/>
+
+                            </vlayout>
+
+                        </groupbox>
+
+
+                        <!-- MICR -->
+
+                        <groupbox
+                            width="300px"
+                            height="130px"
+                            style="background:white;
+                                   border:1px solid #DCE5F0;
+                                   border-radius:8px;">
+
+                            <vlayout
+                                spacing="10px"
+                                style="padding:20px;
+                                       text-align:center;">
+
+                                <label
+                                    value="MICR Repair"
+                                    style="font-size:17px;
+                                           color:#51657D;"/>
+
+                                <label
+                                    value="4"
+                                    style="font-size:34px;
+                                           font-weight:bold;
+                                           color:#E74C3C;"/>
+
+                            </vlayout>
+
+                        </groupbox>
+
+
+                        <!-- READY TO SUBMIT -->
+
+                        <groupbox
+                            width="300px"
+                            height="130px"
+                            style="background:white;
+                                   border:1px solid #DCE5F0;
+                                   border-radius:8px;">
+
+                            <vlayout
+                                spacing="10px"
+                                style="padding:20px;
+                                       text-align:center;">
+
+                                <label
+                                    value="Ready to Submit"
+                                    style="font-size:17px;
+                                           color:#51657D;"/>
+
+                                <label
+                                    value="6"
+                                    style="font-size:34px;
+                                           font-weight:bold;
+                                           color:#12B76A;"/>
+
+                            </vlayout>
+
+                        </groupbox>
+
+                    </hlayout>
+
+
+                    <!-- ================= BATCHES ================= -->
+
+                    <groupbox
+                        width="100%"
+                        style="background:white;
+                               border:1px solid #DCE5F0;
+                               border-radius:8px;">
+
+                        <caption
+                            label="Batches"/>
+
+
+                        <!-- IMPORTANT:
+                             Controller dynamically fills this listbox -->
+
+                        <listbox
+                            id="batchListbox"
+                            width="100%"
+                            emptyMessage="No batches available."
+                            style="font-size:14px;">
+
+                            <listhead>
+
+                                <listheader
+                                    label="Batch No"
+                                    width="15%"/>
+
+                                <listheader
+                                    label="Total Cheques"
+                                    width="18%"/>
+
+                                <listheader
+                                    label="Status"
+                                    width="20%"/>
+
+                                <listheader
+                                    label="User ID"
+                                    width="20%"/>
+
+                                <listheader
+                                    label="Assignment"
+                                    width="15%"/>
+
+                                <listheader
+                                    label="Action"
+                                    width="12%"/>
+
+                            </listhead>
+
+                        </listbox>
+
+                    </groupbox>
+
+                </vlayout>
+
+            </center>
+
+        </borderlayout>
+
+    </window>
+
+</zk>

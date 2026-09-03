@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk>
+
+    <vlayout width="280px"
+             height="100%"
+             spacing="5px"
+             style="background:#081B33;padding-top:18px;">
+
+        <button label="⌂   Dashboard"
+                width="270px"
+                height="52px"
+                style="background:#075BC8;color:white;border:none;text-align:left;padding-left:22px;font-size:16px;"
+                onClick='Executions.sendRedirect("outward-maker-dashboard.zul")'/>
+
+        <button label="☑   Data Entry"
+                width="270px"
+                height="52px"
+                style="background:transparent;color:#C4D1E5;border:none;text-align:left;padding-left:22px;font-size:16px;"
+                onClick='Executions.sendRedirect("outward-maker-data-entry.zul")'/>
+
+        <button label="⚒   MICR Repair"
+                width="270px"
+                height="52px"
+                style="background:transparent;color:#C4D1E5;border:none;text-align:left;padding-left:22px;font-size:16px;"
+                onClick='Executions.sendRedirect("outward-maker-micr-repair.zul")'/>
+
+        <button label="▦   Amount And Account"
+                width="270px"
+                height="52px"
+                style="background:transparent;color:#C4D1E5;border:none;text-align:left;padding-left:22px;font-size:16px;"
+                onClick='Executions.sendRedirect("outward-maker-amount-account.zul")'/>
+
+        <button label="➤   Send to Checker"
+                width="270px"
+                height="52px"
+                style="background:transparent;color:#C4D1E5;border:none;text-align:left;padding-left:22px;font-size:16px;"
+                onClick='Executions.sendRedirect("outward-maker-send-to-checker.zul")'/>
+
+    </vlayout>
+
+</zk>

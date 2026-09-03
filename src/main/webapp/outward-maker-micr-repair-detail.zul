@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="MICR Repair Detail"?>
+
+<zk>
+
+    <window width="100%"
+            height="100%"
+            border="none"
+            apply="com.iispl.cts.controller.outward.OutwardMakerMicrRepairDetailController">
+
+        <borderlayout width="100%"
+                      height="100%"
+                      style="background:#F4F7FB;">
+
+            <north size="62px">
+                <include src="/header.zul"/>
+            </north>
+
+            <west size="280px">
+                <include src="/makersidebar.zul"/>
+            </west>
+
+            <center>
+
+                <vlayout spacing="18px"
+                         style="padding:28px;">
+
+                    <!-- HEADER -->
+
+                    <groupbox width="100%"
+                              style="background:white;border:1px solid #DCE5F0;">
+
+                        <hlayout width="100%"
+                                 style="padding:15px 20px;">
+
+                            <label value="Batch ID : "
+                                   style="font-size:18px;font-weight:bold;"/>
+
+                            <label id="batchIdLabel"
+                                   value=""
+                                   style="font-size:22px;font-weight:bold;color:#175CD3;"/>
+
+                            <space hflex="1"/>
+
+                            <label id="chequeProgressLabel"
+                                   value=""
+                                   style="font-size:18px;font-weight:bold;color:#175CD3;"/>
+
+                        </hlayout>
+
+                    </groupbox>
+
+
+                    <!-- MAIN -->
+
+                    <hlayout width="100%"
+                             spacing="25px">
+
+
+                        <!-- IMAGES -->
+
+                        <vlayout hflex="1"
+                                 spacing="12px">
+
+                            <label value="Scanned Cheque"
+                                   style="font-size:20px;font-weight:bold;"/>
+
+
+                            <groupbox width="100%"
+                                      height="330px"
+                                      style="background:white;border:1px solid #DCE5F0;">
+
+                                <caption label="Front Side"/>
+
+                                <image src="https://placehold.co/900x400?text=Cheque+Front"
+                                       width="95%"
+                                       height="270px"/>
+
+                            </groupbox>
+
+
+                            <groupbox width="100%"
+                                      height="330px"
+                                      style="background:white;border:1px solid #DCE5F0;">
+
+                                <caption label="Back Side"/>
+
+                                <image src="https://placehold.co/900x400?text=Cheque+Back"
+                                       width="95%"
+                                       height="270px"/>
+
+                            </groupbox>
+
+
+                            <hlayout spacing="10px">
+
+                                <button label="Zoom In"
+                                        width="110px"/>
+
+                                <button label="Zoom Out"
+                                        width="110px"/>
+
+                                <button label="Rotate"
+                                        width="100px"/>
+
+                            </hlayout>
+
+                        </vlayout>
+
+
+                        <!-- REPAIR -->
+
+                        <vlayout width="450px"
+                                 spacing="15px">
+
+
+                            <groupbox width="450px"
+                                      style="background:white;border:1px solid #DCE5F0;">
+
+                                <caption label="MICR Repair"/>
+
+                                <grid width="100%">
+
+                                    <columns>
+
+                                        <column width="170px"/>
+
+                                        <column/>
+
+                                    </columns>
+
+                                    <rows>
+
+                                        <row>
+
+                                            <label value="Cheque Number"/>
+
+                                            <textbox id="chequeNumberTextbox"
+                                                     width="250px"
+                                                     readonly="true"/>
+
+                                        </row>
+
+
+                                        <row>
+
+                                            <label value="MICR Status"/>
+
+                                            <label value="MICR Error"
+                                                   style="color:#D92D20;font-weight:bold;"/>
+
+                                        </row>
+
+
+                                        <row>
+
+                                            <label value="Scanned MICR"/>
+
+                                            <textbox id="scannedMicrTextbox"
+                                                     width="250px"
+                                                     readonly="true"/>
+
+                                        </row>
+
+
+                                        <row>
+
+                                            <label value="Correct MICR *"/>
+
+                                            <textbox id="correctMicrTextbox"
+                                                     width="250px"
+                                                     placeholder="Enter correct MICR"/>
+
+                                        </row>
+
+
+                                        <row>
+
+                                            <label value="Repair Reason *"/>
+
+                                            <textbox id="repairReasonTextbox"
+                                                     width="250px"
+                                                     rows="4"
+                                                     placeholder="Enter repair reason"/>
+
+                                        </row>
+
+
+                                        <row>
+
+                                            <label value="Remarks"/>
+
+                                            <textbox id="remarksTextbox"
+                                                     width="250px"
+                                                     rows="3"
+                                                     placeholder="Enter remarks"/>
+
+                                        </row>
+
+                                    </rows>
+
+                                </grid>
+
+                            </groupbox>
+
+
+                            <!-- VERIFICATION -->
+
+                            <groupbox width="450px">
+
+                                <caption label="Verification"/>
+
+                                <vlayout spacing="10px"
+                                         style="padding:12px;">
+
+                                    <checkbox id="micrCorrectedCheckbox"
+                                              label="MICR corrected"/>
+
+                                    <checkbox id="frontVerifiedCheckbox"
+                                              label="Front image verified"/>
+
+                                    <checkbox id="backVerifiedCheckbox"
+                                              label="Back image verified"/>
+
+                                </vlayout>
+
+                            </groupbox>
+
+
+                            <!-- BUTTONS -->
+
+                            <hlayout spacing="10px">
+
+                                <button id="backButton"
+                                        label="Back"
+                                        width="100px"/>
+
+                                <button id="prevButton"
+                                        label="Prev"
+                                        width="100px"/>
+
+                                <button id="nextButton"
+                                        label="Next"
+                                        width="100px"/>
+
+                                <space hflex="1"/>
+
+                                <button id="rejectButton"
+                                        label="Reject"
+                                        width="100px"
+                                        style="background:white;color:#D92D20;border:1px solid #D92D20;"/>
+
+                                <button id="saveNextButton"
+                                        label="Save &amp; Next"
+                                        width="140px"
+                                        style="background:#2457D6;color:white;border:none;"/>
+
+                            </hlayout>
+
+                        </vlayout>
+
+                    </hlayout>
+
+                </vlayout>
+
+            </center>
+
+        </borderlayout>
+
+    </window>
+
+</zk>

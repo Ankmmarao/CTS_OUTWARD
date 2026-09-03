@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Send to Checker"?>
+
+<zk>
+
+    <borderlayout width="100%" height="100%"
+                  style="background:#F4F7FB;">
+
+        <north size="62px">
+            <include src="/header.zul"/>
+        </north>
+
+        <west size="280px">
+            <include src="/makersidebar.zul"/>
+        </west>
+
+        <center>
+
+            <vlayout spacing="20px"
+                     style="padding:30px;">
+
+                <label value="Send to Checker"
+                       style="font-size:30px;font-weight:bold;color:#122B49;"/>
+
+                <groupbox width="100%"
+                          style="background:white;border:1px solid #DCE5F0;">
+
+                    <vlayout>
+
+                        <hlayout style="background:#EEF6FF;padding:15px;">
+
+                            <label value="ⓘ The following outward batches have completed maker data entry &amp; MICR repair and are ready to be submitted to Outward Checker."
+                                   style="font-size:15px;color:#174EA6;"/>
+
+                        </hlayout>
+
+                        <listbox width="100%"
+                                 emptyMessage="No batches are ready to submit.">
+
+                            <listhead>
+
+                                <listheader label="Batch ID"
+                                            width="20%"/>
+
+                                <listheader label="Total Cheques"
+                                            width="20%"/>
+
+                                <listheader label="Status"
+                                            width="30%"/>
+
+                                <listheader label="Action"
+                                            width="25%"/>
+
+                            </listhead>
+
+                            <listitem>
+
+                                <listcell label="B002"/>
+
+                                <listcell label="12"/>
+
+                                <listcell>
+
+                                    <label value="✓ Ready to Submit"
+                                           style="background:#D1FADF;color:#039855;padding:8px 15px;border-radius:5px;font-weight:bold;"/>
+
+                                </listcell>
+
+                                <listcell>
+
+                                    <button label="Send to Checker"
+                                            width="160px"
+                                            style="background:#2457D6;color:white;border:none;"/>
+
+                                </listcell>
+
+                            </listitem>
+
+                            <listitem>
+
+                                <listcell label="B003"/>
+                                <listcell label="12"/>
+
+                                <listcell>
+
+                                    <label value="✓ Ready to Submit"
+                                           style="background:#D1FADF;color:#039855;padding:8px 15px;border-radius:5px;font-weight:bold;"/>
+
+                                </listcell>
+
+                                <listcell>
+
+                                    <button label="Send to Checker"
+                                            width="160px"
+                                            style="background:#2457D6;color:white;border:none;"/>
+
+                                </listcell>
+
+                            </listitem>
+
+                        </listbox>
+
+                    </vlayout>
+
+                </groupbox>
+
+            </vlayout>
+
+        </center>
+
+    </borderlayout>
+
+</zk>

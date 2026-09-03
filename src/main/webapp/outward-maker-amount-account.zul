@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Amount And Account"?>
+
+<zk>
+
+    <borderlayout width="100%" height="100%"
+                  style="background:#F4F7FB;">
+
+        <north size="62px">
+            <include src="/header.zul"/>
+        </north>
+
+        <west size="280px">
+            <include src="/makersidebar.zul"/>
+        </west>
+
+        <center>
+
+            <vlayout spacing="20px"
+                     style="padding:30px;">
+
+                <label value="Amount And Account"
+                       style="font-size:30px;font-weight:bold;color:#122B49;"/>
+
+                <groupbox width="100%"
+                          style="background:white;border:1px solid #DCE5F0;">
+
+                    <listbox width="100%"
+                             emptyMessage="No batches available for Amount And Account.">
+
+                        <listhead>
+
+                            <listheader label="Batch ID"
+                                        width="30%"/>
+
+                            <listheader label="Total Cheques"
+                                        width="30%"/>
+
+                            <listheader label="Action"
+                                        width="30%"/>
+
+                        </listhead>
+
+                        <listitem>
+
+                            <listcell label="B008"/>
+
+                            <listcell label="12"/>
+
+                            <listcell>
+
+                                <button label="Open"
+                                        width="90px"
+                                        onClick='Executions.sendRedirect("outward-maker-amount-account-detail.zul")'/>
+
+                            </listcell>
+
+                        </listitem>
+
+                    </listbox>
+
+                </groupbox>
+
+            </vlayout>
+
+        </center>
+
+    </borderlayout>
+
+</zk>

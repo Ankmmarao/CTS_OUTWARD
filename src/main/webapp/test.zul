@@ -1,0 +1,31 @@
+<?page title="ZK Test"?>
+
+<zk>
+
+    <window title="ZK Test Screen"
+            border="normal"
+            width="500px"
+            height="300px"
+            position="center">
+
+        <vlayout spacing="15px"
+                 style="padding:30px;">
+
+            <label value="ZK Project is Working!"
+                   style="font-size:24px; font-weight:bold;"/>
+
+            <label value="This is a basic ZUL screen."
+                   style="font-size:16px;"/>
+
+            <textbox id="txtName"
+                     placeholder="Enter your name"
+                     width="300px"/>
+
+            <button label="Test Button"
+                    width="150px"/>
+
+        </vlayout>
+
+    </window>
+
+</zk>
