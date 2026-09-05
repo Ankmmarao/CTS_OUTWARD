@@ -1,577 +1,759 @@
 package com.iispl.cts.dao.outward;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.iispl.cts.data.CTSStaticData;
 import com.iispl.cts.model.outward.OutwardBatch;
 import com.iispl.cts.model.outward.OutwardCheque;
 
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 public class OutwardMakerDashboardDAO {
 
-    // =========================================================
-    // LOAD ALL BATCHES FOR MAKER DASHBOARD
-    // =========================================================
+    // ============================================================
+    // GET ALL BATCHES
+    // ============================================================
 
     public List<OutwardBatch> getBatches() throws SQLException {
 
         List<OutwardBatch> batches = new ArrayList<>();
 
-        /*
-         * Do not use batch_id directly here because the current
-         * database reported:
-         *
-         * ERROR: column "batch_id" does not exist
-         *
-         * Therefore the actual columns are read dynamically.
-         */
         String sql =
-                "SELECT * " +
-                "FROM public.outward_batch " +
-                "ORDER BY 1";
+                "SELECT " +
+                "    ob.batch_number, " +
+                "    ob.branch_code, " +
+                "    ob.cheque_count, " +
+                "    ob.batch_folder_path, " +
+                "    ob.created_by, " +
+                "    ob.created_at, " +
+                "    ob.batch_status, " +
 
-        System.out.println("======================================");
-        System.out.println("MAKER DASHBOARD DAO");
-        System.out.println("Loading batches...");
-        System.out.println("SQL = " + sql);
-        System.out.println("======================================");
+                // Maker assignment
+                "    mba.user_id AS maker_user_id, " +
+                "    mba.assigned_at AS maker_assigned_at, " +
+                "    mba.started_at AS maker_started_at, " +
+                "    mba.completed_at AS maker_completed_at, " +
+                "    mba.assignment_status AS maker_assignment_status " +
 
-        try (
-                Connection con = CTSStaticData.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()
-        ) {
+                "FROM public.outward_batch ob " +
 
-            ResultSetMetaData metaData =
-                    rs.getMetaData();
+                "LEFT JOIN public.outward_batch_assignment mba " +
+                "    ON ob.batch_number = mba.batch_number " +
+                "    AND UPPER(mba.assignment_role) = 'MAKER' " +
+                "    AND UPPER(mba.assignment_status) IN " +
+                "        ('ASSIGNED', 'IN_PROGRESS') " +
 
-            System.out.println(
-                    "outward_batch columns:"
-            );
+                "ORDER BY ob.batch_number";
 
-            for (int i = 1;
-                    i <= metaData.getColumnCount();
-                    i++) {
-
-                System.out.println(
-                        i + " -> "
-                        + metaData.getColumnName(i)
-                );
-            }
-
-            System.out.println("--------------------------------------");
+        try (Connection con = CTSStaticData.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
 
-                OutwardBatch batch =
-                        new OutwardBatch();
+                OutwardBatch batch = new OutwardBatch();
 
-                // -------------------------------------------------
-                // BATCH NUMBER
-                // -------------------------------------------------
+                // ====================================================
+                // BASIC BATCH INFORMATION
+                // ====================================================
 
-                String batchNumber =
-                        getString(
-                                rs,
-                                "batch_number",
-                                "batch_no",
-                                "batch_id",
-                                "batchid"
-                        );
-
-                batch.setBatchNumber(batchNumber);
-
-                // -------------------------------------------------
-                // BRANCH CODE
-                // -------------------------------------------------
+                batch.setBatchNumber(
+                        rs.getString("batch_number")
+                );
 
                 batch.setBranchCode(
-                        getString(
-                                rs,
-                                "branch_code",
-                                "branch"
-                        )
+                        rs.getString("branch_code")
                 );
-
-                // -------------------------------------------------
-                // NUMBER OF CHEQUES
-                // -------------------------------------------------
-
-                Integer numberOfCheques =
-                        getInteger(
-                                rs,
-                                "number_of_cheques",
-                                "total_cheques",
-                                "cheque_count",
-                                "total_cheque"
-                        );
-
-                if (numberOfCheques == null) {
-                    numberOfCheques = 0;
-                }
 
                 batch.setNumberOfCheques(
-                        numberOfCheques
+                        rs.getInt("cheque_count")
                 );
-
-                // -------------------------------------------------
-                // TOTAL AMOUNT
-                // -------------------------------------------------
-
-                batch.setTotalAmount(
-                        getBigDecimal(
-                                rs,
-                                "total_amount"
-                        )
-                );
-
-                // -------------------------------------------------
-                // BATCH FOLDER
-                // -------------------------------------------------
 
                 batch.setBatchFolderPath(
-                        getString(
-                                rs,
-                                "batch_folder_path",
-                                "batch_folder"
-                        )
+                        rs.getString("batch_folder_path")
                 );
 
-                // -------------------------------------------------
-                // XML FILE
-                // -------------------------------------------------
-
-                batch.setXmlFilePath(
-                        getString(
-                                rs,
-                                "xml_file_path",
-                                "xml_file"
-                        )
-                );
-
-                // -------------------------------------------------
+                // ====================================================
                 // CREATED BY
-                // -------------------------------------------------
+                // ====================================================
 
-                batch.setCreatedBy(
-                        getString(
-                                rs,
-                                "created_by"
-                        )
-                );
+                int createdBy = rs.getInt("created_by");
 
-                // -------------------------------------------------
+                if (!rs.wasNull()) {
+                    batch.setCreatedBy(
+                            String.valueOf(createdBy)
+                    );
+                }
+
+                // ====================================================
                 // CREATED AT
-                // -------------------------------------------------
+                // ====================================================
 
-                batch.setCreatedAt(
-                        getLocalDateTime(
-                                rs,
-                                "created_at"
-                        )
-                );
+                Timestamp createdAt =
+                        rs.getTimestamp("created_at");
 
-                // -------------------------------------------------
-                // UPDATED BY
-                // -------------------------------------------------
+                if (createdAt != null) {
+                    batch.setCreatedAt(
+                            createdAt.toLocalDateTime()
+                    );
+                }
 
-                batch.setUpdatedBy(
-                        getString(
-                                rs,
-                                "updated_by"
-                        )
-                );
-
-                // -------------------------------------------------
-                // UPDATED AT
-                // -------------------------------------------------
-
-                batch.setUpdatedAt(
-                        getLocalDateTime(
-                                rs,
-                                "updated_at"
-                        )
-                );
-
-                // -------------------------------------------------
+                // ====================================================
                 // BATCH STATUS
-                // -------------------------------------------------
+                // ====================================================
 
-                String status =
-                        getString(
-                                rs,
-                                "batch_status",
-                                "status"
-                        );
-
-                if (status != null) {
-                    status = status.trim();
-                }
-
-                batch.setBatchStatus(status);
-
-                // -------------------------------------------------
-                // MAKER USER
-                // -------------------------------------------------
-
-                String makerUser =
-                        getString(
-                                rs,
-                                "maker_user_number",
-                                "maker_user_id",
-                                "user_id"
-                        );
-
-                if (makerUser != null) {
-                    makerUser = makerUser.trim();
-                }
-
-                batch.setMakerUserNumber(
-                        makerUser
+                batch.setBatchStatus(
+                        rs.getString("batch_status")
                 );
 
-                // -------------------------------------------------
+                // ====================================================
+                // MAKER ASSIGNMENT
+                // ====================================================
+
+                int makerUserId =
+                        rs.getInt("maker_user_id");
+
+                if (!rs.wasNull()) {
+
+                    String makerUser =
+                            String.valueOf(makerUserId);
+
+                    batch.setMakerUserNumber(
+                            makerUser
+                    );
+
+                    /*
+                     * The model contains lockedBy even though the
+                     * database stores the assignment in
+                     * outward_batch_assignment.
+                     */
+                    batch.setLockedBy(
+                            makerUser
+                    );
+                }
+
+                // ====================================================
+                // MAKER ASSIGNED AT
+                // ====================================================
+
+                Timestamp makerAssignedAt =
+                        rs.getTimestamp("maker_assigned_at");
+
+                if (makerAssignedAt != null) {
+
+                    batch.setMakerStartedAt(
+                            makerAssignedAt.toLocalDateTime()
+                    );
+
+                    batch.setLockedAt(
+                            makerAssignedAt.toLocalDateTime()
+                    );
+                }
+
+                // ====================================================
                 // MAKER STARTED AT
-                // -------------------------------------------------
+                // ====================================================
 
-                batch.setMakerStartedAt(
-                        getLocalDateTime(
-                                rs,
-                                "maker_started_at"
-                        )
-                );
+                Timestamp makerStartedAt =
+                        rs.getTimestamp("maker_started_at");
 
-                // -------------------------------------------------
+                if (makerStartedAt != null) {
+
+                    batch.setMakerStartedAt(
+                            makerStartedAt.toLocalDateTime()
+                    );
+                }
+
+                // ====================================================
                 // MAKER COMPLETED AT
-                // -------------------------------------------------
+                // ====================================================
 
-                batch.setMakerCompletedAt(
-                        getLocalDateTime(
-                                rs,
-                                "maker_completed_at"
-                        )
-                );
+                Timestamp makerCompletedAt =
+                        rs.getTimestamp("maker_completed_at");
 
-                // -------------------------------------------------
-                // CHECKER USER
-                // -------------------------------------------------
+                if (makerCompletedAt != null) {
 
-                batch.setCheckerUserNumber(
-                        getString(
-                                rs,
-                                "checker_user_number",
-                                "checker_user_id"
-                        )
-                );
-
-                // -------------------------------------------------
-                // CHECKER STARTED AT
-                // -------------------------------------------------
-
-                batch.setCheckerStartedAt(
-                        getLocalDateTime(
-                                rs,
-                                "checker_started_at"
-                        )
-                );
-
-                // -------------------------------------------------
-                // CHECKER COMPLETED AT
-                // -------------------------------------------------
-
-                batch.setCheckerCompletedAt(
-                        getLocalDateTime(
-                                rs,
-                                "checker_completed_at"
-                        )
-                );
-
-                // -------------------------------------------------
-                // LOCKED BY
-                // -------------------------------------------------
-
-                String lockedBy =
-                        getString(
-                                rs,
-                                "locked_by"
-                        );
-
-                /*
-                 * If there is no separate locked_by column,
-                 * use the Maker user as the fallback.
-                 */
-                if (lockedBy == null
-                        || lockedBy.trim().isEmpty()) {
-
-                    lockedBy = makerUser;
+                    batch.setMakerCompletedAt(
+                            makerCompletedAt.toLocalDateTime()
+                    );
                 }
 
-                batch.setLockedBy(lockedBy);
+                // ====================================================
+                // MAKER ASSIGNMENT STATUS
+                // ====================================================
 
-                // -------------------------------------------------
-                // LOCKED AT
-                // -------------------------------------------------
+                String assignmentStatus =
+                        rs.getString("maker_assignment_status");
 
-                batch.setLockedAt(
-                        getLocalDateTime(
-                                rs,
-                                "locked_at"
-                        )
+                batch.setMakerAssignmentStatus(
+                        assignmentStatus
                 );
 
-                // -------------------------------------------------
+                // ====================================================
                 // LOCK STATUS
-                // -------------------------------------------------
+                // ====================================================
 
-                String lockStatus =
-                        getString(
-                                rs,
-                                "lock_status"
+                if (assignmentStatus != null) {
+
+                    if ("IN_PROGRESS".equalsIgnoreCase(
+                            assignmentStatus)) {
+
+                        batch.setLockStatus(
+                                "IN_PROGRESS"
                         );
 
-                String assignment =
-                        getString(
-                                rs,
-                                "assignment",
-                                "batch_assignment"
+                    } else if ("ASSIGNED".equalsIgnoreCase(
+                            assignmentStatus)) {
+
+                        batch.setLockStatus(
+                                "LOCKED"
                         );
-
-                if (lockStatus == null
-                        || lockStatus.trim().isEmpty()) {
-
-                    lockStatus = assignment;
-                }
-
-                if (lockStatus != null) {
-                    lockStatus = lockStatus.trim();
-                }
-
-                if (lockStatus == null
-                        || lockStatus.isEmpty()) {
-
-                    batch.setLockStatus(null);
-
-                } else if (
-                        "ASSIGNED".equalsIgnoreCase(
-                                lockStatus)
-                        || "IN_PROGRESS".equalsIgnoreCase(
-                                lockStatus)
-                        || "LOCKED".equalsIgnoreCase(
-                                lockStatus)
-                ) {
-
-                    batch.setLockStatus("LOCKED");
+                    }
 
                 } else {
 
-                    batch.setLockStatus(lockStatus);
+                    /*
+                     * No active Maker assignment means the batch
+                     * is available from the assignment perspective.
+                     */
+                    batch.setLockStatus(
+                            "AVAILABLE"
+                    );
                 }
 
-                // -------------------------------------------------
-                // ADD BATCH
-                // -------------------------------------------------
-
                 batches.add(batch);
-
-                // -------------------------------------------------
-                // DEBUG
-                // -------------------------------------------------
-
-                System.out.println(
-                        "Batch loaded: "
-                        + batch.getBatchNumber()
-                        + " | Cheques="
-                        + batch.getNumberOfCheques()
-                        + " | Status="
-                        + batch.getBatchStatus()
-                        + " | Maker="
-                        + batch.getMakerUserNumber()
-                        + " | LockStatus="
-                        + batch.getLockStatus()
-                        + " | LockedBy="
-                        + batch.getLockedBy()
-                );
             }
         }
-
-        System.out.println(
-                "Total batches loaded = "
-                + batches.size()
-        );
-
-        System.out.println("======================================");
-        System.out.println(
-                "MAKER DASHBOARD DAO LOAD COMPLETE"
-        );
-        System.out.println("======================================");
 
         return batches;
     }
 
-
-    // =========================================================
+    // ============================================================
     // ASSIGN BATCH TO MAKER
-    // =========================================================
+    // ============================================================
 
     public boolean assignBatch(
             String batchNumber,
             String userId) throws SQLException {
 
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return false;
+        if (batchNumber == null || batchNumber.trim().isEmpty()) {
+            throw new SQLException("Batch number is required.");
         }
 
-        if (userId == null
-                || userId.trim().isEmpty()) {
-
-            return false;
+        if (userId == null || userId.trim().isEmpty()) {
+            throw new SQLException("User ID is required.");
         }
 
-        String batchColumn =
-                findColumn(
-                        "batch_number",
-                        "batch_no",
-                        "batch_id",
-                        "batchid"
-                );
+        int makerId;
 
-        String userColumn =
-                findColumn(
-                        "maker_user_number",
-                        "maker_user_id",
-                        "user_id"
-                );
-
-        String assignmentColumn =
-                findColumn(
-                        "assignment",
-                        "batch_assignment"
-                );
-
-        if (batchColumn == null) {
-
+        try {
+            makerId = Integer.parseInt(userId.trim());
+        } catch (NumberFormatException e) {
             throw new SQLException(
-                    "Batch number column not found "
-                    + "in public.outward_batch."
+                    "Invalid maker user ID: " + userId
             );
         }
 
-        if (userColumn == null) {
+        try (Connection con = CTSStaticData.getConnection()) {
 
-            throw new SQLException(
-                    "Maker/user column not found "
-                    + "in public.outward_batch."
-            );
-        }
+            con.setAutoCommit(false);
 
-        if (assignmentColumn == null) {
+            try {
 
-            throw new SQLException(
-                    "Assignment column not found "
-                    + "in public.outward_batch."
-            );
-        }
+                // =================================================
+                // 1. VERIFY LOGGED-IN USER IS AN ACTIVE MAKER
+                // =================================================
 
-        String sql =
-                "UPDATE public.outward_batch "
-                + "SET " + userColumn + " = ?, "
-                + assignmentColumn
-                + " = 'IN_PROGRESS' "
-                + "WHERE " + batchColumn + " = ? "
-                + "AND " + userColumn + " IS NULL "
-                + "AND ("
-                + assignmentColumn
-                + " IS NULL OR TRIM("
-                + assignmentColumn
-                + ") = '')";
+                String userSql =
+                        "SELECT u.user_id, u.status, u.role_id " +
+                        "FROM public.\"user\" u " +
+                        "WHERE u.user_id = ? " +
+                        "AND UPPER(TRIM(u.status)) = 'ACTIVE' " +
+                        "AND u.role_id = 3";
 
-        System.out.println(
-                "Assigning batch "
-                + batchNumber
-                + " to maker "
-                + userId
-        );
+                try (PreparedStatement ps =
+                             con.prepareStatement(userSql)) {
 
-        try (
-                Connection con =
-                        CTSStaticData.getConnection();
-                PreparedStatement ps =
-                        con.prepareStatement(sql)
-        ) {
+                    ps.setInt(1, makerId);
 
-            ps.setString(
-                    1,
-                    userId.trim()
-            );
+                    try (ResultSet rs = ps.executeQuery()) {
 
-            ps.setString(
-                    2,
-                    batchNumber.trim()
-            );
+                        if (!rs.next()) {
 
-            int rows =
+                            throw new SQLException(
+                                    "User " + makerId +
+                                    " is not an active Maker. " +
+                                    "Expected status ACTIVE and Maker role_id 3."
+                            );
+                        }
+                    }
+                }
+
+                // =================================================
+                // 2. LOCK BATCH ROW
+                // =================================================
+
+                String batchSql =
+                        "SELECT batch_status " +
+                        "FROM public.outward_batch " +
+                        "WHERE batch_number = ? " +
+                        "FOR UPDATE";
+
+                String currentStatus;
+
+                try (PreparedStatement ps =
+                             con.prepareStatement(batchSql)) {
+
+                    ps.setString(1, batchNumber.trim());
+
+                    try (ResultSet rs = ps.executeQuery()) {
+
+                        if (!rs.next()) {
+
+                            throw new SQLException(
+                                    "Batch not found: " + batchNumber
+                            );
+                        }
+
+                        currentStatus =
+                                rs.getString("batch_status");
+                    }
+                }
+
+                // =================================================
+                // 3. CHECK EXISTING MAKER ASSIGNMENT
+                // =================================================
+
+                String assignmentSql =
+                        "SELECT user_id, assignment_status " +
+                        "FROM public.outward_batch_assignment " +
+                        "WHERE batch_number = ? " +
+                        "AND UPPER(assignment_role) = 'MAKER' " +
+                        "AND UPPER(assignment_status) IN " +
+                        "    ('ASSIGNED', 'IN_PROGRESS') " +
+                        "FOR UPDATE";
+
+                Integer existingMakerId = null;
+                String existingAssignmentStatus = null;
+
+                try (PreparedStatement ps =
+                             con.prepareStatement(assignmentSql)) {
+
+                    ps.setString(1, batchNumber.trim());
+
+                    try (ResultSet rs = ps.executeQuery()) {
+
+                        if (rs.next()) {
+
+                            existingMakerId =
+                                    rs.getInt("user_id");
+
+                            existingAssignmentStatus =
+                                    rs.getString("assignment_status");
+                        }
+                    }
+                }
+
+                // =================================================
+                // 4. IF ALREADY ASSIGNED, ONLY SAME MAKER CAN CONTINUE
+                // =================================================
+
+                if (existingMakerId != null) {
+
+                    // Another Maker already owns the batch.
+                    if (existingMakerId.intValue() != makerId) {
+
+                        throw new SQLException(
+                                "Batch " + batchNumber +
+                                " is already assigned to Maker " +
+                                existingMakerId + "."
+                        );
+                    }
+
+                    // Same Maker already has the batch in progress.
+                    // Do NOT create another assignment.
+                    if ("IN_PROGRESS".equalsIgnoreCase(
+                            existingAssignmentStatus)) {
+
+                        con.commit();
+                        return true;
+                    }
+
+                    // Same Maker owns the batch but assignment is ASSIGNED.
+                    // Resume it.
+                    if ("ASSIGNED".equalsIgnoreCase(
+                            existingAssignmentStatus)) {
+
+                        String resumeSql =
+                                "UPDATE public.outward_batch_assignment " +
+                                "SET started_at = COALESCE(" +
+                                "started_at, CURRENT_TIMESTAMP), " +
+                                "assignment_status = 'IN_PROGRESS' " +
+                                "WHERE batch_number = ? " +
+                                "AND user_id = ? " +
+                                "AND UPPER(assignment_role) = 'MAKER' " +
+                                "AND UPPER(assignment_status) = 'ASSIGNED'";
+
+                        try (PreparedStatement ps =
+                                     con.prepareStatement(resumeSql)) {
+
+                            ps.setString(1, batchNumber.trim());
+                            ps.setInt(2, makerId);
+
+                            ps.executeUpdate();
+                        }
+
+                        String statusSql =
+                                "UPDATE public.outward_batch " +
+                                "SET batch_status = 'ASSIGNED' " +
+                                "WHERE batch_number = ?";
+
+                        try (PreparedStatement ps =
+                                     con.prepareStatement(statusSql)) {
+
+                            ps.setString(1, batchNumber.trim());
+
+                            ps.executeUpdate();
+                        }
+
+                        con.commit();
+                        return true;
+                    }
+                }
+
+                // =================================================
+                // 5. NEW ASSIGNMENT ONLY WHEN BATCH IS AVAILABLE
+                // =================================================
+
+                if (!"CAPTURED".equalsIgnoreCase(currentStatus)) {
+
+                    throw new SQLException(
+                            "Batch " + batchNumber +
+                            " is not available for a new Maker assignment. " +
+                            "Current status: " + currentStatus
+                    );
+                }
+
+                // =================================================
+                // 6. CREATE MAKER ASSIGNMENT
+                // =================================================
+
+                String insertSql =
+                        "INSERT INTO public.outward_batch_assignment " +
+                        "(batch_number, user_id, assignment_role, " +
+                        "assigned_at, started_at, assignment_status) " +
+                        "VALUES (?, ?, 'MAKER', " +
+                        "CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, " +
+                        "'IN_PROGRESS')";
+
+                try (PreparedStatement ps =
+                             con.prepareStatement(insertSql)) {
+
+                    ps.setString(1, batchNumber.trim());
+                    ps.setInt(2, makerId);
+
                     ps.executeUpdate();
+                }
 
-            System.out.println(
-                    "Assignment rows updated = "
-                    + rows
-            );
+                // =================================================
+                // 7. UPDATE BATCH STATUS
+                // =================================================
 
-            return rows == 1;
+                String updateSql =
+                        "UPDATE public.outward_batch " +
+                        "SET batch_status = 'ASSIGNED' " +
+                        "WHERE batch_number = ?";
+
+                try (PreparedStatement ps =
+                             con.prepareStatement(updateSql)) {
+
+                    ps.setString(1, batchNumber.trim());
+
+                    ps.executeUpdate();
+                }
+
+                con.commit();
+
+                return true;
+
+            } catch (SQLException e) {
+
+                con.rollback();
+
+                throw e;
+
+            } finally {
+
+                con.setAutoCommit(true);
+            }
         }
-    }
+    }    // ============================================================
+    // GET CHEQUES
+    // ============================================================
+ // ============================================================
+ // GET CHEQUES
+ // ============================================================
 
+ public List<OutwardCheque> getCheques(String batchNumber) throws SQLException {
 
-    // =========================================================
-    // LOAD CHEQUES FOR BATCH
-    // =========================================================
+     List<OutwardCheque> cheques = new ArrayList<>();
 
-    public List<OutwardCheque> getCheques(
+     if (batchNumber == null || batchNumber.trim().isEmpty()) {
+         throw new SQLException("Batch number is required.");
+     }
+
+     String sql =
+             "SELECT " +
+             "    oc.batch_number, " +
+             "    oc.cheque_number, " +
+             "    oc.city_code, " +
+             "    oc.bank_code, " +
+             "    oc.branch_code, " +
+             "    oc.drawer_account_number, " +
+             "    oc.drawer_name, " +
+             "    oc.payee_account_number, " +
+             "    oc.payee_name, " +
+             "    oc.amount, " +
+             "    oc.amount_in_words, " +
+             "    oc.cheque_date, " +
+             "    oc.front_image_path, " +
+             "    oc.back_image_path, " +
+             "    oc.cheque_status, " +
+             "    ob.created_by AS batch_created_by, " +
+             "    ob.created_at AS batch_created_at " +
+             "FROM public.outward_cheque oc " +
+             "INNER JOIN public.outward_batch ob " +
+             "    ON ob.batch_number = oc.batch_number " +
+             "WHERE oc.batch_number = ? " +
+             "ORDER BY oc.cheque_number";
+
+     try (Connection con = CTSStaticData.getConnection();
+          PreparedStatement ps = con.prepareStatement(sql)) {
+
+         ps.setString(1, batchNumber.trim());
+
+         try (ResultSet rs = ps.executeQuery()) {
+
+             while (rs.next()) {
+
+                 OutwardCheque cheque = new OutwardCheque();
+
+                 // =================================================
+                 // BATCH NUMBER
+                 // =================================================
+
+                 cheque.setBatchNumber(
+                         rs.getString("batch_number")
+                 );
+
+                 // =================================================
+                 // CHEQUE NUMBER
+                 // =================================================
+
+                 cheque.setChequeNumber(
+                         rs.getString("cheque_number")
+                 );
+
+                 // =================================================
+                 // CITY CODE
+                 // =================================================
+
+                 cheque.setCityCode(
+                         rs.getString("city_code")
+                 );
+
+                 // =================================================
+                 // BANK CODE
+                 // =================================================
+
+                 cheque.setBankCode(
+                         rs.getString("bank_code")
+                 );
+
+                 // =================================================
+                 // BRANCH CODE
+                 // =================================================
+
+                 cheque.setBranchCode(
+                         rs.getString("branch_code")
+                 );
+
+                 // =================================================
+                 // DRAWER ACCOUNT NUMBER
+                 // =================================================
+
+                 cheque.setDrawerAccountNumber(
+                         rs.getString("drawer_account_number")
+                 );
+
+                 // =================================================
+                 // DRAWER NAME
+                 // =================================================
+
+                 cheque.setDrawerName(
+                         rs.getString("drawer_name")
+                 );
+
+                 // =================================================
+                 // DEPOSITOR ACCOUNT NUMBER
+                 // =================================================
+
+                 cheque.setDepositorAccountNumber(
+                         rs.getString("payee_account_number")
+                 );
+
+                 // =================================================
+                 // DEPOSITOR NAME
+                 // =================================================
+
+                 cheque.setDepositorName(
+                         rs.getString("payee_name")
+                 );
+
+                 // =================================================
+                 // PAYEE NAME
+                 // =================================================
+
+                 cheque.setPayeeName(
+                         rs.getString("payee_name")
+                 );
+
+                 // =================================================
+                 // AMOUNT
+                 // =================================================
+
+                 cheque.setAmount(
+                         rs.getBigDecimal("amount")
+                 );
+
+                 // =================================================
+                 // AMOUNT IN WORDS
+                 // =================================================
+
+                 cheque.setAmountInWords(
+                         rs.getString("amount_in_words")
+                 );
+
+                 // =================================================
+                 // CHEQUE DATE
+                 // =================================================
+
+                 Date chequeDate = rs.getDate("cheque_date");
+
+                 if (chequeDate != null) {
+                     cheque.setChequeDate(
+                             chequeDate.toLocalDate()
+                     );
+                 } else {
+                     cheque.setChequeDate(null);
+                 }
+
+                 // =================================================
+                 // FRONT IMAGE PATH
+                 // =================================================
+
+                 cheque.setFrontImagePath(
+                         rs.getString("front_image_path")
+                 );
+
+                 // =================================================
+                 // BACK IMAGE PATH
+                 // =================================================
+
+                 cheque.setBackImagePath(
+                         rs.getString("back_image_path")
+                 );
+
+                 // =================================================
+                 // CHEQUE STATUS
+                 // =================================================
+
+                 cheque.setChequeStatus(
+                         rs.getString("cheque_status")
+                 );
+
+                 // =================================================
+                 // CREATED BY
+                 // =================================================
+
+                 int batchCreatedBy =
+                         rs.getInt("batch_created_by");
+
+                 if (!rs.wasNull()) {
+                     cheque.setCreatedBy(
+                             String.valueOf(batchCreatedBy)
+                     );
+                 } else {
+                     cheque.setCreatedBy(null);
+                 }
+
+                 // =================================================
+                 // CREATED AT
+                 // =================================================
+
+                 Timestamp batchCreatedAt =
+                         rs.getTimestamp("batch_created_at");
+
+                 if (batchCreatedAt != null) {
+                     cheque.setCreatedAt(
+                             batchCreatedAt.toLocalDateTime()
+                     );
+                 } else {
+                     cheque.setCreatedAt(null);
+                 }
+
+                 // =================================================
+                 // UPDATED BY
+                 // =================================================
+
+                 cheque.setUpdatedBy(null);
+
+                 // =================================================
+                 // UPDATED AT
+                 // =================================================
+
+                 cheque.setUpdatedAt(null);
+
+                 // =================================================
+                 // ADD CHEQUE
+                 // =================================================
+
+                 cheques.add(cheque);
+             }
+         }
+     }
+
+     return cheques;
+ }
+    // ============================================================
+    // CHECK BATCH EXISTS
+    // ============================================================
+
+    public boolean isBatchValid(
             String batchNumber) throws SQLException {
 
-        List<OutwardCheque> cheques =
-                new ArrayList<>();
+        if (batchNumber == null ||
+                batchNumber.trim().isEmpty()) {
 
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return cheques;
-        }
-
-        String batchColumn =
-                findChequeColumn(
-                        "batch_number",
-                        "batch_no",
-                        "batch_id"
-                );
-
-        if (batchColumn == null) {
-
-            throw new SQLException(
-                    "Batch column not found "
-                    + "in public.outward_cheque."
-            );
+            return false;
         }
 
         String sql =
-                "SELECT * "
-                + "FROM public.outward_cheque "
-                + "WHERE " + batchColumn + " = ? "
-                + "ORDER BY 1";
+                "SELECT 1 " +
+                "FROM public.outward_batch " +
+                "WHERE batch_number = ?";
 
-        try (
-                Connection con =
-                        CTSStaticData.getConnection();
-                PreparedStatement ps =
-                        con.prepareStatement(sql)
-        ) {
+        try (Connection con =
+                     CTSStaticData.getConnection();
+
+             PreparedStatement ps =
+                     con.prepareStatement(sql)) {
 
             ps.setString(
                     1,
@@ -579,437 +761,91 @@ public class OutwardMakerDashboardDAO {
             );
 
             try (ResultSet rs =
-                    ps.executeQuery()) {
+                         ps.executeQuery()) {
 
-                while (rs.next()) {
-
-                    OutwardCheque cheque =
-                            new OutwardCheque();
-
-                    cheque.setBatchNumber(
-                            getString(
-                                    rs,
-                                    "batch_number",
-                                    "batch_no",
-                                    "batch_id"
-                            )
-                    );
-
-                    cheque.setChequeNumber(
-                            getString(
-                                    rs,
-                                    "cheque_number",
-                                    "cheque_no"
-                            )
-                    );
-
-                    cheque.setDrawerAccountNumber(
-                            getString(
-                                    rs,
-                                    "drawer_account_number",
-                                    "account_number"
-                            )
-                    );
-
-                    cheque.setAmount(
-                            getBigDecimal(
-                                    rs,
-                                    "amount"
-                            )
-                    );
-
-                    java.sql.Date date =
-                            getDate(
-                                    rs,
-                                    "cheque_date"
-                            );
-
-                    if (date != null) {
-
-                        cheque.setChequeDate(
-                                date.toLocalDate()
-                        );
-                    }
-
-                    cheque.setFrontImagePath(
-                            getString(
-                                    rs,
-                                    "front_image"
-                            )
-                    );
-
-                    cheque.setBackImagePath(
-                            getString(
-                                    rs,
-                                    "back_image"
-                            )
-                    );
-
-                    cheques.add(cheque);
-                }
+                return rs.next();
             }
         }
-
-        return cheques;
     }
 
+    // ============================================================
+    // COMPLETE BATCH
+    // ============================================================
 
-    // =========================================================
-    // VALIDATE BATCH
-    // =========================================================
-
-    public boolean isBatchValid(
+    public void updateBatchIfCompleted(
             String batchNumber) throws SQLException {
 
-        List<OutwardCheque> cheques =
-                getCheques(batchNumber);
-
-        if (cheques.isEmpty()) {
-            return false;
-        }
-
-        for (OutwardCheque cheque : cheques) {
-
-            if (cheque.getDrawerAccountNumber() == null
-                    || cheque.getDrawerAccountNumber()
-                            .trim().isEmpty()) {
-
-                return false;
-            }
-
-            if (cheque.getChequeDate() == null) {
-                return false;
-            }
-
-            if (cheque.getAmount() == null) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    // =========================================================
-    // UPDATE COMPLETED BATCH
-    // =========================================================
-
-    public boolean updateBatchIfCompleted(
-            String batchNumber) throws SQLException {
-
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return false;
-        }
-
-        String batchColumn =
-                findColumn(
-                        "batch_number",
-                        "batch_no",
-                        "batch_id",
-                        "batchid"
-                );
-
-        String statusColumn =
-                findColumn(
-                        "batch_status",
-                        "status"
-                );
-
-        if (batchColumn == null
-                || statusColumn == null) {
+        if (batchNumber == null ||
+                batchNumber.trim().isEmpty()) {
 
             throw new SQLException(
-                    "Batch/status column not found "
-                    + "in public.outward_batch."
+                    "Batch number is required."
             );
         }
 
-        String assignmentColumn =
-                findColumn(
-                        "assignment",
-                        "batch_assignment"
-                );
+        try (Connection con =
+                     CTSStaticData.getConnection()) {
 
-        String sql;
+            con.setAutoCommit(false);
 
-        if (assignmentColumn != null) {
+            try {
 
-            sql =
-                    "UPDATE public.outward_batch "
-                    + "SET " + statusColumn
-                    + " = 'COMPLETED', "
-                    + assignmentColumn
-                    + " = 'COMPLETED' "
-                    + "WHERE " + batchColumn
-                    + " = ? "
-                    + "AND " + statusColumn
-                    + " <> 'COMPLETED'";
+                // ================================================
+                // 1. COMPLETE MAKER ASSIGNMENT
+                // ================================================
 
-        } else {
+                String assignmentSql =
+                        "UPDATE public.outward_batch_assignment " +
+                        "SET assignment_status = 'COMPLETED', " +
+                        "completed_at = CURRENT_TIMESTAMP " +
+                        "WHERE batch_number = ? " +
+                        "AND UPPER(assignment_role) = 'MAKER' " +
+                        "AND UPPER(assignment_status) = 'IN_PROGRESS'";
 
-            sql =
-                    "UPDATE public.outward_batch "
-                    + "SET " + statusColumn
-                    + " = 'COMPLETED' "
-                    + "WHERE " + batchColumn
-                    + " = ? "
-                    + "AND " + statusColumn
-                    + " <> 'COMPLETED'";
-        }
+                try (PreparedStatement ps =
+                             con.prepareStatement(
+                                     assignmentSql)) {
 
-        try (
-                Connection con =
-                        CTSStaticData.getConnection();
-                PreparedStatement ps =
-                        con.prepareStatement(sql)
-        ) {
+                    ps.setString(
+                            1,
+                            batchNumber.trim()
+                    );
 
-            ps.setString(
-                    1,
-                    batchNumber.trim()
-            );
-
-            int rows =
                     ps.executeUpdate();
-
-            return rows > 0;
-        }
-    }
-
-
-    // =========================================================
-    // FIND COLUMN IN OUTWARD_BATCH
-    // =========================================================
-
-    private String findColumn(
-            String... possibleColumns)
-            throws SQLException {
-
-        String sql =
-                "SELECT * "
-                + "FROM public.outward_batch "
-                + "LIMIT 0";
-
-        try (
-                Connection con =
-                        CTSStaticData.getConnection();
-                PreparedStatement ps =
-                        con.prepareStatement(sql);
-                ResultSet rs =
-                        ps.executeQuery()
-        ) {
-
-            ResultSetMetaData md =
-                    rs.getMetaData();
-
-            for (String possible :
-                    possibleColumns) {
-
-                for (int i = 1;
-                        i <= md.getColumnCount();
-                        i++) {
-
-                    if (possible.equalsIgnoreCase(
-                            md.getColumnName(i))) {
-
-                        return md.getColumnName(i);
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-
-    // =========================================================
-    // FIND COLUMN IN OUTWARD_CHEQUE
-    // =========================================================
-
-    private String findChequeColumn(
-            String... possibleColumns)
-            throws SQLException {
-
-        String sql =
-                "SELECT * "
-                + "FROM public.outward_cheque "
-                + "LIMIT 0";
-
-        try (
-                Connection con =
-                        CTSStaticData.getConnection();
-                PreparedStatement ps =
-                        con.prepareStatement(sql);
-                ResultSet rs =
-                        ps.executeQuery()
-        ) {
-
-            ResultSetMetaData md =
-                    rs.getMetaData();
-
-            for (String possible :
-                    possibleColumns) {
-
-                for (int i = 1;
-                        i <= md.getColumnCount();
-                        i++) {
-
-                    if (possible.equalsIgnoreCase(
-                            md.getColumnName(i))) {
-
-                        return md.getColumnName(i);
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-
-    // =========================================================
-    // GET STRING
-    // =========================================================
-
-    private String getString(
-            ResultSet rs,
-            String... columns)
-            throws SQLException {
-
-        for (String column : columns) {
-
-            if (hasColumn(rs, column)) {
-
-                return rs.getString(column);
-            }
-        }
-
-        return null;
-    }
-
-
-    // =========================================================
-    // GET INTEGER
-    // =========================================================
-
-    private Integer getInteger(
-            ResultSet rs,
-            String... columns)
-            throws SQLException {
-
-        for (String column : columns) {
-
-            if (hasColumn(rs, column)) {
-
-                int value =
-                        rs.getInt(column);
-
-                if (rs.wasNull()) {
-                    return null;
                 }
 
-                return value;
-            }
-        }
+                // ================================================
+                // 2. COMPLETE BATCH
+                // ================================================
 
-        return null;
-    }
+                String batchSql =
+                        "UPDATE public.outward_batch " +
+                        "SET batch_status = 'COMPLETED' " +
+                        "WHERE batch_number = ?";
 
+                try (PreparedStatement ps =
+                             con.prepareStatement(batchSql)) {
 
-    // =========================================================
-    // GET BIG DECIMAL
-    // =========================================================
+                    ps.setString(
+                            1,
+                            batchNumber.trim()
+                    );
 
-    private java.math.BigDecimal getBigDecimal(
-            ResultSet rs,
-            String... columns)
-            throws SQLException {
-
-        for (String column : columns) {
-
-            if (hasColumn(rs, column)) {
-
-                return rs.getBigDecimal(column);
-            }
-        }
-
-        return null;
-    }
-
-
-    // =========================================================
-    // GET DATE
-    // =========================================================
-
-    private java.sql.Date getDate(
-            ResultSet rs,
-            String... columns)
-            throws SQLException {
-
-        for (String column : columns) {
-
-            if (hasColumn(rs, column)) {
-
-                return rs.getDate(column);
-            }
-        }
-
-        return null;
-    }
-
-
-    // =========================================================
-    // GET LOCAL DATE TIME
-    // =========================================================
-
-    private java.time.LocalDateTime getLocalDateTime(
-            ResultSet rs,
-            String... columns)
-            throws SQLException {
-
-        for (String column : columns) {
-
-            if (hasColumn(rs, column)) {
-
-                java.sql.Timestamp timestamp =
-                        rs.getTimestamp(column);
-
-                if (timestamp != null) {
-                    return timestamp
-                            .toLocalDateTime();
+                    ps.executeUpdate();
                 }
+
+                con.commit();
+
+            } catch (SQLException e) {
+
+                con.rollback();
+
+                throw e;
+
+            } finally {
+
+                con.setAutoCommit(true);
             }
         }
-
-        return null;
-    }
-
-
-    // =========================================================
-    // CHECK COLUMN
-    // =========================================================
-
-    private boolean hasColumn(
-            ResultSet rs,
-            String column)
-            throws SQLException {
-
-        ResultSetMetaData md =
-                rs.getMetaData();
-
-        for (int i = 1;
-                i <= md.getColumnCount();
-                i++) {
-
-            if (column.equalsIgnoreCase(
-                    md.getColumnName(i))) {
-
-                return true;
-            }
-        }
-
-        return false;
     }
 }

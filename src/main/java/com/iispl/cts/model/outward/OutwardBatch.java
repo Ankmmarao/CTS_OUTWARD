@@ -270,4 +270,9 @@ public class OutwardBatch implements Serializable {
                 ", lockStatus='" + lockStatus + '\'' +
                 '}';
     }
+
+	public void setMakerAssignmentStatus(String assignmentStatus) {
+		// TODO Auto-generated method stub
+		
+	}
 }
