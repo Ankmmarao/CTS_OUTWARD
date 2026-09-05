@@ -358,3 +358,36 @@
     color: #475467;
     font-size: 14px;
 }
+
+
+
+/* ==============================
+   MICR REPAIR
+   ============================== */
+
+.micr-repair-layout {
+    background: #F4F7FB;
+}
+
+.micr-repair-content {
+    padding: 30px 45px;
+    box-sizing: border-box;
+}
+
+.micr-repair-title {
+    display: block;
+    font-size: 30px;
+    font-weight: bold;
+    color: #122B49;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+}
+
+.micr-repair-table {
+    background: white;
+    border: 1px solid #DCE5F0;
+    border-radius: 4px;
+    padding: 16px;
+    box-sizing: border-box;
+}
