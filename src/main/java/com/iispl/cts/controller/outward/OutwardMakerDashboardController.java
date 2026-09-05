@@ -1,6 +1,6 @@
-
 package com.iispl.cts.controller.outward;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.zkoss.zk.ui.Component;
@@ -22,23 +22,36 @@ import com.iispl.cts.model.outward.OutwardBatch;
 import com.iispl.cts.model.outward.OutwardValidationResult;
 import com.iispl.cts.service.outward.OutwardMakerDashboardService;
 
+
 public class OutwardMakerDashboardController
         extends SelectorComposer<Component> {
 
     private static final long serialVersionUID = 1L;
 
+
     // =========================================================
-    // ZUL COMPONENT
+    // ZUL COMPONENTS
     // =========================================================
 
     @Wire
     private Listbox batchListbox;
+
+    @Wire
+    private Label pendingDataEntryCount;
+
+    @Wire
+    private Label micrRepairCount;
+
+    @Wire
+    private Label readyToSubmitCount;
+
 
     // =========================================================
     // SERVICE
     // =========================================================
 
     private OutwardMakerDashboardService service;
+
 
     // =========================================================
     // AFTER COMPOSE
@@ -54,60 +67,9 @@ public class OutwardMakerDashboardController
         System.out.println("doAfterCompose() START");
         System.out.println("======================================");
 
-        // =====================================================
-        // TEMPORARY TEST USER
-        // =====================================================
-        //
-        // You currently do not have a Login Controller.
-        // Therefore no userId is being stored in the session.
-        //
-        // This creates a temporary session user so that you can
-        // test Assign to Me and Open functionality.
-        //
-        // IMPORTANT:
-        // Change "maker001" to your actual Maker user ID.
-        //
-        // Remove this section when real login is implemented.
-        // =====================================================
-
-        Session session =
-                Executions.getCurrent().getSession();
-
-        if (session != null) {
-
-            Object existingUser =
-                    session.getAttribute("userId");
-
-            if (existingUser == null
-                    || existingUser.toString().trim().isEmpty()) {
-
-                session.setAttribute(
-                        "userId",
-                        "maker001"
-                );
-
-                System.out.println(
-                        "Temporary test user created: maker001"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Existing session user: "
-                        + existingUser
-                );
-            }
-
-        } else {
-
-            System.out.println(
-                    "WARNING: ZK session is NULL."
-            );
-        }
-
-        // =====================================================
+        // -----------------------------------------------------
         // CREATE SERVICE
-        // =====================================================
+        // -----------------------------------------------------
 
         service = new OutwardMakerDashboardService();
 
@@ -115,27 +77,60 @@ public class OutwardMakerDashboardController
                 "Service created successfully."
         );
 
+        // -----------------------------------------------------
+        // CHECK LISTBOX
+        // -----------------------------------------------------
+
         System.out.println(
                 "batchListbox = "
                 + (
                     batchListbox == null
                     ? "NULL"
                     : "FOUND"
-                  )
+                )
         );
 
-        // =====================================================
-        // LOAD DATABASE BATCHES
-        // =====================================================
+        // -----------------------------------------------------
+        // LOAD DASHBOARD
+        // -----------------------------------------------------
+
+        loadDashboard();
+
+        System.out.println(
+                "doAfterCompose() END"
+        );
+
+        System.out.println(
+                "======================================"
+        );
+    }
+
+
+    // =========================================================
+    // LOAD COMPLETE DASHBOARD
+    // =========================================================
+
+    private void loadDashboard() {
 
         loadBatches();
 
-        System.out.println("doAfterCompose() END");
-        System.out.println("======================================");
+        /*
+         * Summary counts should come from Service / DAO.
+         *
+         * Do not put database code here.
+         *
+         * When count methods are available in the Service,
+         * they can be called here:
+         *
+         * pendingDataEntryCount
+         * micrRepairCount
+         * readyToSubmitCount
+         */
     }
 
+
     // =========================================================
-    // LOAD BATCHES FROM DATABASE
+    // LOAD BATCHES
     // =========================================================
 
     private void loadBatches() {
@@ -178,7 +173,7 @@ public class OutwardMakerDashboardController
         try {
 
             // -------------------------------------------------
-            // GET BATCHES
+            // GET BATCHES THROUGH SERVICE
             // -------------------------------------------------
 
             System.out.println(
@@ -198,8 +193,7 @@ public class OutwardMakerDashboardController
                         "ERROR: service.getBatches() returned NULL."
                 );
 
-                batches =
-                        new java.util.ArrayList<>();
+                batches = new ArrayList<>();
 
             } else {
 
@@ -210,85 +204,60 @@ public class OutwardMakerDashboardController
             }
 
             // -------------------------------------------------
-            // PRINT EVERY BATCH
+            // PRINT DATABASE VALUES
             // -------------------------------------------------
 
-            if (batches.isEmpty()) {
+            for (OutwardBatch batch : batches) {
 
-                System.out.println(
-                        "WARNING: No batches returned."
-                );
-
-                System.out.println(
-                        "Expected sample batches: B001, B002, B003"
-                );
-
-            } else {
-
-                System.out.println(
-                        "========== DATABASE BATCHES =========="
-                );
-
-                for (OutwardBatch batch : batches) {
-
-                    if (batch == null) {
-
-                        System.out.println(
-                                "WARNING: NULL batch found."
-                        );
-
-                        continue;
-                    }
-
-                    System.out.println(
-                            "Batch ID       : "
-                            + batch.getBatchId()
-                    );
-
-                    System.out.println(
-                            "Total Cheques  : "
-                            + batch.getTotalCheques()
-                    );
-
-                    System.out.println(
-                            "Status         : "
-                            + batch.getStatus()
-                    );
-
-                    System.out.println(
-                            "User ID        : "
-                            + batch.getUserId()
-                    );
-
-                    System.out.println(
-                            "Assignment     : "
-                            + batch.getAssignment()
-                    );
-
-                    System.out.println(
-                            "Data Entry Err : "
-                            + batch.getDataEntryErrorCount()
-                    );
-
-                    System.out.println(
-                            "MICR Err       : "
-                            + batch.getMicrErrorCount()
-                    );
-
-                    System.out.println(
-                            "Amount/Account : "
-                            + batch.getAmountAccountErrorCount()
-                    );
-
-                    System.out.println(
-                            "--------------------------------------"
-                    );
+                if (batch == null) {
+                    continue;
                 }
 
                 System.out.println(
-                        "======================================"
+                        "--------------------------------------"
+                );
+
+                System.out.println(
+                        "Batch Number       : "
+                        + batch.getBatchNumber()
+                );
+
+                System.out.println(
+                        "Number Of Cheques  : "
+                        + batch.getNumberOfCheques()
+                );
+
+                System.out.println(
+                        "Batch Status       : "
+                        + batch.getBatchStatus()
+                );
+
+                System.out.println(
+                        "Created By         : "
+                        + batch.getCreatedBy()
+                );
+
+                System.out.println(
+                        "Maker User Number  : "
+                        + batch.getMakerUserNumber()
+                );
+
+                System.out.println(
+                        "Checker User Number: "
+                        + batch.getCheckerUserNumber()
+                );
+
+                System.out.println(
+                        "Lock Status        : "
+                        + batch.getLockStatus()
+                );
+
+                System.out.println(
+                        "Locked By          : "
+                        + batch.getLockedBy()
                 );
             }
+
 
             // -------------------------------------------------
             // CREATE MODEL
@@ -299,10 +268,6 @@ public class OutwardMakerDashboardController
 
             model.addAll(batches);
 
-            System.out.println(
-                    "ListModelList size = "
-                    + model.getSize()
-            );
 
             // -------------------------------------------------
             // SET RENDERER
@@ -318,17 +283,6 @@ public class OutwardMakerDashboardController
                                 int index)
                                 throws Exception {
 
-                            System.out.println(
-                                    "Rendering row: "
-                                    + index
-                                    + " | Batch: "
-                                    + (
-                                        batch == null
-                                        ? "NULL"
-                                        : batch.getBatchId()
-                                      )
-                            );
-
                             renderBatchRow(
                                     item,
                                     batch
@@ -336,6 +290,7 @@ public class OutwardMakerDashboardController
                         }
                     }
             );
+
 
             // -------------------------------------------------
             // SET MODEL
@@ -352,9 +307,6 @@ public class OutwardMakerDashboardController
                     + model.getSize()
             );
 
-            System.out.println(
-                    "LOAD BATCHES FINISHED SUCCESSFULLY"
-            );
 
         } catch (Exception e) {
 
@@ -387,6 +339,7 @@ public class OutwardMakerDashboardController
         );
     }
 
+
     // =========================================================
     // RENDER ONE BATCH ROW
     // =========================================================
@@ -399,6 +352,7 @@ public class OutwardMakerDashboardController
             return;
         }
 
+
         // =====================================================
         // BATCH NUMBER
         // =====================================================
@@ -409,15 +363,16 @@ public class OutwardMakerDashboardController
         batchCell.appendChild(
                 new Label(
                         safeValue(
-                                batch.getBatchId()
+                                batch.getBatchNumber()
                         )
                 )
         );
 
         item.appendChild(batchCell);
 
+
         // =====================================================
-        // TOTAL CHEQUES
+        // NUMBER OF CHEQUES
         // =====================================================
 
         Listcell totalCell =
@@ -426,36 +381,16 @@ public class OutwardMakerDashboardController
         totalCell.appendChild(
                 new Label(
                         String.valueOf(
-                                batch.getTotalCheques()
+                                batch.getNumberOfCheques()
                         )
                 )
         );
 
         item.appendChild(totalCell);
 
-        // =====================================================
-        // ERROR SUMMARY
-        // =====================================================
-
-        Listcell errorCell =
-                new Listcell();
-
-        String errorSummary =
-                "Data Entry: "
-                + batch.getDataEntryErrorCount()
-                + " | MICR: "
-                + batch.getMicrErrorCount()
-                + " | Amount/Account: "
-                + batch.getAmountAccountErrorCount();
-
-        errorCell.appendChild(
-                new Label(errorSummary)
-        );
-
-        item.appendChild(errorCell);
 
         // =====================================================
-        // STATUS
+        // BATCH STATUS
         // =====================================================
 
         Listcell statusCell =
@@ -464,130 +399,206 @@ public class OutwardMakerDashboardController
         statusCell.appendChild(
                 new Label(
                         safeValue(
-                                batch.getStatus()
+                                batch.getBatchStatus()
                         )
                 )
         );
 
         item.appendChild(statusCell);
 
+
         // =====================================================
-        // USER
+        // MAKER USER
         // =====================================================
 
-        Listcell userCell =
+        Listcell makerCell =
                 new Listcell();
 
-        userCell.appendChild(
+        String makerUser =
+                batch.getMakerUserNumber();
+
+        makerCell.appendChild(
                 new Label(
-                        safeValue(
-                                batch.getUserId()
-                        )
+                        safeValue(makerUser)
                 )
         );
 
-        item.appendChild(userCell);
+        item.appendChild(makerCell);
+
 
         // =====================================================
-        // ASSIGNMENT
+        // DETERMINE WHETHER BATCH IS AVAILABLE
+        // =====================================================
+
+        String batchStatus =
+                batch.getBatchStatus();
+
+        String makerUserNumber =
+                batch.getMakerUserNumber();
+
+        String lockStatus =
+                batch.getLockStatus();
+
+        String lockedBy =
+                batch.getLockedBy();
+
+
+        boolean hasMakerAssignment =
+                makerUserNumber != null
+                && !makerUserNumber.trim().isEmpty();
+
+
+        boolean isLocked =
+                (
+                    lockStatus != null
+                    && (
+                        "LOCKED".equalsIgnoreCase(
+                                lockStatus.trim()
+                        )
+                        ||
+                        "IN_PROGRESS".equalsIgnoreCase(
+                                lockStatus.trim()
+                        )
+                    )
+                )
+                ||
+                (
+                    lockedBy != null
+                    && !lockedBy.trim().isEmpty()
+                );
+
+
+        boolean isAvailable =
+                "AVAILABLE".equalsIgnoreCase(
+                        safeValue(batchStatus)
+                )
+                && !hasMakerAssignment
+                && !isLocked;
+
+
+        // =====================================================
+        // ASSIGNMENT COLUMN
         // =====================================================
 
         Listcell assignmentCell =
                 new Listcell();
 
-        String assignment =
-                batch.getAssignment();
 
-        boolean available =
-                "AVAILABLE".equalsIgnoreCase(
-                        safeValue(
-                                batch.getStatus()
-                        )
-                )
-                &&
-                (
-                    assignment == null
-                    || assignment.trim().isEmpty()
-                    || "AVAILABLE".equalsIgnoreCase(
-                            assignment
-                       )
-                );
-
-        if (available) {
-
-            Button assignButton =
-                    new Button("Assign to Me");
-
-            assignButton.setWidth("110px");
-
-            assignButton.addEventListener(
-                    Events.ON_CLICK,
-                    event ->
-                            assignAndValidate(
-                                    batch.getBatchId()
-                            )
-            );
+        if (hasMakerAssignment) {
 
             assignmentCell.appendChild(
-                    assignButton
+                    new Label(
+                            makerUserNumber
+                    )
+            );
+
+        } else if (isLocked) {
+
+            String displayLockedBy =
+                    lockedBy;
+
+            if (displayLockedBy == null
+                    || displayLockedBy.trim().isEmpty()) {
+
+                displayLockedBy = "Locked";
+            }
+
+            assignmentCell.appendChild(
+                    new Label(
+                            displayLockedBy
+                    )
             );
 
         } else {
 
             assignmentCell.appendChild(
-                    new Label(
-                            safeValue(
-                                    assignment
-                            )
-                    )
+                    new Label("Available")
             );
         }
 
         item.appendChild(assignmentCell);
 
+
         // =====================================================
-        // ACTION
+        // ACTION COLUMN
         // =====================================================
 
         Listcell actionCell =
                 new Listcell();
 
-        Button openButton =
-                new Button("Open");
 
-        openButton.setWidth("70px");
+        // -----------------------------------------------------
+        // AVAILABLE
+        // -----------------------------------------------------
 
-        if (available) {
+        if (isAvailable) {
 
-            openButton.setDisabled(true);
+            Button openButton =
+                    new Button("Open");
 
-        } else {
+            openButton.setWidth("75px");
+
+            openButton.setHeight("32px");
+
+            openButton.setStyle(
+                    "background:#12B76A;"
+                    + "color:white;"
+                    + "border:none;"
+                    + "border-radius:5px;"
+                    + "font-weight:bold;"
+                    + "cursor:pointer;"
+            );
+
 
             openButton.addEventListener(
                     Events.ON_CLICK,
                     event ->
-                            openAssignedBatch(
-                                    batch.getBatchId()
+                            openAndAssignBatch(
+                                    batch.getBatchNumber()
                             )
+            );
+
+
+            actionCell.appendChild(
+                    openButton
+            );
+
+
+        }
+
+        // -----------------------------------------------------
+        // ASSIGNED / LOCKED
+        // -----------------------------------------------------
+
+        else {
+
+            Label lockedLabel =
+                    new Label("🔒 Locked");
+
+            lockedLabel.setStyle(
+                    "color:#E74C3C;"
+                    + "font-weight:bold;"
+            );
+
+            actionCell.appendChild(
+                    lockedLabel
             );
         }
 
-        actionCell.appendChild(
-                openButton
-        );
 
         item.appendChild(actionCell);
     }
 
+
     // =========================================================
-    // ASSIGN BATCH
+    // OPEN + AUTOMATICALLY ASSIGN BATCH
     // =========================================================
 
-    private void assignAndValidate(
-            String batchId) {
+    private void openAndAssignBatch(
+            String batchNumber) {
 
-        if (batchId == null
-                || batchId.trim().isEmpty()) {
+        if (batchNumber == null
+                || batchNumber.trim().isEmpty()) {
 
             Messagebox.show(
                     "Invalid batch number.",
@@ -599,12 +610,16 @@ public class OutwardMakerDashboardController
             return;
         }
 
+
         // =====================================================
         // GET SESSION
         // =====================================================
 
         Session session =
-                Executions.getCurrent().getSession();
+                Executions
+                        .getCurrent()
+                        .getSession();
+
 
         if (session == null) {
 
@@ -618,17 +633,22 @@ public class OutwardMakerDashboardController
             return;
         }
 
+
         // =====================================================
-        // GET LOGGED-IN USER
+        // GET CURRENT LOGGED-IN USER
         // =====================================================
 
         Object sessionUser =
                 session.getAttribute("userId");
 
-        if (sessionUser == null) {
+
+        if (sessionUser == null
+                || sessionUser.toString()
+                        .trim()
+                        .isEmpty()) {
 
             Messagebox.show(
-                    "Logged-in user was not found in session.",
+                    "Logged-in user was not found.",
                     "User",
                     Messagebox.OK,
                     Messagebox.ERROR
@@ -636,273 +656,83 @@ public class OutwardMakerDashboardController
 
             return;
         }
+
 
         String userId =
-                sessionUser.toString().trim();
+                sessionUser
+                        .toString()
+                        .trim();
 
-        if (userId.isEmpty()) {
-
-            Messagebox.show(
-                    "Invalid logged-in user.",
-                    "User",
-                    Messagebox.OK,
-                    Messagebox.ERROR
-            );
-
-            return;
-        }
 
         System.out.println(
-                "Assigning batch "
-                + batchId
-                + " to user "
+                "======================================"
+        );
+
+        System.out.println(
+                "OPEN BATCH REQUEST"
+        );
+
+        System.out.println(
+                "Batch : "
+                + batchNumber
+        );
+
+        System.out.println(
+                "User  : "
                 + userId
         );
 
-        // =====================================================
-        // ASSIGN + VALIDATE
-        // =====================================================
+        System.out.println(
+                "======================================"
+        );
+
 
         try {
 
+            // =================================================
+            // SERVICE HANDLES ASSIGNMENT
+            // =================================================
+
             OutwardValidationResult result =
                     service.assignAndValidate(
-                            batchId,
+                            batchNumber,
                             userId
                     );
 
-            // Reload latest database values
-            loadBatches();
 
-            if (result == null
-                    || result.getTotalCheques() == 0) {
+            // =================================================
+            // ASSIGNMENT FAILED
+            // =================================================
+
+            if (result == null) {
 
                 Messagebox.show(
                         "Batch "
-                        + batchId
-                        + " could not be assigned.\n\n"
+                        + batchNumber
+                        + " could not be opened.\n\n"
                         + "It may already be assigned "
                         + "to another Maker.",
-                        "Assignment Failed",
+                        "Batch Locked",
                         Messagebox.OK,
                         Messagebox.ERROR
                 );
 
+                loadBatches();
+
                 return;
             }
 
-            showValidationResult(
-                    batchId,
-                    result
-            );
 
-        } catch (Exception e) {
+            // =================================================
+            // RELOAD DASHBOARD
+            // =================================================
 
-            e.printStackTrace();
+            loadBatches();
 
-            Messagebox.show(
-                    "Unable to assign batch "
-                    + batchId
-                    + ".\n\n"
-                    + "Error: "
-                    + e.getMessage(),
-                    "Assignment Error",
-                    Messagebox.OK,
-                    Messagebox.ERROR
-            );
-        }
-    }
 
-    // =========================================================
-    // SHOW VALIDATION RESULT
-    // =========================================================
-
-    private void showValidationResult(
-            String batchId,
-            OutwardValidationResult result) {
-
-        if (result == null) {
-            return;
-        }
-
-        int dataEntry =
-                result.getDataEntryErrors();
-
-        int micr =
-                result.getMicrErrors();
-
-        int amountAccount =
-                result.getAmountAccountErrors();
-
-        int totalErrors =
-                dataEntry
-                + micr
-                + amountAccount;
-
-        // =====================================================
-        // NO ERRORS
-        // =====================================================
-
-        if (totalErrors == 0) {
-
-            Messagebox.show(
-                    "Batch "
-                    + batchId
-                    + " has no validation errors.\n\n"
-                    + "The batch is ready for Checker.",
-                    "Validation Successful",
-                    Messagebox.OK,
-                    Messagebox.INFORMATION
-            );
-
-            return;
-        }
-
-        // =====================================================
-        // ERRORS FOUND
-        // =====================================================
-
-        String message =
-                "Batch "
-                + batchId
-                + " validation completed.\n\n"
-
-                + "Total Cheques: "
-                + result.getTotalCheques()
-
-                + "\n\n"
-
-                + "Data Entry Errors: "
-                + dataEntry
-
-                + "\n"
-
-                + "MICR Errors: "
-                + micr
-
-                + "\n"
-
-                + "Amount / Account Errors: "
-                + amountAccount;
-
-        Messagebox.show(
-                message,
-                "Validation Required",
-                Messagebox.OK,
-                Messagebox.EXCLAMATION
-        );
-    }
-
-    // =========================================================
-    // OPEN ASSIGNED BATCH
-    // =========================================================
-
-    private void openAssignedBatch(
-            String batchId) {
-
-        if (batchId == null
-                || batchId.trim().isEmpty()) {
-
-            return;
-        }
-
-        // =====================================================
-        // FIND BATCH
-        // =====================================================
-
-        OutwardBatch batch =
-                findBatch(batchId);
-
-        if (batch == null) {
-
-            Messagebox.show(
-                    "Batch "
-                    + batchId
-                    + " was not found.",
-                    "Batch",
-                    Messagebox.OK,
-                    Messagebox.ERROR
-            );
-
-            return;
-        }
-
-        // =====================================================
-        // GET SESSION
-        // =====================================================
-
-        Session session =
-                Executions.getCurrent().getSession();
-
-        if (session == null) {
-
-            Messagebox.show(
-                    "Session expired. Please login again.",
-                    "Session",
-                    Messagebox.OK,
-                    Messagebox.ERROR
-            );
-
-            return;
-        }
-
-        // =====================================================
-        // GET USER
-        // =====================================================
-
-        Object sessionUser =
-                session.getAttribute("userId");
-
-        if (sessionUser == null) {
-
-            Messagebox.show(
-                    "Logged-in user was not found in session.",
-                    "User",
-                    Messagebox.OK,
-                    Messagebox.ERROR
-            );
-
-            return;
-        }
-
-        String loggedInUser =
-                sessionUser.toString().trim();
-
-        String assignedUser =
-                batch.getUserId();
-
-        // =====================================================
-        // CHECK ASSIGNMENT
-        // =====================================================
-
-        if (assignedUser == null
-                || assignedUser.trim().isEmpty()
-                || !loggedInUser.equals(
-                        assignedUser
-                   )) {
-
-            Messagebox.show(
-                    "This batch is assigned to another Maker.",
-                    "Access Denied",
-                    Messagebox.OK,
-                    Messagebox.ERROR
-            );
-
-            return;
-        }
-
-        // =====================================================
-        // REVALIDATE ACTUAL DATABASE VALUES
-        // =====================================================
-
-        try {
-
-            OutwardValidationResult result =
-                    service.validateBatch(batchId);
-
-            if (result == null) {
-                return;
-            }
+            // =================================================
+            // GET VALIDATION COUNTS
+            // =================================================
 
             int dataEntry =
                     result.getDataEntryErrors();
@@ -913,152 +743,251 @@ public class OutwardMakerDashboardController
             int amountAccount =
                     result.getAmountAccountErrors();
 
+
             // =================================================
-            // DATA ENTRY FIRST
+            // DATA ENTRY
             // =================================================
 
             if (dataEntry > 0) {
 
-                openDataEntry(batchId);
+                openDataEntry(
+                        batchNumber
+                );
 
                 return;
             }
 
+
             // =================================================
-            // MICR SECOND
+            // MICR REPAIR
             // =================================================
 
             if (micr > 0) {
 
-                openMicrRepair(batchId);
+                openMicrRepair(
+                        batchNumber
+                );
 
                 return;
             }
 
+
             // =================================================
-            // AMOUNT / ACCOUNT THIRD
+            // AMOUNT / ACCOUNT
             // =================================================
 
             if (amountAccount > 0) {
 
-                openAmountAccount(batchId);
+                openAmountAccount(
+                        batchNumber
+                );
 
                 return;
             }
+
 
             // =================================================
             // NO ERRORS
             // =================================================
 
             Messagebox.show(
-                    "All cheques in batch "
-                    + batchId
-                    + " are valid.\n\n"
-                    + "Batch is READY_FOR_CHECKER.",
+                    "Batch "
+                    + batchNumber
+                    + " is valid and ready for Checker.",
                     "Batch Ready",
                     Messagebox.OK,
                     Messagebox.INFORMATION
             );
+
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
             Messagebox.show(
-                    "Unable to validate batch "
-                    + batchId
+                    "Unable to open batch "
+                    + batchNumber
                     + ".\n\n"
                     + "Error: "
                     + e.getMessage(),
-                    "Validation Error",
+                    "Open Batch Error",
                     Messagebox.OK,
                     Messagebox.ERROR
             );
         }
     }
 
+
     // =========================================================
-    // OPEN DATA ENTRY SCREEN
+    // SHOW VALIDATION RESULT
+    // =========================================================
+
+    private void showValidationResult(
+            String batchNumber,
+            OutwardValidationResult result) {
+
+        if (result == null) {
+            return;
+        }
+
+
+        int dataEntry =
+                result.getDataEntryErrors();
+
+        int micr =
+                result.getMicrErrors();
+
+        int amountAccount =
+                result.getAmountAccountErrors();
+
+
+        int totalErrors =
+                dataEntry
+                + micr
+                + amountAccount;
+
+
+        // =====================================================
+        // NO ERRORS
+        // =====================================================
+
+        if (totalErrors == 0) {
+
+            Messagebox.show(
+                    "Batch "
+                    + batchNumber
+                    + " has no validation errors.\n\n"
+                    + "The batch is ready for Checker.",
+                    "Validation Successful",
+                    Messagebox.OK,
+                    Messagebox.INFORMATION
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // ERRORS FOUND
+        // =====================================================
+
+        String message =
+                "Batch "
+                + batchNumber
+                + " validation completed.\n\n"
+                + "Total Cheques: "
+                + result.getTotalCheques()
+                + "\n\n"
+                + "Data Entry Errors: "
+                + dataEntry
+                + "\n"
+                + "MICR Errors: "
+                + micr
+                + "\n"
+                + "Amount / Account Errors: "
+                + amountAccount;
+
+
+        Messagebox.show(
+                message,
+                "Validation Required",
+                Messagebox.OK,
+                Messagebox.EXCLAMATION
+        );
+    }
+
+
+    // =========================================================
+    // OPEN DATA ENTRY
     // =========================================================
 
     private void openDataEntry(
-            String batchId) {
+            String batchNumber) {
 
         Executions.sendRedirect(
                 "/outward-maker-data-entry.zul"
-                + "?batchId="
-                + encode(batchId)
+                + "?batchNumber="
+                + encode(batchNumber)
         );
     }
 
+
     // =========================================================
-    // OPEN MICR REPAIR SCREEN
+    // OPEN MICR REPAIR
     // =========================================================
 
     private void openMicrRepair(
-            String batchId) {
+            String batchNumber) {
 
         Executions.sendRedirect(
                 "/outward-maker-micr-repair.zul"
-                + "?batchId="
-                + encode(batchId)
+                + "?batchNumber="
+                + encode(batchNumber)
         );
     }
 
+
     // =========================================================
-    // OPEN AMOUNT / ACCOUNT SCREEN
+    // OPEN AMOUNT / ACCOUNT
     // =========================================================
 
     private void openAmountAccount(
-            String batchId) {
+            String batchNumber) {
 
         Executions.sendRedirect(
                 "/outward-maker-amount-account.zul"
-                + "?batchId="
-                + encode(batchId)
+                + "?batchNumber="
+                + encode(batchNumber)
         );
     }
+
 
     // =========================================================
     // FIND BATCH
     // =========================================================
 
     private OutwardBatch findBatch(
-            String batchId) {
+            String batchNumber) {
 
-        if (batchId == null
-                || batchId.trim().isEmpty()) {
+        if (batchNumber == null
+                || batchNumber.trim().isEmpty()) {
 
             return null;
         }
+
 
         try {
 
             List<OutwardBatch> batches =
                     service.getBatches();
 
+
             if (batches == null) {
                 return null;
             }
 
+
             for (OutwardBatch batch : batches) {
 
                 if (batch != null
-                        && batchId.equals(
-                                batch.getBatchId()
-                           )) {
+                        && batchNumber.equals(
+                                batch.getBatchNumber()
+                        )) {
 
                     return batch;
                 }
             }
+
 
         } catch (Exception e) {
 
             e.printStackTrace();
         }
 
+
         return null;
     }
+
 
     // =========================================================
     // SAFE STRING
@@ -1075,6 +1004,7 @@ public class OutwardMakerDashboardController
 
         return value;
     }
+
 
     // =========================================================
     // URL ENCODING
@@ -1096,4 +1026,3 @@ public class OutwardMakerDashboardController
         }
     }
 }
-

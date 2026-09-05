@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Checker Reports"
+        contentType="text/html;charset=UTF-8"?>
+
+<?style src="/css/checker.css"?>
+
+<zk>
+
+    <window
+        id="checkerReportsWindow"
+        border="none"
+        width="100%"
+        height="100%"
+        apply="com.iispl.cts.controller.outward.checker.CheckerReportsController">
+
+        <borderlayout width="100%" height="100%">
+
+            <west width="230px">
+
+                <div sclass="checker-sidebar">
+
+                    <div sclass="checker-logo">
+                        CTS OUTWARD
+                    </div>
+
+                    <div sclass="checker-role">
+                        CHECKER
+                    </div>
+
+                    <separator height="20px"/>
+
+                    <button
+                        label="Dashboard"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/dashboard.zul')"/>
+
+                    <button
+                        label="Batches Queue"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/batchesQueue.zul')"/>
+
+                    <button
+                        label="Reports"
+                        sclass="sidebar-button active"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/reports.zul')"/>
+
+                    <button
+                        label="Send to NPCI"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/sendToNPCI.zul')"/>
+
+                </div>
+
+            </west>
+
+
+            <center>
+
+                <div sclass="checker-main">
+
+                    <div sclass="checker-header">
+
+                        <label
+                            value="Checker Reports"
+                            sclass="page-title"/>
+
+                    </div>
+
+
+                    <!-- FILTER -->
+
+                    <div sclass="filter-card">
+
+                        <label
+                            value="Batch ID"
+                            sclass="filter-label"/>
+
+                        <textbox
+                            id="batchIdSearch"
+                            placeholder="Batch ID"
+                            width="200px"/>
+
+
+                        <label
+                            value="Status"
+                            sclass="filter-label"/>
+
+                        <combobox
+                            id="statusFilter"
+                            width="180px">
+
+                            <comboitem label="ALL"/>
+                            <comboitem label="ACCEPTED"/>
+                            <comboitem label="REJECTED"/>
+                            <comboitem label="RETURNED_TO_MAKER"/>
+                            <comboitem label="CHECKER_COMPLETED"/>
+
+                        </combobox>
+
+
+                        <button
+                            id="generateButton"
+                            label="Generate Report"
+                            sclass="primary-button"/>
+
+                    </div>
+
+
+                    <!-- REPORT -->
+
+                    <div sclass="section-card">
+
+                        <label
+                            value="Checker Activity"
+                            sclass="section-title"/>
+
+                        <separator height="15px"/>
+
+                        <listbox
+                            id="reportListbox"
+                            width="100%"
+                            mold="paging"
+                            pageSize="10"
+                            emptyMessage="No report data">
+
+                            <listhead>
+
+                                <listheader
+                                    label="Batch ID"
+                                    width="20%"/>
+
+                                <listheader
+                                    label="Total"
+                                    width="12%"/>
+
+                                <listheader
+                                    label="Accepted"
+                                    width="12%"/>
+
+                                <listheader
+                                    label="Rejected"
+                                    width="12%"/>
+
+                                <listheader
+                                    label="Returned"
+                                    width="12%"/>
+
+                                <listheader
+                                    label="Status"
+                                    width="17%"/>
+
+                                <listheader
+                                    label="Updated"
+                                    width="15%"/>
+
+                            </listhead>
+
+                        </listbox>
+
+                    </div>
+
+                </div>
+
+            </center>
+
+        </borderlayout>
+
+    </window>
+
+</zk>

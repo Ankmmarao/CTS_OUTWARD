@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Cheque Verification"
+        contentType="text/html;charset=UTF-8"?>
+
+<?style src="/css/checker.css"?>
+
+<zk>
+
+    <window
+        id="chequeVerificationWindow"
+        border="none"
+        width="100%"
+        height="100%"
+        apply="com.iispl.cts.controller.outward.checker.CheckerChequeVerificationController">
+
+        <borderlayout width="100%" height="100%">
+
+            <!-- ================= SIDEBAR ================= -->
+
+            <west width="230px">
+
+                <div sclass="checker-sidebar">
+
+                    <div sclass="checker-logo">
+                        CTS OUTWARD
+                    </div>
+
+                    <div sclass="checker-role">
+                        CHECKER
+                    </div>
+
+                    <separator height="20px"/>
+
+                    <button
+                        label="Dashboard"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/dashboard.zul')"/>
+
+                    <button
+                        label="Batches Queue"
+                        sclass="sidebar-button active"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/batchesQueue.zul')"/>
+
+                    <button
+                        label="Reports"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/reports.zul')"/>
+
+                    <button
+                        label="Send to NPCI"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/sendToNPCI.zul')"/>
+
+                </div>
+
+            </west>
+
+
+            <!-- ================= MAIN ================= -->
+
+            <center>
+
+                <div sclass="checker-main">
+
+                    <!-- TOP HEADER -->
+
+                    <div sclass="checker-header">
+
+                        <div>
+
+                            <label
+                                value="Cheque Verification"
+                                sclass="page-title"/>
+
+                            <separator/>
+
+                            <label
+                                id="verificationBatchId"
+                                value="Batch: -"
+                                sclass="batch-id-label"/>
+
+                            <label
+                                id="chequeSequence"
+                                value="Cheque: - / -"
+                                sclass="sequence-label"/>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= CHEQUE AREA ================= -->
+
+                    <div sclass="verification-layout">
+
+
+                        <!-- LEFT IMAGE AREA -->
+
+                        <div sclass="image-panel">
+
+                            <label
+                                value="Cheque Front"
+                                sclass="image-title"/>
+
+                            <div sclass="cheque-image-container">
+
+                                <image
+                                    id="frontImage"
+                                    width="100%"
+                                    height="260px"
+                                    content=""
+                                    sclass="cheque-image"/>
+
+                            </div>
+
+
+                            <label
+                                value="Cheque Back"
+                                sclass="image-title"/>
+
+                            <div sclass="cheque-image-container">
+
+                                <image
+                                    id="backImage"
+                                    width="100%"
+                                    height="180px"
+                                    content=""
+                                    sclass="cheque-image"/>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- RIGHT DATA AREA -->
+
+                        <div sclass="data-panel">
+
+                            <label
+                                value="Cheque Details"
+                                sclass="section-title"/>
+
+                            <separator height="15px"/>
+
+
+                            <!-- CHEQUE NUMBER -->
+
+                            <div sclass="field-row">
+
+                                <label
+                                    value="Cheque Number"
+                                    sclass="field-label"/>
+
+                                <textbox
+                                    id="chequeNumber"
+                                    readonly="true"
+                                    width="100%"/>
+
+                            </div>
+
+
+                            <!-- ACCOUNT -->
+
+                            <div sclass="field-row">
+
+                                <label
+                                    value="Account Number"
+                                    sclass="field-label"/>
+
+                                <textbox
+                                    id="accountNumber"
+                                    readonly="true"
+                                    width="100%"/>
+
+                            </div>
+
+
+                            <!-- AMOUNT -->
+
+                            <div sclass="field-row">
+
+                                <label
+                                    value="Amount"
+                                    sclass="field-label"/>
+
+                                <textbox
+                                    id="amount"
+                                    readonly="true"
+                                    width="100%"/>
+
+                            </div>
+
+
+                            <!-- CHEQUE DATE -->
+
+                            <div sclass="field-row">
+
+                                <label
+                                    value="Cheque Date"
+                                    sclass="field-label"/>
+
+                                <textbox
+                                    id="chequeDate"
+                                    readonly="true"
+                                    width="100%"/>
+
+                            </div>
+
+
+                            <!-- MICR -->
+
+                            <div class="field-row">
+
+                                <label
+                                    value="MICR"
+                                    sclass="field-label"/>
+
+                                <textbox
+                                    id="micr"
+                                    readonly="true"
+                                    width="100%"/>
+
+                            </div>
+
+
+                            <!-- STATUS -->
+
+                            <div sclass="field-row">
+
+                                <label
+                                    value="Current Status"
+                                    sclass="field-label"/>
+
+                                <label
+                                    id="statusLabel"
+                                    value="PENDING"
+                                    sclass="status-badge"/>
+
+                            </div>
+
+
+                            <separator height="25px"/>
+
+
+                            <!-- ================= ACTIONS ================= -->
+
+                            <div sclass="verification-actions">
+
+                                <button
+                                    id="previousButton"
+                                    label="← Previous"
+                                    sclass="secondary-button"/>
+
+                                <button
+                                    id="nextButton"
+                                    label="Next →"
+                                    sclass="secondary-button"/>
+
+                            </div>
+
+
+                            <separator height="15px"/>
+
+
+                            <div sclass="decision-actions">
+
+                                <button
+                                    id="acceptButton"
+                                    label="✓ Accept"
+                                    sclass="accept-button"/>
+
+                                <button
+                                    id="rejectButton"
+                                    label="✕ Reject"
+                                    sclass="reject-button"/>
+
+                                <button
+                                    id="returnButton"
+                                    label="↩ Return to Maker"
+                                    sclass="return-button"/>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </center>
+
+        </borderlayout>
+
+    </window>
+
+</zk>

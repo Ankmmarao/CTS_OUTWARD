@@ -4,39 +4,55 @@
 
 <zk>
 
-    <borderlayout width="100%" height="100%"
+    <borderlayout width="100%"
+                  height="100%"
                   style="background:#F4F7FB;">
 
+        <!-- HEADER -->
         <north size="62px">
             <include src="/header.zul"/>
         </north>
 
+        <!-- MAKER SIDEBAR -->
         <west size="280px">
             <include src="/makersidebar.zul"/>
         </west>
 
+        <!-- MAIN CONTENT -->
         <center>
 
             <vlayout spacing="20px"
                      style="padding:30px;">
 
+                <!-- PAGE TITLE -->
                 <label value="Send to Checker"
-                       style="font-size:30px;font-weight:bold;color:#122B49;"/>
+                       style="font-size:30px;
+                              font-weight:bold;
+                              color:#122B49;"/>
 
+                <!-- INFORMATION -->
                 <groupbox width="100%"
-                          style="background:white;border:1px solid #DCE5F0;">
+                          style="background:white;
+                                 border:1px solid #DCE5F0;">
 
                     <vlayout>
 
-                        <hlayout style="background:#EEF6FF;padding:15px;">
+                        <hlayout style="background:#EEF6FF;
+                                        padding:15px;">
 
-                            <label value="ⓘ The following outward batches have completed maker data entry &amp; MICR repair and are ready to be submitted to Outward Checker."
-                                   style="font-size:15px;color:#174EA6;"/>
+                            <label value="ⓘ The following outward batches have completed maker processing and are ready to be submitted to Outward Checker."
+                                   style="font-size:15px;
+                                          color:#174EA6;"/>
 
                         </hlayout>
 
-                        <listbox width="100%"
-                                 emptyMessage="No batches are ready to submit.">
+
+                        <!-- BATCH LIST -->
+                        <listbox id="batchListbox"
+                                 width="100%"
+                                 emptyMessage="No batches are ready to submit."
+                                 mold="paging"
+                                 pageSize="10">
 
                             <listhead>
 
@@ -53,51 +69,6 @@
                                             width="25%"/>
 
                             </listhead>
-
-                            <listitem>
-
-                                <listcell label="B002"/>
-
-                                <listcell label="12"/>
-
-                                <listcell>
-
-                                    <label value="✓ Ready to Submit"
-                                           style="background:#D1FADF;color:#039855;padding:8px 15px;border-radius:5px;font-weight:bold;"/>
-
-                                </listcell>
-
-                                <listcell>
-
-                                    <button label="Send to Checker"
-                                            width="160px"
-                                            style="background:#2457D6;color:white;border:none;"/>
-
-                                </listcell>
-
-                            </listitem>
-
-                            <listitem>
-
-                                <listcell label="B003"/>
-                                <listcell label="12"/>
-
-                                <listcell>
-
-                                    <label value="✓ Ready to Submit"
-                                           style="background:#D1FADF;color:#039855;padding:8px 15px;border-radius:5px;font-weight:bold;"/>
-
-                                </listcell>
-
-                                <listcell>
-
-                                    <button label="Send to Checker"
-                                            width="160px"
-                                            style="background:#2457D6;color:white;border:none;"/>
-
-                                </listcell>
-
-                            </listitem>
 
                         </listbox>
 

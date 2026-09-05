@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Checker Batches Queue"
+        contentType="text/html;charset=UTF-8"?>
+
+<?style src="/css/checker.css"?>
+
+<zk>
+
+    <window
+        id="checkerQueueWindow"
+        border="none"
+        width="100%"
+        height="100%"
+        apply="com.iispl.cts.controller.outward.checker.CheckerBatchesQueueController">
+
+        <borderlayout width="100%" height="100%">
+
+            <!-- ================= SIDEBAR ================= -->
+
+            <west width="230px"
+                  splittable="false"
+                  collapsible="false">
+
+                <div sclass="checker-sidebar">
+
+                    <div sclass="checker-logo">
+                        CTS OUTWARD
+                    </div>
+
+                    <div sclass="checker-role">
+                        CHECKER
+                    </div>
+
+                    <separator height="20px"/>
+
+                    <button
+                        label="Dashboard"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/dashboard.zul')"/>
+
+                    <button
+                        label="Batches Queue"
+                        sclass="sidebar-button active"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/batchesQueue.zul')"/>
+
+                    <button
+                        label="Reports"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/reports.zul')"/>
+
+                    <button
+                        label="Send to NPCI"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/sendToNPCI.zul')"/>
+
+                </div>
+
+            </west>
+
+
+            <!-- ================= CONTENT ================= -->
+
+            <center>
+
+                <div sclass="checker-main">
+
+                    <div sclass="checker-header">
+
+                        <label
+                            value="Batches Queue"
+                            sclass="page-title"/>
+
+                        <div sclass="header-info">
+
+                            <label value="Checker"/>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FILTER -->
+
+                    <div sclass="filter-card">
+
+                        <label
+                            value="Batch ID"
+                            sclass="filter-label"/>
+
+                        <textbox
+                            id="batchSearch"
+                            placeholder="Search Batch ID"
+                            width="250px"/>
+
+                        <button
+                            id="searchButton"
+                            label="Search"
+                            sclass="primary-button"/>
+
+                        <button
+                            id="refreshButton"
+                            label="Refresh"
+                            sclass="secondary-button"/>
+
+                    </div>
+
+
+                    <!-- QUEUE TABLE -->
+
+                    <div sclass="section-card">
+
+                        <div sclass="section-header">
+
+                            <label
+                                value="Assigned Batches"
+                                sclass="section-title"/>
+
+                        </div>
+
+
+                        <listbox
+                            id="batchListbox"
+                            width="100%"
+                            mold="paging"
+                            pageSize="10"
+                            emptyMessage="No batches assigned to checker">
+
+                            <listhead>
+
+                                <listheader
+                                    label="Batch ID"
+                                    width="20%"/>
+
+                                <listheader
+                                    label="Total Cheques"
+                                    width="15%"/>
+
+                                <listheader
+                                    label="Accepted"
+                                    width="15%"/>
+
+                                <listheader
+                                    label="Rejected"
+                                    width="15%"/>
+
+                                <listheader
+                                    label="Status"
+                                    width="15%"/>
+
+                                <listheader
+                                    label="Action"
+                                    width="20%"/>
+
+                            </listhead>
+
+                        </listbox>
+
+                    </div>
+
+                </div>
+
+            </center>
+
+        </borderlayout>
+
+    </window>
+
+</zk>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Batch Verification"
+        contentType="text/html;charset=UTF-8"?>
+
+<?style src="/css/checker.css"?>
+
+<zk>
+
+    <window
+        id="batchVerificationWindow"
+        border="none"
+        width="100%"
+        height="100%"
+        apply="com.iispl.cts.controller.outward.checker.CheckerBatchVerificationController">
+
+        <borderlayout width="100%" height="100%">
+
+            <!-- SIDEBAR -->
+
+            <west width="230px">
+
+                <div sclass="checker-sidebar">
+
+                    <div sclass="checker-logo">
+                        CTS OUTWARD
+                    </div>
+
+                    <div sclass="checker-role">
+                        CHECKER
+                    </div>
+
+                    <separator height="20px"/>
+
+                    <button
+                        label="Dashboard"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/dashboard.zul')"/>
+
+                    <button
+                        label="Batches Queue"
+                        sclass="sidebar-button active"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/batchesQueue.zul')"/>
+
+                    <button
+                        label="Reports"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/reports.zul')"/>
+
+                    <button
+                        label="Send to NPCI"
+                        sclass="sidebar-button"
+                        width="100%"
+                        onClick="Executions.sendRedirect('/outward/checker/sendToNPCI.zul')"/>
+
+                </div>
+
+            </west>
+
+
+            <center>
+
+                <div sclass="checker-main">
+
+                    <!-- HEADER -->
+
+                    <div sclass="checker-header">
+
+                        <div>
+
+                            <label
+                                value="Batch Verification"
+                                sclass="page-title"/>
+
+                            <separator/>
+
+                            <label
+                                id="batchIdLabel"
+                                value="Batch: -"
+                                sclass="batch-id-label"/>
+
+                        </div>
+
+                        <button
+                            label="← Back to Queue"
+                            sclass="secondary-button"
+                            onClick="Executions.sendRedirect('/outward/checker/batchesQueue.zul')"/>
+
+                    </div>
+
+
+                    <!-- BATCH SUMMARY -->
+
+                    <div sclass="batch-summary">
+
+                        <div sclass="summary-item">
+
+                            <label
+                                value="Total Cheques"
+                                sclass="summary-label"/>
+
+                            <label
+                                id="totalChequeLabel"
+                                value="0"
+                                sclass="summary-value"/>
+
+                        </div>
+
+
+                        <div sclass="summary-item">
+
+                            <label
+                                value="Accepted"
+                                sclass="summary-label"/>
+
+                            <label
+                                id="acceptedChequeLabel"
+                                value="0"
+                                sclass="summary-value"/>
+
+                        </div>
+
+
+                        <div sclass="summary-item">
+
+                            <label
+                                value="Rejected"
+                                sclass="summary-label"/>
+
+                            <label
+                                id="rejectedChequeLabel"
+                                value="0"
+                                sclass="summary-value"/>
+
+                        </div>
+
+
+                        <div sclass="summary-item">
+
+                            <label
+                                value="Pending"
+                                sclass="summary-label"/>
+
+                            <label
+                                id="pendingChequeLabel"
+                                value="0"
+                                sclass="summary-value"/>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CHEQUES -->
+
+                    <div sclass="section-card">
+
+                        <label
+                            value="Cheques in Batch"
+                            sclass="section-title"/>
+
+                        <separator height="15px"/>
+
+                        <listbox
+                            id="chequeListbox"
+                            width="100%"
+                            mold="paging"
+                            pageSize="10"
+                            emptyMessage="No cheques found in this batch">
+
+                            <listhead>
+
+                                <listheader
+                                    label="#"
+                                    width="8%"/>
+
+                                <listheader
+                                    label="Cheque Number"
+                                    width="18%"/>
+
+                                <listheader
+                                    label="Account Number"
+                                    width="20%"/>
+
+                                <listheader
+                                    label="Amount"
+                                    width="15%"/>
+
+                                <listheader
+                                    label="Cheque Date"
+                                    width="15%"/>
+
+                                <listheader
+                                    label="Status"
+                                    width="12%"/>
+
+                                <listheader
+                                    label="Action"
+                                    width="12%"/>
+
+                            </listhead>
+
+                        </listbox>
+
+                    </div>
+
+                </div>
+
+            </center>
+
+        </borderlayout>
+
+    </window>
+
+</zk>

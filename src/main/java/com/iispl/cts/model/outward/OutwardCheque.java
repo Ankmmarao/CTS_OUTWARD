@@ -1,95 +1,115 @@
-
 package com.iispl.cts.model.outward;
 
-public class OutwardCheque {
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-    private String batchId;
+public class OutwardCheque implements Serializable {
 
-    private String chequeId;
+    private static final long serialVersionUID = 1L;
+
+    // =========================
+    // PRIMARY KEY
+    // =========================
+
+    private String batchNumber;
 
     private String chequeNumber;
 
-    private String accountNumber;
+    // =========================
+    // MICR
+    // =========================
 
-    private String chequeDate;
+    private String cityCode;
 
-    private String amount;
+    private String bankCode;
 
-    /*
-     * Original MICR value coming from outward_cheque.scanned_micr
-     */
-    private String micr;
+    private String branchCode;
 
-    /*
-     * Kept for compatibility with existing code.
-     *
-     * IMPORTANT:
-     * Validation will no longer depend on errorType.
-     * Error type will be determined from actual cheque values.
-     */
-    private String errorType;
+    // =========================
+    // DRAWER
+    // =========================
 
-    private String frontImage;
+    private String drawerAccountNumber;
 
-    private String backImage;
+    private String drawerName;
 
-    /*
-     * Corrected values entered during repair.
-     */
-    private String correctAccountNumber;
+    // =========================
+    // DEPOSITOR
+    // =========================
 
-    private String correctChequeDate;
+    private String depositorAccountNumber;
 
-    private String correctAmount;
+    private String depositorName;
 
-    private String correctMicr;
+    // =========================
+    // PAYEE
+    // =========================
 
-    private String repairReason;
+    private String payeeName;
 
-    private String remarks;
+    // =========================
+    // CHEQUE DETAILS
+    // =========================
 
-    private String rejectReason;
+    private BigDecimal amount;
 
-    private boolean micrCorrected;
+    private String amountInWords;
 
-    private boolean frontVerified;
+    private LocalDate chequeDate;
 
-    private boolean backVerified;
+    // =========================
+    // IMAGES
+    // =========================
 
-    private boolean saved;
+    private String frontImagePath;
 
-    private boolean rejected;
+    private String backImagePath;
+
+    // =========================
+    // STATUS
+    // =========================
+
+    private String chequeStatus;
+
+    // =========================
+    // AUDIT
+    // =========================
+
+    private String createdBy;
+
+    private LocalDateTime createdAt;
+
+    private String updatedBy;
+
+    private LocalDateTime updatedAt;
 
 
-    // =========================================================
-    // BATCH ID
-    // =========================================================
+    // =========================
+    // CONSTRUCTORS
+    // =========================
 
-    public String getBatchId() {
-        return batchId;
+    public OutwardCheque() {
     }
 
-    public void setBatchId(String batchId) {
-        this.batchId = batchId;
+    public OutwardCheque(String batchNumber, String chequeNumber) {
+        this.batchNumber = batchNumber;
+        this.chequeNumber = chequeNumber;
     }
 
 
-    // =========================================================
-    // CHEQUE ID
-    // =========================================================
+    // =========================
+    // GETTERS / SETTERS
+    // =========================
 
-    public String getChequeId() {
-        return chequeId;
+    public String getBatchNumber() {
+        return batchNumber;
     }
 
-    public void setChequeId(String chequeId) {
-        this.chequeId = chequeId;
+    public void setBatchNumber(String batchNumber) {
+        this.batchNumber = batchNumber;
     }
-
-
-    // =========================================================
-    // CHEQUE NUMBER
-    // =========================================================
 
     public String getChequeNumber() {
         return chequeNumber;
@@ -99,251 +119,162 @@ public class OutwardCheque {
         this.chequeNumber = chequeNumber;
     }
 
-
-    // =========================================================
-    // ACCOUNT NUMBER
-    // =========================================================
-
-    public String getAccountNumber() {
-        return accountNumber;
+    public String getCityCode() {
+        return cityCode;
     }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
     }
 
-
-    // =========================================================
-    // CHEQUE DATE
-    // =========================================================
-
-    public String getChequeDate() {
-        return chequeDate;
+    public String getBankCode() {
+        return bankCode;
     }
 
-    public void setChequeDate(String chequeDate) {
-        this.chequeDate = chequeDate;
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
     }
 
+    public String getBranchCode() {
+        return branchCode;
+    }
 
-    // =========================================================
-    // AMOUNT
-    // =========================================================
+    public void setBranchCode(String branchCode) {
+        this.branchCode = branchCode;
+    }
 
-    public String getAmount() {
+    public String getDrawerAccountNumber() {
+        return drawerAccountNumber;
+    }
+
+    public void setDrawerAccountNumber(String drawerAccountNumber) {
+        this.drawerAccountNumber = drawerAccountNumber;
+    }
+
+    public String getDrawerName() {
+        return drawerName;
+    }
+
+    public void setDrawerName(String drawerName) {
+        this.drawerName = drawerName;
+    }
+
+    public String getDepositorAccountNumber() {
+        return depositorAccountNumber;
+    }
+
+    public void setDepositorAccountNumber(String depositorAccountNumber) {
+        this.depositorAccountNumber = depositorAccountNumber;
+    }
+
+    public String getDepositorName() {
+        return depositorName;
+    }
+
+    public void setDepositorName(String depositorName) {
+        this.depositorName = depositorName;
+    }
+
+    public String getPayeeName() {
+        return payeeName;
+    }
+
+    public void setPayeeName(String payeeName) {
+        this.payeeName = payeeName;
+    }
+
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-
-    // =========================================================
-    // ORIGINAL MICR
-    // =========================================================
-
-    public String getMicr() {
-        return micr;
+    public String getAmountInWords() {
+        return amountInWords;
     }
 
-    public void setMicr(String micr) {
-        this.micr = micr;
+    public void setAmountInWords(String amountInWords) {
+        this.amountInWords = amountInWords;
     }
 
-
-    // =========================================================
-    // ERROR TYPE
-    // =========================================================
-
-    public String getErrorType() {
-        return errorType;
+    public LocalDate getChequeDate() {
+        return chequeDate;
     }
 
-    public void setErrorType(String errorType) {
-        this.errorType = errorType;
+    public void setChequeDate(LocalDate chequeDate) {
+        this.chequeDate = chequeDate;
     }
 
-
-    // =========================================================
-    // FRONT IMAGE
-    // =========================================================
-
-    public String getFrontImage() {
-        return frontImage;
+    public String getFrontImagePath() {
+        return frontImagePath;
     }
 
-    public void setFrontImage(String frontImage) {
-        this.frontImage = frontImage;
+    public void setFrontImagePath(String frontImagePath) {
+        this.frontImagePath = frontImagePath;
     }
 
-
-    // =========================================================
-    // BACK IMAGE
-    // =========================================================
-
-    public String getBackImage() {
-        return backImage;
+    public String getBackImagePath() {
+        return backImagePath;
     }
 
-    public void setBackImage(String backImage) {
-        this.backImage = backImage;
+    public void setBackImagePath(String backImagePath) {
+        this.backImagePath = backImagePath;
     }
 
-
-    // =========================================================
-    // CORRECT ACCOUNT NUMBER
-    // =========================================================
-
-    public String getCorrectAccountNumber() {
-        return correctAccountNumber;
+    public String getChequeStatus() {
+        return chequeStatus;
     }
 
-    public void setCorrectAccountNumber(String value) {
-        this.correctAccountNumber = value;
+    public void setChequeStatus(String chequeStatus) {
+        this.chequeStatus = chequeStatus;
     }
 
-
-    // =========================================================
-    // CORRECT CHEQUE DATE
-    // =========================================================
-
-    public String getCorrectChequeDate() {
-        return correctChequeDate;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCorrectChequeDate(String value) {
-        this.correctChequeDate = value;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
 
-    // =========================================================
-    // CORRECT AMOUNT
-    // =========================================================
-
-    public String getCorrectAmount() {
-        return correctAmount;
-    }
-
-    public void setCorrectAmount(String value) {
-        this.correctAmount = value;
-    }
-
-
-    // =========================================================
-    // CORRECT MICR
-    // =========================================================
-
-    public String getCorrectMicr() {
-        return correctMicr;
-    }
-
-    public void setCorrectMicr(String value) {
-        this.correctMicr = value;
-    }
-
-
-    // =========================================================
-    // REPAIR REASON
-    // =========================================================
-
-    public String getRepairReason() {
-        return repairReason;
-    }
-
-    public void setRepairReason(String value) {
-        this.repairReason = value;
-    }
-
-
-    // =========================================================
-    // REMARKS
-    // =========================================================
-
-    public String getRemarks() {
-        return remarks;
-    }
-
-    public void setRemarks(String value) {
-        this.remarks = value;
-    }
-
-
-    // =========================================================
-    // REJECT REASON
-    // =========================================================
-
-    public String getRejectReason() {
-        return rejectReason;
-    }
-
-    public void setRejectReason(String value) {
-        this.rejectReason = value;
-    }
-
-
-    // =========================================================
-    // MICR CORRECTED
-    // =========================================================
-
-    public boolean isMicrCorrected() {
-        return micrCorrected;
-    }
-
-    public void setMicrCorrected(boolean value) {
-        this.micrCorrected = value;
-    }
-
-
-    // =========================================================
-    // FRONT VERIFIED
-    // =========================================================
-
-    public boolean isFrontVerified() {
-        return frontVerified;
-    }
-
-    public void setFrontVerified(boolean value) {
-        this.frontVerified = value;
-    }
-
-
-    // =========================================================
-    // BACK VERIFIED
-    // =========================================================
-
-    public boolean isBackVerified() {
-        return backVerified;
-    }
-
-    public void setBackVerified(boolean value) {
-        this.backVerified = value;
-    }
-
-
-    // =========================================================
-    // SAVED
-    // =========================================================
-
-    public boolean isSaved() {
-        return saved;
-    }
-
-    public void setSaved(boolean value) {
-        this.saved = value;
-    }
-
-
-    // =========================================================
-    // REJECTED
-    // =========================================================
-
-    public boolean isRejected() {
-        return rejected;
-    }
-
-    public void setRejected(boolean value) {
-        this.rejected = value;
+    @Override
+    public String toString() {
+        return "OutwardCheque{" +
+                "batchNumber='" + batchNumber + '\'' +
+                ", chequeNumber='" + chequeNumber + '\'' +
+                ", cityCode='" + cityCode + '\'' +
+                ", bankCode='" + bankCode + '\'' +
+                ", branchCode='" + branchCode + '\'' +
+                ", amount=" + amount +
+                ", chequeDate=" + chequeDate +
+                ", chequeStatus='" + chequeStatus + '\'' +
+                '}';
     }
 }
-

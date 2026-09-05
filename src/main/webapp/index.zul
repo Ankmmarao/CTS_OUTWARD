@@ -17,7 +17,7 @@
 
             <button label="Maker Dashboard"
                     width="250px"
-                    onClick='Executions.sendRedirect("outward-maker-dashboard.zul")'/>
+                   onClick='Executions.sendRedirect("outward-maker-dashboard.zul")'/>
 
             <button label="Data Entry"
                     width="250px"

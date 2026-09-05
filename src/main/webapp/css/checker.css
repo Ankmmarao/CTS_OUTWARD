@@ -1,0 +1,360 @@
+/* ==============================
+   MAIN LAYOUT
+   ============================== */
+
+.checker-sidebar {
+    background: #172033;
+    height: 100%;
+    padding: 20px 15px;
+}
+
+.checker-logo {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    padding: 15px 5px;
+}
+
+.checker-role {
+    color: #9ca9bd;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+
+/* ==============================
+   SIDEBAR
+   ============================== */
+
+.sidebar-button {
+    margin-bottom: 8px;
+    height: 45px;
+    text-align: left;
+    border: none;
+    background: transparent;
+    color: #dce3ed;
+    font-size: 14px;
+}
+
+.sidebar-button:hover {
+    background: #27344b;
+    color: white;
+}
+
+.sidebar-button.active {
+    background: #31415d;
+    color: white;
+    font-weight: bold;
+}
+
+
+/* ==============================
+   MAIN CONTENT
+   ============================== */
+
+.checker-main {
+    background: #f4f6f9;
+    min-height: 100%;
+    padding: 25px;
+}
+
+.checker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-title {
+    font-size: 25px;
+    font-weight: bold;
+    color: #172033;
+}
+
+.batch-id-label {
+    font-size: 14px;
+    color: #596579;
+}
+
+.sequence-label {
+    margin-left: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+
+/* ==============================
+   HEADER
+   ============================== */
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #667085;
+    font-size: 13px;
+}
+
+
+/* ==============================
+   DASHBOARD CARDS
+   ============================== */
+
+.dashboard-cards {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    flex: 1;
+    min-height: 120px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.card-title {
+    display: block;
+    font-size: 14px;
+    color: #667085;
+}
+
+.card-number {
+    display: block;
+    margin-top: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #172033;
+}
+
+.card-description {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #98a2b3;
+}
+
+
+/* ==============================
+   SECTION
+   ============================== */
+
+.section-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #172033;
+}
+
+
+/* ==============================
+   FILTER
+   ============================== */
+
+.filter-card {
+    background: white;
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #475467;
+}
+
+
+/* ==============================
+   BUTTONS
+   ============================== */
+
+.primary-button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 18px;
+    font-weight: bold;
+}
+
+.secondary-button {
+    background: white;
+    color: #344054;
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    padding: 8px 18px;
+}
+
+.accept-button {
+    background: #198754;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 25px;
+    font-weight: bold;
+}
+
+.reject-button {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 25px;
+    font-weight: bold;
+}
+
+.return-button {
+    background: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 25px;
+    font-weight: bold;
+}
+
+
+/* ==============================
+   BATCH SUMMARY
+   ============================== */
+
+.batch-summary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    background: white;
+    padding: 18px;
+    border-radius: 8px;
+    flex: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.summary-label {
+    display: block;
+    font-size: 12px;
+    color: #667085;
+}
+
+.summary-value {
+    display: block;
+    margin-top: 5px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
+/* ==============================
+   CHEQUE VERIFICATION
+   ============================== */
+
+.verification-layout {
+    display: flex;
+    gap: 20px;
+}
+
+.image-panel {
+    width: 60%;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.data-panel {
+    width: 40%;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.image-title {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #344054;
+}
+
+.cheque-image-container {
+    background: #f8fafc;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.cheque-image {
+    object-fit: contain;
+}
+
+.field-row {
+    margin-bottom: 15px;
+}
+
+.field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: #667085;
+    margin-bottom: 5px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 15px;
+    background: #fff3cd;
+    font-weight: bold;
+}
+
+.verification-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.decision-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+
+/* ==============================
+   INFO
+   ============================== */
+
+.info-card {
+    background: white;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+
+.info-text {
+    color: #475467;
+    font-size: 14px;
+}
