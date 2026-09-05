@@ -6,28 +6,27 @@ import java.sql.SQLException;
 
 public class CTSStaticData {
 
-    // =====================================================
-    // DATABASE CONFIGURATION
-    // =====================================================
-
     private static final String DRIVER =
             "org.postgresql.Driver";
 
+    /*
+     * Supabase Transaction Pooler
+     *
+     * 6543 = Transaction mode
+     * 5432 = Session mode
+     */
     private static final String DB_URL =
-            "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
-            + "?sslmode=require";
+            "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+            + "?sslmode=require"
+            + "&prepareThreshold=0";
 
     private static final String DB_USER =
             "postgres.bijnscklhxftxritxdrc";
 
     private static final String DB_PASSWORD ="Sushmabandari@123";
-           
-
-    // =====================================================
-    // LOAD POSTGRESQL DRIVER
-    // =====================================================
 
     static {
+
         try {
 
             Class.forName(DRIVER);
@@ -42,10 +41,9 @@ public class CTSStaticData {
         }
     }
 
-
-    // =====================================================
-    // DATABASE CONNECTION
-    // =====================================================
+    private CTSStaticData() {
+        // Utility class
+    }
 
     public static Connection getConnection()
             throws SQLException {
@@ -58,10 +56,19 @@ public class CTSStaticData {
             );
         }
 
-        return DriverManager.getConnection(
-                DB_URL,
-                DB_USER,
-                DB_PASSWORD
-        );
+        Connection connection =
+                DriverManager.getConnection(
+                        DB_URL,
+                        DB_USER,
+                        DB_PASSWORD
+                );
+
+        /*
+         * Make sure every connection starts with
+         * auto-commit enabled.
+         */
+        connection.setAutoCommit(true);
+
+        return connection;
     }
 }
