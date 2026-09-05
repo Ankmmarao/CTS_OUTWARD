@@ -1,86 +1,74 @@
 package com.iispl.cts.controller.outward;
 
 import java.util.List;
-
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.SelectorComposer;
-import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 
+import com.iispl.cts.dao.outward.OutwardMakerDataEntryDAO;
+import com.iispl.cts.data.CTSStaticData;
 import com.iispl.cts.model.outward.OutwardBatch;
-import com.iispl.cts.service.outward.OutwardMakerDataEntryService;
 
-public class OutwardMakerDataEntryController
-        extends SelectorComposer<Component> {
+public class OutwardMakerDataEntryController extends SelectorComposer<Component> {
 
     private static final long serialVersionUID = 1L;
 
     @Wire
     private Listbox batchListbox;
 
-    private OutwardMakerDataEntryService service;
-
     @Override
-    public void doAfterCompose(Component comp)
-            throws Exception {
-
+    public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-
-        service = new OutwardMakerDataEntryService();
-
         loadBatches();
     }
 
-    private void loadBatches() {
+    private OutwardMakerDataEntryDAO dataEntryDAO = new OutwardMakerDataEntryDAO();
 
+    private void loadBatches() {
+        if (batchListbox == null) return;
         batchListbox.getItems().clear();
 
-        List<OutwardBatch> batches =
-                service.getBatches();
+        List<OutwardBatch> batches = dataEntryDAO.getAllBatches();
 
-        for (OutwardBatch batch : batches) {
+        if (batches != null) {
+            for (OutwardBatch batch : batches) {
+                Listitem item = new Listitem();
 
-            Listitem item = new Listitem();
+                // 1. Batch ID
+                String batchNumber = batch.getBatchNumber();
+                Listcell cellBatchId = new Listcell(batchNumber);
+                cellBatchId.setStyle("font-weight: 600; color: #1E293B;");
+                item.appendChild(cellBatchId);
 
-            item.appendChild(
-                    new Listcell(batch.getBatchId()));
+                // 2. Total Cheques
+                item.appendChild(new Listcell(String.valueOf(batch.getNumberOfCheques())));
 
-            item.appendChild(
-                    new Listcell(
-                            String.valueOf(
-                                    batch.getTotalCheques())));
+                // 3. Batch Status
+                Listcell cellStatus = new Listcell();
+                String status = batch.getBatchStatus() != null ? batch.getBatchStatus() : "UNKNOWN";
+                Label lblStatus = new Label(status);
+                lblStatus.setSclass("status-badge " + ("COMPLETED".equalsIgnoreCase(status) ? "badge-completed" : "badge-assigned"));
+                cellStatus.appendChild(lblStatus);
+                item.appendChild(cellStatus);
 
-            item.appendChild(
-                    new Listcell(
-                            String.valueOf(
-                                    batch.getErrorCount())));
+                // 4. Action Button
+                Listcell cellAction = new Listcell();
+                Button btn = new Button("Process");
+                btn.setSclass("action-btn");
+                btn.addEventListener("onClick", e -> {
+                    Executions.sendRedirect("outward-maker-data-entry-detail.zul?batchId=" + batchNumber);
+                });
+                cellAction.appendChild(btn);
+                item.appendChild(cellAction);
 
-            Listcell actionCell = new Listcell();
-
-            Button open = new Button("Open");
-
-            open.setWidth("90px");
-
-            open.addEventListener(
-                    "onClick",
-                    event -> {
-
-                        Executions.sendRedirect(
-                                "outward-maker-data-entry-detail.zul"
-                                + "?batchId="
-                                + batch.getBatchId());
-                    });
-
-            actionCell.appendChild(open);
-
-            item.appendChild(actionCell);
-
-            batchListbox.appendChild(item);
+                batchListbox.appendChild(item);
+            }
         }
     }
 }
