@@ -1,230 +1,223 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?page title="Data Entry Detail"?>
+<?page title="Amount And Account - Batch Details"?>
 
 <zk>
 
-    <borderlayout width="100%"
-                  height="100%"
-                  style="background:#F4F7FB;">
+    <window
+            width="100%"
+            height="100%"
+            border="none"
+            apply="com.iispl.cts.controller.outward.OutwardMakerAmountAccountDetailController">
 
-        <north size="62px">
-            <include src="/header.zul"/>
-        </north>
+        <borderlayout
+                width="100%"
+                height="100%"
+                style="background:#F4F7FB;">
 
-        <west size="280px">
-            <include src="/makersidebar.zul"/>
-        </west>
+            <!-- HEADER -->
+            <north size="62px">
+                <include src="/header.zul"/>
+            </north>
 
-        <center>
+            <!-- SIDEBAR -->
+            <west size="280px">
+                <include src="/makersidebar.zul"/>
+            </west>
 
-            <vlayout spacing="15px"
-                     style="padding:28px;">
+            <!-- MAIN CONTENT -->
+            <center>
 
-                <!-- BATCH HEADER -->
+                <vlayout
+                        width="100%"
+                        spacing="20px"
+                        style="padding:30px;">
 
-                <groupbox width="100%"
-                          style="background:white;border:1px solid #DCE5F0;">
+                    <!-- PAGE TITLE -->
+                    <hlayout
+                            width="100%"
+                            valign="middle">
 
-                    <hlayout width="100%"
-                             style="padding:15px 20px;">
+                        <label
+                                value="Amount And Account"
+                                style="font-size:30px;
+                                       font-weight:bold;
+                                       color:#122B49;"/>
 
-                        <label value="Batch ID : "
-                               style="font-size:18px;font-weight:bold;"/>
+                        <space/>
 
-                        <label value="B008"
-                               style="font-size:22px;font-weight:bold;color:#175CD3;"/>
-
-                        <space hflex="1"/>
-
-                        <label value="Cheque 1 of 5"
-                               style="font-size:18px;font-weight:bold;color:#175CD3;"/>
+                        <button
+                                id="backButton"
+                                label="Back"
+                                width="100px"
+                                style="background:#FFFFFF;
+                                       border:1px solid #C9D6E4;
+                                       color:#122B49;
+                                       font-weight:bold;"/>
 
                     </hlayout>
 
-                </groupbox>
+                    <!-- BATCH INFORMATION -->
+                    <groupbox
+                            width="100%"
+                            style="background:white;
+                                   border:1px solid #DCE5F0;">
+
+                        <caption
+                                label="Batch Information"
+                                style="font-size:18px;
+                                       font-weight:bold;
+                                       color:#122B49;"/>
+
+                        <grid
+                                width="100%"
+                                style="padding:10px;">
+
+                            <columns>
+                                <column width="20%"/>
+                                <column width="30%"/>
+                                <column width="20%"/>
+                                <column width="30%"/>
+                            </columns>
+
+                            <rows>
+
+                                <row>
+                                    <label
+                                            value="Batch Number"
+                                            style="font-weight:bold;
+                                                   color:#526579;"/>
+
+                                    <label
+                                            id="batchNumberLabel"
+                                            value="-"
+                                            style="font-weight:bold;
+                                                   color:#122B49;"/>
+
+                                    <label
+                                            value="Total Cheques"
+                                            style="font-weight:bold;
+                                                   color:#526579;"/>
+
+                                    <label
+                                            id="totalChequesLabel"
+                                            value="-"
+                                            style="font-weight:bold;
+                                                   color:#122B49;"/>
+                                </row>
+
+                                <row>
+                                    <label
+                                            value="Batch Status"
+                                            style="font-weight:bold;
+                                                   color:#526579;"/>
+
+                                    <label
+                                            id="batchStatusLabel"
+                                            value="-"
+                                            style="font-weight:bold;
+                                                   color:#122B49;"/>
+
+                                    <label
+                                            value="Verification Status"
+                                            style="font-weight:bold;
+                                                   color:#526579;"/>
+
+                                    <label
+                                            id="verificationStatusLabel"
+                                            value="-"
+                                            style="font-weight:bold;
+                                                   color:#122B49;"/>
+                                </row>
+
+                            </rows>
+
+                        </grid>
+
+                    </groupbox>
+
+
+                    <!-- CHEQUE LIST -->
+                    <groupbox
+                            width="100%"
+                            height="100%"
+                            style="background:white;
+                                   border:1px solid #DCE5F0;">
+
+                        <caption
+                                label="Cheque Verification"
+                                style="font-size:18px;
+                                       font-weight:bold;
+                                       color:#122B49;"/>
+
+                        <listbox
+                                id="chequeListbox"
+                                width="100%"
+                                height="100%"
+                                emptyMessage="No cheques available for this batch.">
+
+                            <listhead>
+
+                                <listheader
+                                        label="Cheque Number"
+                                        width="15%"/>
 
+                                <listheader
+                                        label="Account Number"
+                                        width="20%"/>
 
-                <!-- MAIN AREA -->
+                                <listheader
+                                        label="Amount"
+                                        width="15%"/>
 
-                <hlayout width="100%"
-                         spacing="25px">
+                                <listheader
+                                        label="Cheque Date"
+                                        width="15%"/>
 
+                                <listheader
+                                        label="Cheque Status"
+                                        width="20%"/>
 
-                    <!-- LEFT -->
+                                <listheader
+                                        label="Validation"
+                                        width="15%"/>
 
-                    <vlayout hflex="1"
-                             spacing="12px">
+                            </listhead>
 
-                        <label value="Scanned Cheque"
-                               style="font-size:20px;font-weight:bold;color:#122B49;"/>
+                        </listbox>
 
+                    </groupbox>
 
-                        <groupbox width="100%"
-                                  height="450px"
-                                  style="background:white;border:1px solid #DCE5F0;">
 
-                            <vlayout width="100%"
-                                     spacing="12px"
-                                     style="text-align:center;">
+                    <!-- FOOTER ACTIONS -->
+                    <hlayout
+                            width="100%"
+                            valign="middle">
 
-                                <hlayout spacing="10px">
+                        <label
+                                id="messageLabel"
+                                value=""
+                                style="font-size:14px;
+                                       color:#C0392B;"/>
 
-                                    <button label="Zoom In"
-                                            width="110px"/>
+                        <space/>
 
-                                    <button label="Zoom Out"
-                                            width="110px"/>
+                        <button
+                                id="verifyButton"
+                                label="Verify Batch"
+                                width="140px"
+                                style="background:#122B49;
+                                       color:white;
+                                       border:none;
+                                       font-weight:bold;"/>
 
-                                    <button label="Rotate"
-                                            width="100px"/>
+                    </hlayout>
 
-                                    <button label="Back"
-                                            width="100px"
-                                            onClick='Executions.sendRedirect("outward-maker-data-entry.zul")'/>
+                </vlayout>
 
-                                </hlayout>
+            </center>
 
+        </borderlayout>
 
-                                <image src="/images/cheque-front.jpg"
-                                       width="95%"
-                                       height="340px"
-                                       style="object-fit:contain;"/>
-
-                            </vlayout>
-
-                        </groupbox>
-
-                    </vlayout>
-
-
-                    <!-- RIGHT -->
-
-                    <vlayout width="450px"
-                             spacing="15px">
-
-                        <groupbox width="450px"
-                                  height="500px"
-                                  style="background:white;border:1px solid #DCE5F0;">
-
-                            <caption label="Scanned / Extracted Data (Errors Only)"/>
-
-                            <vlayout spacing="12px"
-                                     style="padding:15px;">
-
-                                <label value="The following fields have Data Entry errors."
-                                       style="font-size:14px;color:#667085;"/>
-
-                                <label value="Please correct and save."
-                                       style="font-size:14px;color:#667085;"/>
-
-
-                                <!-- ACCOUNT -->
-
-                                <label value="Account Number *"
-                                       style="font-size:15px;font-weight:bold;"/>
-
-                                <label value="Account Number Error"
-                                       style="color:#D92D20;background:#FEF3F2;padding:5px;"/>
-
-                                <label value="Scanned Value"
-                                       style="color:#667085;"/>
-
-                                <textbox value="123456789011"
-                                         width="100%"
-                                         readonly="true"
-                                         style="background:#F2F4F7;"/>
-
-                                <label value="Correct Value *"
-                                       style="font-weight:bold;"/>
-
-                                <textbox value="123456789010"
-                                         width="100%"/>
-
-
-                                <!-- DATE -->
-
-                                <label value="Cheque Date *"
-                                       style="font-size:15px;font-weight:bold;"/>
-
-                                <label value="Date Error"
-                                       style="color:#D92D20;background:#FEF3F2;padding:5px;"/>
-
-                                <label value="Scanned Value"
-                                       style="color:#667085;"/>
-
-                                <textbox value="16-06-2025"
-                                         width="100%"
-                                         readonly="true"/>
-
-                                <label value="Correct Value *"
-                                       style="font-weight:bold;"/>
-
-                                <datebox width="100%"/>
-
-
-                                <!-- AMOUNT -->
-
-                                <label value="Amount *"
-                                       style="font-size:15px;font-weight:bold;"/>
-
-                                <label value="Amount Error"
-                                       style="color:#D92D20;background:#FEF3F2;padding:5px;"/>
-
-                                <label value="Scanned Value"
-                                       style="color:#667085;"/>
-
-                                <textbox value="50649.01"
-                                         width="100%"
-                                         readonly="true"/>
-
-                                <label value="Correct Value *"
-                                       style="font-weight:bold;"/>
-
-                                <decimalbox width="100%"
-                                            placeholder="Enter correct amount"/>
-
-                            </vlayout>
-
-                        </groupbox>
-
-                    </vlayout>
-
-                </hlayout>
-
-
-                <!-- BUTTONS -->
-
-                <hlayout width="100%"
-                         valign="middle"
-                         style="padding-top:10px;">
-
-                    <button label="Back to List"
-                            width="140px"
-                            onClick='Executions.sendRedirect("outward-maker-data-entry.zul")'/>
-
-                    <button label="Prev"
-                            width="100px"
-                            disabled="true"/>
-
-                    <button label="Next"
-                            width="100px"/>
-
-                    <space hflex="1"/>
-
-                    <button label="Reject"
-                            width="120px"
-                            style="background:white;color:#D92D20;border:1px solid #D92D20;"/>
-
-                    <button label="Save &amp; Next"
-                            width="155px"
-                            style="background:#2457D6;color:white;border:none;"/>
-
-                </hlayout>
-
-            </vlayout>
-
-        </center>
-
-    </borderlayout>
+    </window>
 
 </zk>
