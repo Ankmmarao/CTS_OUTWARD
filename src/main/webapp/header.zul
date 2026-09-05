@@ -5,7 +5,9 @@
     <hlayout width="100%"
              height="62px"
              valign="middle"
-             style="background:#081B33;padding:0 18px;">
+             style="background:#081B33;padding:0 18px;
+             box-sizing:border-box;
+			 align-items:center;">
 
         <button label="☰"
                 width="42px"

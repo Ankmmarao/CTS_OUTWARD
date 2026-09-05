@@ -7,9 +7,11 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
-import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
+import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.ListModelList;
 
 import com.iispl.cts.model.outward.OutwardBatch;
 import com.iispl.cts.service.outward.OutwardMakerMicrRepairService;
@@ -25,9 +27,7 @@ public class OutwardMakerMicrRepairController
     private OutwardMakerMicrRepairService service;
 
     @Override
-    public void doAfterCompose(Component comp)
-            throws Exception {
-
+    public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
 
         service = new OutwardMakerMicrRepairService();
@@ -37,54 +37,78 @@ public class OutwardMakerMicrRepairController
 
     private void loadBatches() {
 
-        batchListbox.getItems().clear();
+        batchListbox.setItemRenderer(
+            new ListitemRenderer<OutwardBatch>() {
+
+                @Override
+                public void render(
+                        Listitem item,
+                        OutwardBatch batch,
+                        int index) {
+
+                    item.appendChild(
+                        new Listcell(batch.getBatchNumber())
+                    );
+
+                    item.appendChild(
+                        new Listcell(
+                            String.valueOf(batch.getNumberOfCheques())
+                        )
+                    );
+
+                    // Get number of MICR error cheques
+                    int micrErrorCount =
+                        service.getMicrErrorCount(
+                            batch.getBatchNumber()
+                        );
+
+                    item.appendChild(
+                        new Listcell(
+                            String.valueOf(micrErrorCount)
+                        )
+                    );
+
+                    Listcell actionCell = new Listcell();
+
+                    Button openButton = new Button("Open");
+
+                    openButton.setWidth("90px");
+
+                    openButton.addEventListener(
+                        "onClick",
+                        event -> openBatch(batch)
+                    );
+
+                    actionCell.appendChild(openButton);
+
+                    item.appendChild(actionCell);
+                }
+            }
+        );
 
         List<OutwardBatch> batches =
-                service.getBatches();
+            service.getMicrRepairBatches();
 
-        for (OutwardBatch batch : batches) {
+        ListModelList<OutwardBatch> model =
+            new ListModelList<>(batches);
 
-            Listitem item = new Listitem();
-
-            item.appendChild(
-                    new Listcell(batch.getBatchId()));
-
-            item.appendChild(
-                    new Listcell(
-                            String.valueOf(
-                                    batch.getTotalCheques())));
-
-            item.appendChild(
-                    new Listcell(
-                            String.valueOf(
-                                    batch.getErrorCount())));
-
-            Listcell actionCell = new Listcell();
-
-            Button openButton =
-                    new Button("Open");
-
-            openButton.setWidth("90px");
-
-            openButton.addEventListener(
-                    "onClick",
-                    event -> openBatch(batch)
-            );
-
-            actionCell.appendChild(openButton);
-
-            item.appendChild(actionCell);
-
-            batchListbox.appendChild(item);
-        }
+        batchListbox.setModel(model);
     }
 
     private void openBatch(OutwardBatch batch) {
 
+        /*
+         * Change batch status to MICR_REPAIR
+         * when Maker starts MICR Repair.
+         */
+        service.startMicrRepair(
+            batch.getBatchNumber()
+        );
+
         Executions.sendRedirect(
-                "outward-maker-micr-repair-detail.zul"
-                + "?batchId="
-                + batch.getBatchId()
+            "outward-maker-micr-repair-detail.zul"
+            + "?batchNumber="
+            + batch.getBatchNumber()
         );
     }
 }
