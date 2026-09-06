@@ -1,0 +1,143 @@
+<?page title="Capture Operator - Batch Capture"
+    contentType="text/html;charset=UTF-8"?>
+
+<zk>
+
+    <window
+        id="batchCaptureWindow"
+        width="100%"
+        height="100%"
+        border="none"
+        apply="com.iispl.cts.controller.outward.CaptureOperatorBatchCaptureController">
+
+        <!-- HEADER -->
+        <include src="/header.zul"
+                 width="100%" />
+
+        <hlayout
+            width="100%"
+            height="calc(100% - 60px)">
+
+            <!-- SIDEBAR -->
+            <include
+                src="/captureoperatorsidebar.zul"
+                width="230px"
+                height="100%" />
+
+            <!-- MAIN CONTENT -->
+            <vlayout
+                width="100%"
+                height="100%"
+                spacing="20px"
+                style="padding:25px;background:#f5f7fa;">
+
+                <!-- PAGE TITLE -->
+                <label
+                    value="Batch Capture"
+                    style="font-size:24px;font-weight:bold;color:#071b33;" />
+
+                <!-- FORM -->
+                <groupbox
+                    width="100%"
+                    mold="3d">
+
+                    <caption
+                        label="Batch Details"
+                        style="font-size:17px;font-weight:bold;" />
+
+                    <grid width="100%">
+
+                        <columns>
+                            <column width="180px" />
+                            <column />
+                        </columns>
+
+                        <rows>
+
+                            <!-- BRANCH CODE -->
+                            <row>
+                                <label
+                                    value="Branch Code"
+                                    style="font-weight:bold;" />
+
+                                <combobox
+                                    id="branchCodeCombo"
+                                    width="300px"
+                                    placeholder="Select Branch Code"
+                                    autodrop="true" />
+                            </row>
+
+                            <!-- BRANCH NAME -->
+                            <row>
+                                <label
+                                    value="Branch Name"
+                                    style="font-weight:bold;" />
+
+                                <textbox
+                                    id="branchNameTextbox"
+                                    width="300px"
+                                    readonly="true" />
+                            </row>
+
+                            <!-- NUMBER OF CHEQUES -->
+                            <row>
+                                <label
+                                    value="Number of Cheques"
+                                    style="font-weight:bold;" />
+
+                                <intbox
+                                    id="numberOfCheques"
+                                    width="300px"
+                                    placeholder="Enter number of cheques"
+                                    constraint="no negative" />
+                            </row>
+
+                            <!-- BATCH FOLDER -->
+                            <row>
+                                <label
+                                    value="Batch Folder Path"
+                                    style="font-weight:bold;" />
+
+                                <textbox
+                                    id="batchFolderPath"
+                                    width="600px"
+                                    value="C:\Users"
+                                    placeholder="Enter batch folder path" />
+                            </row>
+
+                            <!-- XML INFORMATION -->
+                            <row>
+                                <label
+                                    value="XML File"
+                                    style="font-weight:bold;" />
+
+                                <label
+                                    value="XML will be detected automatically from the selected folder."
+                                    style="color:#555;" />
+                            </row>
+
+                            <!-- CAPTURE BUTTON -->
+                            <row>
+                                <label value="" />
+
+                                <button
+                                    id="capturedBatchButton"
+                                    label="Capture Batch"
+                                    width="180px"
+                                    height="40px"
+                                    style="background:#071b33;color:white;font-weight:bold;" />
+                            </row>
+
+                        </rows>
+
+                    </grid>
+
+                </groupbox>
+
+            </vlayout>
+
+        </hlayout>
+
+    </window>
+
+</zk>

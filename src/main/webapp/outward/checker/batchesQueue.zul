@@ -1,160 +1,140 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Batches Queue" contentType="text/html;charset=UTF-8"?>
 
-<?page title="Checker Batches Queue"
-        contentType="text/html;charset=UTF-8"?>
+<zk apply="com.iispl.cts.controller.outward.checker.CheckerBatchesQueueController">
 
-<?style src="/css/checker.css"?>
+    <borderlayout width="100%"
+                  height="100%"
+                  style="background:#F8FAFC;">
 
-<zk>
+        <!-- ===================================================== -->
+        <!-- HEADER -->
+        <!-- ===================================================== -->
 
-    <window
-        id="checkerQueueWindow"
-        border="none"
-        width="100%"
-        height="100%"
-        apply="com.iispl.cts.controller.outward.checker.CheckerBatchesQueueController">
+        <north size="70px"
+               border="0">
 
-        <borderlayout width="100%" height="100%">
+            <include src="/header.zul"
+                     width="100%"
+                     height="100%"/>
 
-            <!-- ================= SIDEBAR ================= -->
-
-            <west width="230px"
-                  splittable="false"
-                  collapsible="false">
-
-                <div sclass="checker-sidebar">
-
-                    <div sclass="checker-logo">
-                        CTS OUTWARD
-                    </div>
-
-                    <div sclass="checker-role">
-                        CHECKER
-                    </div>
-
-                    <separator height="20px"/>
-
-                    <button
-                        label="Dashboard"
-                        sclass="sidebar-button"
-                        width="100%"
-                        onClick="Executions.sendRedirect('/outward/checker/dashboard.zul')"/>
-
-                    <button
-                        label="Batches Queue"
-                        sclass="sidebar-button active"
-                        width="100%"
-                        onClick="Executions.sendRedirect('/outward/checker/batchesQueue.zul')"/>
-
-                    <button
-                        label="Reports"
-                        sclass="sidebar-button"
-                        width="100%"
-                        onClick="Executions.sendRedirect('/outward/checker/reports.zul')"/>
-
-                    <button
-                        label="Send to NPCI"
-                        sclass="sidebar-button"
-                        width="100%"
-                        onClick="Executions.sendRedirect('/outward/checker/sendToNPCI.zul')"/>
-
-                </div>
-
-            </west>
+        </north>
 
 
-            <!-- ================= CONTENT ================= -->
+        <!-- ===================================================== -->
+        <!-- CHECKER SIDEBAR -->
+        <!-- ===================================================== -->
 
-            <center>
+        <west size="300px"
+              border="0">
 
-                <div sclass="checker-main">
+            <include src="/checkersidebar.zul"
+                     width="100%"
+                     height="100%"/>
 
-                    <div sclass="checker-header">
-
-                        <label
-                            value="Batches Queue"
-                            sclass="page-title"/>
-
-                        <div sclass="header-info">
-
-                            <label value="Checker"/>
-
-                        </div>
-
-                    </div>
+        </west>
 
 
-                    <!-- FILTER -->
+        <!-- ===================================================== -->
+        <!-- MAIN CONTENT -->
+        <!-- ===================================================== -->
 
-                    <div sclass="filter-card">
+        <center border="0"
+                autoscroll="true">
 
-                        <label
-                            value="Batch ID"
-                            sclass="filter-label"/>
+            <div width="100%"
+                 style="padding:35px 55px;background:#F8FAFC;">
 
-                        <textbox
-                            id="batchSearch"
-                            placeholder="Search Batch ID"
-                            width="250px"/>
+                <!-- PAGE TITLE -->
 
-                        <button
-                            id="searchButton"
-                            label="Search"
-                            sclass="primary-button"/>
-
-                        <button
-                            id="refreshButton"
-                            label="Refresh"
-                            sclass="secondary-button"/>
-
-                    </div>
+                <label value="Batches Queue"
+                       style="font-size:32px;
+                              font-weight:bold;
+                              color:#0B2A4A;
+                              display:block;
+                              margin-bottom:30px;"/>
 
 
-                    <!-- QUEUE TABLE -->
+                <!-- ================================================= -->
+                <!-- QUEUE BOX -->
+                <!-- ================================================= -->
 
-                    <div sclass="section-card">
+                <groupbox width="100%"
+                          style="background:white;
+                                 border:1px solid #D5DDE7;
+                                 border-radius:5px;">
 
-                        <div sclass="section-header">
-
-                            <label
-                                value="Assigned Batches"
-                                sclass="section-title"/>
-
-                        </div>
+                    <caption label="Checker Batch Queue"
+                             style="font-size:21px;
+                                    font-weight:bold;
+                                    color:#173B63;"/>
 
 
-                        <listbox
-                            id="batchListbox"
-                            width="100%"
-                            mold="paging"
-                            pageSize="10"
-                            emptyMessage="No batches assigned to checker">
+                    <div style="padding:18px;">
 
-                            <listhead>
+                        <!-- ================================================= -->
+                        <!-- BATCH LIST -->
+                        <!-- ================================================= -->
 
-                                <listheader
-                                    label="Batch ID"
-                                    width="20%"/>
+                        <listbox id="queueListbox"
+                                 width="100%"
+                                 mold="paging"
+                                 pageSize="10"
+                                 emptyMessage="No batches found"
+                                 style="border:1px solid #D7DFE8;
+                                        font-size:16px;">
 
-                                <listheader
-                                    label="Total Cheques"
-                                    width="15%"/>
+                            <listhead sizable="true"
+                                      height="52px">
 
-                                <listheader
-                                    label="Accepted"
-                                    width="15%"/>
 
-                                <listheader
-                                    label="Rejected"
-                                    width="15%"/>
+                                <!-- BATCH NUMBER -->
 
-                                <listheader
-                                    label="Status"
-                                    width="15%"/>
+                                <listheader label="Batch No"
+                                            width="25%"
+                                            style="background:#078FE5;
+                                                   color:white;
+                                                   font-size:16px;
+                                                   font-weight:bold;"/>
 
-                                <listheader
-                                    label="Action"
-                                    width="20%"/>
+
+                                <!-- BRANCH -->
+
+                                <listheader label="Branch"
+                                            width="18%"
+                                            style="background:#078FE5;
+                                                   color:white;
+                                                   font-size:16px;
+                                                   font-weight:bold;"/>
+
+
+                                <!-- TOTAL CHEQUES -->
+
+                                <listheader label="Total Cheques"
+                                            width="17%"
+                                            style="background:#078FE5;
+                                                   color:white;
+                                                   font-size:16px;
+                                                   font-weight:bold;"/>
+
+
+                                <!-- STATUS -->
+
+                                <listheader label="Status"
+                                            width="18%"
+                                            style="background:#078FE5;
+                                                   color:white;
+                                                   font-size:16px;
+                                                   font-weight:bold;"/>
+
+
+                                <!-- ACTION -->
+
+                                <listheader label="Action"
+                                            width="22%"
+                                            style="background:#078FE5;
+                                                   color:white;
+                                                   font-size:16px;
+                                                   font-weight:bold;"/>
 
                             </listhead>
 
@@ -162,12 +142,12 @@
 
                     </div>
 
-                </div>
+                </groupbox>
 
-            </center>
+            </div>
 
-        </borderlayout>
+        </center>
 
-    </window>
+    </borderlayout>
 
 </zk>

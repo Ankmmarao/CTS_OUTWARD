@@ -1,246 +1,172 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?page title="Outward Checker Dashboard"
-        contentType="text/html;charset=UTF-8"?>
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml">
 
-<?style src="/css/checker.css"?>
-
-<zk>
-
-    <window
-        id="checkerDashboardWindow"
-        border="none"
+    <borderlayout
         width="100%"
         height="100%"
         apply="com.iispl.cts.controller.outward.checker.CheckerDashboardController">
 
-        <borderlayout width="100%" height="100%">
+        <!-- ================= HEADER ================= -->
+        <north size="70px" border="none">
+            <include src="/header.zul"/>
+        </north>
 
-            <!-- ================= SIDEBAR ================= -->
-            <west width="230px"
-                  splittable="false"
-                  collapsible="false">
 
-                <div sclass="checker-sidebar">
+        <!-- ================= SIDEBAR ================= -->
+        <west size="230px" border="none" splittable="false">
+            <include src="/checkersidebar.zul"/>
+        </west>
 
-                    <div sclass="checker-logo">
-                        CTS OUTWARD
-                    </div>
 
-                    <div sclass="checker-role">
-                        CHECKER
-                    </div>
+        <!-- ================= MAIN CONTENT ================= -->
+        <center border="none">
 
-                    <separator height="20px"/>
+            <div width="100%"
+                 height="100%"
+                 style="padding:25px;">
 
-                    <button
-                        id="dashboardBtn"
-                        label="Dashboard"
-                        sclass="sidebar-button active"
-                        width="100%"
-                        onClick="Executions.sendRedirect('/outward/checker/dashboard.zul')"/>
+                <!-- PAGE TITLE -->
+                <div style="margin-bottom:20px;">
 
-                    <button
-                        id="queueBtn"
-                        label="Batches Queue"
-                        sclass="sidebar-button"
-                        width="100%"
-                        onClick="Executions.sendRedirect('/outward/checker/batchesQueue.zul')"/>
+                    <label value="Checker Dashboard"
+                           style="font-size:26px;
+                                  font-weight:bold;
+                                  color:#172B4D;"/>
 
-                    <button
-                        id="reportsBtn"
-                        label="Reports"
-                        sclass="sidebar-button"
-                        width="100%"
-                        onClick="Executions.sendRedirect('/outward/checker/reports.zul')"/>
+                    <separator height="5px"/>
 
-                    <button
-                        id="npciBtn"
-                        label="Send to NPCI"
-                        sclass="sidebar-button"
-                        width="100%"
-                        onClick="Executions.sendRedirect('/outward/checker/sendToNPCI.zul')"/>
+                    <label value="Monitor and verify outward batches"
+                           style="font-size:14px;
+                                  color:#6B7280;"/>
 
                 </div>
 
-            </west>
 
+                <!-- ================= SUMMARY CARDS ================= -->
 
-            <!-- ================= MAIN CONTENT ================= -->
-            <center>
+                <hlayout width="100%"
+                         spacing="15px"
+                         style="margin-bottom:25px;">
 
-                <div sclass="checker-main">
+                    <!-- Pending Verification -->
+                    <div width="30%"
+                         style="background:#FFFFFF;
+                                border:1px solid #E5E7EB;
+                                border-radius:8px;
+                                padding:20px;">
 
-                    <!-- HEADER -->
-                    <div sclass="checker-header">
+                        <label value="Pending Verification"
+                               style="font-size:14px;
+                                      color:#6B7280;"/>
 
-                        <div>
-                            <label
-                                value="Outward Checker Dashboard"
-                                sclass="page-title"/>
-                        </div>
+                        <separator height="8px"/>
 
-                        <div sclass="header-info">
-
-                            <label
-                                value="Date: "/>
-
-                            <label
-                                id="currentDate"
-                                value=""/>
-
-                            <separator orient="vertical"
-                                       height="25px"/>
-
-                            <label
-                                value="Role: Checker"/>
-
-                        </div>
+                        <label id="pendingVerificationCount"
+                               value="0"
+                               style="font-size:28px;
+                                      font-weight:bold;
+                                      color:#172B4D;"/>
 
                     </div>
 
 
-                    <!-- ================= CARDS ================= -->
+                    <!-- CBS Validation -->
+                    <div width="30%"
+                         style="background:#FFFFFF;
+                                border:1px solid #E5E7EB;
+                                border-radius:8px;
+                                padding:20px;">
 
-                    <div sclass="dashboard-cards">
+                        <label value="CBS Validation"
+                               style="font-size:14px;
+                                      color:#6B7280;"/>
 
-                        <!-- QUEUE -->
-                        <div sclass="dashboard-card">
+                        <separator height="8px"/>
 
-                            <label
-                                value="Batches Queue"
-                                sclass="card-title"/>
-
-                            <label
-                                id="queueCount"
-                                value="0"
-                                sclass="card-number"/>
-
-                            <label
-                                value="Batches waiting for verification"
-                                sclass="card-description"/>
-
-                        </div>
-
-
-                        <!-- PENDING -->
-                        <div sclass="dashboard-card">
-
-                            <label
-                                value="Pending Cheques"
-                                sclass="card-title"/>
-
-                            <label
-                                id="pendingChequeCount"
-                                value="0"
-                                sclass="card-number"/>
-
-                            <label
-                                value="Cheques pending checker action"
-                                sclass="card-description"/>
-
-                        </div>
-
-
-                        <!-- ACCEPTED -->
-                        <div sclass="dashboard-card">
-
-                            <label
-                                value="Accepted"
-                                sclass="card-title"/>
-
-                            <label
-                                id="acceptedCount"
-                                value="0"
-                                sclass="card-number"/>
-
-                            <label
-                                value="Cheques accepted"
-                                sclass="card-description"/>
-
-                        </div>
-
-
-                        <!-- REJECTED -->
-                        <div sclass="dashboard-card">
-
-                            <label
-                                value="Rejected"
-                                sclass="card-title"/>
-
-                            <label
-                                id="rejectedCount"
-                                value="0"
-                                sclass="card-number"/>
-
-                            <label
-                                value="Cheques rejected"
-                                sclass="card-description"/>
-
-                        </div>
+                        <label id="cbsValidationCount"
+                               value="0"
+                               style="font-size:28px;
+                                      font-weight:bold;
+                                      color:#172B4D;"/>
 
                     </div>
 
 
-                    <!-- ================= RECENT BATCHES ================= -->
+                    <!-- Ready To Send -->
+                    <div width="30%"
+                         style="background:#FFFFFF;
+                                border:1px solid #E5E7EB;
+                                border-radius:8px;
+                                padding:20px;">
 
-                    <div sclass="section-card">
+                        <label value="Ready To Send"
+                               style="font-size:14px;
+                                      color:#6B7280;"/>
 
-                        <div sclass="section-header">
+                        <separator height="8px"/>
 
-                            <label
-                                value="Batches Waiting for Verification"
-                                sclass="section-title"/>
-
-                            <button
-                                label="View All"
-                                sclass="secondary-button"
-                                onClick="Executions.sendRedirect('/outward/checker/batchesQueue.zul')"/>
-
-                        </div>
-
-
-                        <listbox
-                            id="recentBatchListbox"
-                            width="100%"
-                            mold="paging"
-                            pageSize="8"
-                            emptyMessage="No batches waiting for checker verification">
-
-                            <listhead>
-
-                                <listheader
-                                    label="Batch ID"
-                                    width="25%"/>
-
-                                <listheader
-                                    label="Total Cheques"
-                                    width="15%"/>
-
-                                <listheader
-                                    label="Status"
-                                    width="20%"/>
-
-                                <listheader
-                                    label="Assignment"
-                                    width="20%"/>
-
-                                <listheader
-                                    label="Action"
-                                    width="20%"/>
-
-                            </listhead>
-
-                        </listbox>
+                        <label id="readyToSendCount"
+                               value="0"
+                               style="font-size:28px;
+                                      font-weight:bold;
+                                      color:#172B4D;"/>
 
                     </div>
+
+                </hlayout>
+
+
+                <!-- ================= BATCH TABLE ================= -->
+
+                <div width="100%"
+                     style="background:#FFFFFF;
+                            border:1px solid #E5E7EB;
+                            border-radius:8px;
+                            padding:20px;">
+
+                    <label value="Checker Batch Queue"
+                           style="font-size:18px;
+                                  font-weight:bold;
+                                  color:#172B4D;"/>
+
+                    <separator height="15px"/>
+
+
+                    <listbox id="batchListbox"
+                             width="100%"
+                             mold="paging"
+                             pageSize="10"
+                             emptyMessage="No batches available for verification.">
+
+                        <listhead>
+
+                            <listheader label="Batch Number"
+                                        width="20%"/>
+
+                            <listheader label="Total Cheques"
+                                        width="15%"/>
+
+                            <listheader label="Status"
+                                        width="20%"/>
+
+                            <listheader label="Assignment"
+                                        width="20%"/>
+
+                            <listheader label="Action"
+                                        width="15%"/>
+
+                        </listhead>
+
+                    </listbox>
 
                 </div>
 
-            </center>
+            </div>
 
-        </borderlayout>
+        </center>
 
-    </window>
+    </borderlayout>
 
 </zk>

@@ -1,58 +1,84 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<zk xmlns:n="native">
 
-<zk>
-
-    <vlayout width="280px"
+    <vlayout width="100%"
              height="100%"
-             spacing="5px"
-             style="background:#081B33;
-                    padding-top:18px;">
+             style="background:#071C34;">
 
-        <button label="⌂   Dashboard"
-                width="270px"
-                height="52px"
-                style="background:#075BC8;
-                       color:white;
-                       border:none;
-                       text-align:left;
-                       padding-left:22px;
-                       font-size:16px;"
-                onClick='Executions.sendRedirect("outward-checker-dashboard.zul")'/>
+        <!-- Dashboard -->
+        <div width="100%"
+             height="60px"
+             style="background:#0B5FC6;
+                    cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    padding-left:25px;"
+             onClick='Executions.sendRedirect("/outward/checker/dashboard.zul");'>
 
+            <label value="⌂ Dashboard"
+                   style="color:white;
+                          font-size:18px;
+                          font-weight:500;"/>
+        </div>
 
-        <button label="☷   Batches Queue"
-                width="270px"
-                height="52px"
-                style="background:transparent;
-                       color:#C4D1E5;
-                       border:none;
-                       text-align:left;
-                       padding-left:22px;
-                       font-size:16px;"
-                onClick='Executions.sendRedirect("outward-checker-verification.zul")'/>
+        <!-- Batches Queue -->
+        <div width="100%"
+             height="60px"
+             style="cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    padding-left:25px;"
+             onClick='Executions.sendRedirect("/outward/checker/batchesQueue.zul");'>
 
+            <label value="☑ Batches Queue"
+                   style="color:#EAF2FF;
+                          font-size:18px;
+                          font-weight:500;"/>
+        </div>
 
-        <button label="▥   Reports"
-                width="270px"
-                height="52px"
-                style="background:transparent;
-                       color:#C4D1E5;
-                       border:none;
-                       text-align:left;
-                       padding-left:22px;
-                       font-size:16px;"/>
+        <!-- CBS Validation -->
+        <div width="100%"
+             height="60px"
+             style="cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    padding-left:25px;"
+             onClick='Executions.sendRedirect("/outward/checker/cbs-validation.zul");'>
 
+            <label value="✓ CBS Validation"
+                   style="color:#EAF2FF;
+                          font-size:18px;
+                          font-weight:500;"/>
+        </div>
 
-        <button label="➤   Send to NPCI"
-                width="270px"
-                height="52px"
-                style="background:transparent;
-                       color:#C4D1E5;
-                       border:none;
-                       text-align:left;
-                       padding-left:22px;
-                       font-size:16px;"
-                onClick='Executions.sendRedirect("outward-checker-send-to-npci.zul")'/>
+        <!-- Reports -->
+        <div width="100%"
+             height="60px"
+             style="cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    padding-left:25px;"
+             onClick='Executions.sendRedirect("/outward/checker/reports.zul");'>
+
+            <label value="▦ Reports"
+                   style="color:#EAF2FF;
+                          font-size:18px;
+                          font-weight:500;"/>
+        </div>
+
+        <!-- Send to NPCI -->
+        <div width="100%"
+             height="60px"
+             style="cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    padding-left:25px;"
+             onClick='Executions.sendRedirect("/outward/checker/sendToNPCI.zul");'>
+
+            <label value="➤ Send to NPCI"
+                   style="color:#EAF2FF;
+                          font-size:18px;
+                          font-weight:500;"/>
+        </div>
 
     </vlayout>
 

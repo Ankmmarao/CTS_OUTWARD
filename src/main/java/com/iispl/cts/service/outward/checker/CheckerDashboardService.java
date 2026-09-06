@@ -1,6 +1,5 @@
 package com.iispl.cts.service.outward.checker;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.iispl.cts.dao.outward.checker.CheckerDashboardDAO;
@@ -8,37 +7,99 @@ import com.iispl.cts.model.outward.OutwardBatch;
 
 public class CheckerDashboardService {
 
-    private final CheckerDashboardDAO dashboardDAO;
+    private final CheckerDashboardDAO dao;
 
     public CheckerDashboardService() {
-        dashboardDAO = new CheckerDashboardDAO();
+        this.dao = new CheckerDashboardDAO();
     }
 
-    public List<OutwardBatch> getCheckerBatches() {
+    /**
+     * Load all batches that are ready for Checker.
+     */
+    public List<OutwardBatch> getBatches() {
 
-        List<OutwardBatch> batches =
-                dashboardDAO.getCheckerBatches();
+        return dao.getCheckerBatches();
+    }
 
-        if (batches == null) {
-            return Collections.emptyList();
+
+    /**
+     * Find a particular batch.
+     */
+    public OutwardBatch findBatch(String batchNumber) {
+
+        if (batchNumber == null ||
+            batchNumber.trim().isEmpty()) {
+
+            return null;
         }
 
-        return batches;
+        return dao.findBatch(batchNumber);
     }
 
-    public int getQueueCount() {
-        return dashboardDAO.getQueueCount();
+
+    /**
+     * Assign/lock a batch for the current Checker.
+     *
+     * Returns true only when the database successfully
+     * assigns the batch to this Checker.
+     */
+    public boolean assignBatch(
+            String batchNumber,
+            String checkerUserId) {
+
+        if (batchNumber == null ||
+            batchNumber.trim().isEmpty()) {
+
+            return false;
+        }
+
+        if (checkerUserId == null ||
+            checkerUserId.trim().isEmpty()) {
+
+            return false;
+        }
+
+        return dao.assignBatch(
+                batchNumber,
+                checkerUserId
+        );
     }
 
-    public int getPendingChequeCount() {
-        return dashboardDAO.getPendingChequeCount();
+
+    /**
+     * Check whether the batch is currently available.
+     */
+    public boolean isBatchAvailable(String batchNumber) {
+
+        OutwardBatch batch = findBatch(batchNumber);
+
+        if (batch == null) {
+            return false;
+        }
+
+        return "AVAILABLE".equalsIgnoreCase(
+                batch.getLockStatus()
+        );
     }
 
-    public int getAcceptedCount() {
-        return dashboardDAO.getAcceptedCount();
-    }
 
-    public int getRejectedCount() {
-        return dashboardDAO.getRejectedCount();
+    /**
+     * Check whether this Checker currently owns the batch.
+     */
+    public boolean isAssignedToChecker(
+            String batchNumber,
+            String checkerUserId) {
+
+        OutwardBatch batch = findBatch(batchNumber);
+
+        if (batch == null ||
+            checkerUserId == null) {
+
+            return false;
+        }
+
+        return checkerUserId.equals(
+                batch.getCheckerUserNumber()
+        );
     }
 }

@@ -1,14 +1,12 @@
 package com.iispl.cts.controller.outward.checker;
 
-import com.iispl.cts.model.outward.OutwardBatch;
-import com.iispl.cts.service.outward.checker.CheckerDashboardService;
+import java.util.List;
 
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zk.ui.select.annotation.Listen;
-
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
@@ -17,269 +15,496 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.ListModelList;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.iispl.cts.model.outward.OutwardBatch;
+import com.iispl.cts.service.outward.checker.CheckerDashboardService;
 
 public class CheckerDashboardController
         extends SelectorComposer<Component> {
 
     private static final long serialVersionUID = 1L;
 
-
-    // ==============================
-    // ZUL COMPONENTS
-    // ==============================
+    @Wire
+    private Listbox batchListbox;
 
     @Wire
-    private Label currentDate;
+    private Label pendingVerificationCount;
 
     @Wire
-    private Label queueCount;
+    private Label cbsValidationCount;
 
     @Wire
-    private Label pendingChequeCount;
+    private Label readyToSendCount;
 
-    @Wire
-    private Label acceptedCount;
+    private CheckerDashboardService service;
 
-    @Wire
-    private Label rejectedCount;
+    /*
+     * Temporary Checker user.
+     *
+     * Replace with session user later when login/session
+     * integration is enabled.
+     */
+    private final String currentCheckerUser = "104";
 
-    @Wire
-    private Listbox recentBatchListbox;
-
-
-    // ==============================
-    // SERVICE
-    // ==============================
-
-    private CheckerDashboardService dashboardService;
-
-
-    // ==============================
-    // INIT
-    // ==============================
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
 
         super.doAfterCompose(comp);
 
-        dashboardService =
-                new CheckerDashboardService();
+        service = new CheckerDashboardService();
 
         loadDashboard();
     }
 
 
-    // ==============================
-    // LOAD DASHBOARD
-    // ==============================
-
+    /*
+     * ============================================================
+     * LOAD DASHBOARD
+     * ============================================================
+     */
     private void loadDashboard() {
 
         try {
 
-            loadDate();
+            List<OutwardBatch> batches =
+                    service.getBatches();
 
-            loadCounts();
+            loadCounts(batches);
 
-            loadRecentBatches();
+            loadBatchList(batches);
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
+            Clients.showNotification(
+                    "Unable to load Checker Dashboard.",
+                    Clients.NOTIFICATION_TYPE_ERROR,
+                    null,
+                    "top_center",
+                    4000
+            );
         }
     }
 
 
-    // ==============================
-    // DATE
-    // ==============================
+    /*
+     * ============================================================
+     * SUMMARY COUNTS
+     * ============================================================
+     */
+    private void loadCounts(
+            List<OutwardBatch> batches) {
 
-    private void loadDate() {
+        int pending = 0;
+        int cbsValidation = 0;
+        int readyToSend = 0;
 
-        currentDate.setValue(
-                LocalDate.now().toString()
-        );
-    }
+        if (batches != null) {
 
+            for (OutwardBatch batch : batches) {
 
-    // ==============================
-    // COUNTS
-    // ==============================
+                if (batch == null) {
+                    continue;
+                }
 
-    private void loadCounts() {
+                String status =
+                        batch.getBatchStatus();
 
-        int queue =
-                dashboardService.getQueueCount();
+                if (status == null) {
+                    continue;
+                }
 
-        int pending =
-                dashboardService.getPendingChequeCount();
-
-        int accepted =
-                dashboardService.getAcceptedCount();
-
-        int rejected =
-                dashboardService.getRejectedCount();
+                status = status.toUpperCase();
 
 
-        queueCount.setValue(
-                String.valueOf(queue)
-        );
+                /*
+                 * Pending verification
+                 */
+                if ("READY_FOR_CHECKER".equals(status)
+                        || "SUBMITTED".equals(status)
+                        || "CHECKER_PENDING".equals(status)
+                        || "PENDING_CHECKER".equals(status)) {
 
-        pendingChequeCount.setValue(
+                    pending++;
+                }
+
+
+                /*
+                 * CBS validation
+                 */
+                if ("CBS_VALIDATION".equals(status)
+                        || "PENDING_CBS_VALIDATION".equals(status)) {
+
+                    cbsValidation++;
+                }
+
+
+                /*
+                 * Ready to send
+                 */
+                if ("READY_TO_SEND".equals(status)
+                        || "READY_FOR_NPCI".equals(status)) {
+
+                    readyToSend++;
+                }
+            }
+        }
+
+
+        pendingVerificationCount.setValue(
                 String.valueOf(pending)
         );
 
-        acceptedCount.setValue(
-                String.valueOf(accepted)
+        cbsValidationCount.setValue(
+                String.valueOf(cbsValidation)
         );
 
-        rejectedCount.setValue(
-                String.valueOf(rejected)
+        readyToSendCount.setValue(
+                String.valueOf(readyToSend)
         );
     }
 
 
-    // ==============================
-    // RECENT BATCHES
-    // ==============================
-
-    private void loadRecentBatches() {
-
-        List<OutwardBatch> batches =
-                dashboardService.getCheckerBatches();
-
+    /*
+     * ============================================================
+     * LOAD BATCH TABLE
+     * ============================================================
+     */
+    private void loadBatchList(
+            List<OutwardBatch> batches) {
 
         ListModelList<OutwardBatch> model =
                 new ListModelList<>();
 
-        model.addAll(batches);
+        if (batches != null) {
+            model.addAll(batches);
+        }
 
+        batchListbox.setModel(model);
 
-        recentBatchListbox.setModel(model);
-
-
-        /*
-         * Renderer tells ZK:
-         *
-         * "For every OutwardBatch,
-         *  create one Listitem."
-         */
-
-        recentBatchListbox.setItemRenderer(
-                new ListitemRenderer<OutwardBatch>() {
-
-                    @Override
-                    public void render(
-                            Listitem item,
-                            OutwardBatch batch,
-                            int index) {
-
-                        // --------------------------
-                        // Batch ID
-                        // --------------------------
-
-                        Listcell batchIdCell =
-                                new Listcell(
-                                        batch.getBatchId()
-                                );
-
-                        item.appendChild(
-                                batchIdCell
-                        );
-
-
-                        // --------------------------
-                        // Total Cheques
-                        // --------------------------
-
-                        Listcell totalCell =
-                                new Listcell(
-                                        String.valueOf(
-                                                batch.getTotalCheques()
-                                        )
-                                );
-
-                        item.appendChild(
-                                totalCell
-                        );
-
-
-                        // --------------------------
-                        // Status
-                        // --------------------------
-
-                        Listcell statusCell =
-                                new Listcell(
-                                        batch.getStatus()
-                                );
-
-                        item.appendChild(
-                                statusCell
-                        );
-
-
-                        // --------------------------
-                        // Assignment
-                        // --------------------------
-
-                        Listcell assignmentCell =
-                                new Listcell(
-                                        batch.getAssignment()
-                                );
-
-                        item.appendChild(
-                                assignmentCell
-                        );
-
-
-                        // --------------------------
-                        // OPEN BUTTON
-                        // --------------------------
-
-                        Listcell actionCell =
-                                new Listcell();
-
-                        Button openButton =
-                                new Button();
-
-                        openButton.setLabel(
-                                "OPEN"
-                        );
-
-                        openButton.setSclass(
-                                "primary-button"
-                        );
-
-
-                        openButton.addEventListener(
-                                "onClick",
-                                event -> {
-
-                                    String batchId =
-                                            batch.getBatchId();
-
-                                    Executions.sendRedirect(
-                                            "/outward/checker/batchVerification.zul"
-                                            + "?batchId="
-                                            + batchId
-                                    );
-                                }
-                        );
-
-
-                        actionCell.appendChild(
-                                openButton
-                        );
-
-                        item.appendChild(
-                                actionCell
-                        );
-                    }
-                }
+        batchListbox.setItemRenderer(
+                new CheckerBatchRenderer()
         );
+    }
+
+
+    /*
+     * ============================================================
+     * BATCH RENDERER
+     * ============================================================
+     */
+    private class CheckerBatchRenderer
+            implements ListitemRenderer<OutwardBatch> {
+
+        @Override
+        public void render(
+                Listitem item,
+                OutwardBatch batch,
+                int index)
+                throws Exception {
+
+
+            /*
+             * ----------------------------------------------------
+             * BATCH NUMBER
+             * ----------------------------------------------------
+             */
+            Listcell batchCell =
+                    new Listcell();
+
+            batchCell.setLabel(
+                    safe(batch.getBatchNumber())
+            );
+
+            item.appendChild(batchCell);
+
+
+            /*
+             * ----------------------------------------------------
+             * CHEQUE COUNT
+             * ----------------------------------------------------
+             */
+            Listcell chequeCell =
+                    new Listcell();
+
+            chequeCell.setLabel(
+                    String.valueOf(
+                            batch.getNumberOfCheques()
+                    )
+            );
+
+            item.appendChild(chequeCell);
+
+
+            /*
+             * ----------------------------------------------------
+             * STATUS
+             * ----------------------------------------------------
+             */
+            Listcell statusCell =
+                    new Listcell();
+
+            statusCell.setLabel(
+                    safe(batch.getBatchStatus())
+            );
+
+            item.appendChild(statusCell);
+
+
+            /*
+             * ----------------------------------------------------
+             * ASSIGNMENT
+             * ----------------------------------------------------
+             */
+            Listcell assignmentCell =
+                    new Listcell();
+
+            String lockStatus =
+                    batch.getLockStatus();
+
+
+            if (lockStatus == null) {
+
+                assignmentCell.setLabel(
+                        "AVAILABLE"
+                );
+
+            } else if ("AVAILABLE".equalsIgnoreCase(
+                    lockStatus)) {
+
+                assignmentCell.setLabel(
+                        "Available"
+                );
+
+            } else {
+
+                String checker =
+                        batch.getCheckerUserNumber();
+
+                if (checker != null &&
+                    !checker.trim().isEmpty()) {
+
+                    assignmentCell.setLabel(
+                            "Locked by Checker "
+                            + checker
+                    );
+
+                } else {
+
+                    assignmentCell.setLabel(
+                            "Locked"
+                    );
+                }
+            }
+
+            item.appendChild(assignmentCell);
+
+
+            /*
+             * ----------------------------------------------------
+             * ACTION
+             * ----------------------------------------------------
+             */
+            Listcell actionCell =
+                    new Listcell();
+
+
+            boolean available =
+                    "AVAILABLE".equalsIgnoreCase(
+                            batch.getLockStatus()
+                    );
+
+
+            if (available) {
+
+                Button openButton =
+                        new Button("Open");
+
+                openButton.setSclass(
+                        "btn btn-primary"
+                );
+
+
+                openButton.addEventListener(
+                        "onClick",
+                        event -> openBatch(batch)
+                );
+
+
+                actionCell.appendChild(
+                        openButton
+                );
+
+            } else {
+
+                Button lockedButton =
+                        new Button("🔒 Locked");
+
+                lockedButton.setDisabled(
+                        true
+                );
+
+                actionCell.appendChild(
+                        lockedButton
+                );
+            }
+
+
+            item.appendChild(actionCell);
+        }
+    }
+
+
+    /*
+     * ============================================================
+     * OPEN BATCH
+     * ============================================================
+     *
+     * 1. User clicks Open
+     * 2. Backend tries to acquire lock
+     * 3. If successful -> Batches Queue
+     * 4. If another Checker already acquired it -> error
+     */
+    private void openBatch(
+            OutwardBatch batch) {
+
+        if (batch == null ||
+            batch.getBatchNumber() == null) {
+
+            Clients.showNotification(
+                    "Invalid batch.",
+                    Clients.NOTIFICATION_TYPE_ERROR,
+                    null,
+                    "top_center",
+                    3000
+            );
+
+            return;
+        }
+
+
+        String batchNumber =
+                batch.getBatchNumber();
+
+
+        try {
+
+            /*
+             * Re-check database before locking.
+             */
+            OutwardBatch latest =
+                    service.findBatch(batchNumber);
+
+
+            if (latest == null) {
+
+                Clients.showNotification(
+                        "Batch no longer exists.",
+                        Clients.NOTIFICATION_TYPE_ERROR,
+                        null,
+                        "top_center",
+                        3000
+                );
+
+                loadDashboard();
+
+                return;
+            }
+
+
+            /*
+             * Already locked?
+             */
+            if (!"AVAILABLE".equalsIgnoreCase(
+                    latest.getLockStatus())) {
+
+                Clients.showNotification(
+                        "Batch is already locked.",
+                        Clients.NOTIFICATION_TYPE_WARNING,
+                        null,
+                        "top_center",
+                        3000
+                );
+
+                loadDashboard();
+
+                return;
+            }
+
+
+            /*
+             * Attempt atomic assignment.
+             */
+            boolean assigned =
+                    service.assignBatch(
+                            batchNumber,
+                            currentCheckerUser
+                    );
+
+
+            if (!assigned) {
+
+                Clients.showNotification(
+                        "Batch was already assigned to another Checker.",
+                        Clients.NOTIFICATION_TYPE_WARNING,
+                        null,
+                        "top_center",
+                        4000
+                );
+
+                loadDashboard();
+
+                return;
+            }
+
+
+            /*
+             * Successful lock.
+             */
+            Clients.showNotification(
+                    "Batch assigned successfully.",
+                    Clients.NOTIFICATION_TYPE_INFO,
+                    null,
+                    "top_center",
+                    2000
+            );
+
+
+            /*
+             * Move to Batches Queue.
+             */
+            Executions.sendRedirect(
+                    "/outward/checker/batchesQueue.zul"
+                    + "?batchNumber="
+                    + Executions.encodeURL(batchNumber)
+            );
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            Clients.showNotification(
+                    "Unable to open batch.",
+                    Clients.NOTIFICATION_TYPE_ERROR,
+                    null,
+                    "top_center",
+                    4000
+            );
+        }
+    }
+
+
+    /*
+     * ============================================================
+     * SAFE STRING
+     * ============================================================
+     */
+    private String safe(String value) {
+
+        return value == null
+                ? ""
+                : value;
     }
 }
