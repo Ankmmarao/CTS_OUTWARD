@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?page title="Send to Checker"?>
 
 <zk>
 
+    <!-- Attached OutwardMakerSendCheckerController via apply -->
     <borderlayout width="100%"
                   height="100%"
-                  style="background:#F4F7FB;">
+                  style="background:#F4F7FB;"
+                  apply="com.iispl.cts.controller.outward.OutwardMakerSendCheckerController">
 
         <!-- HEADER -->
         <north size="62px">

@@ -17,6 +17,6 @@ public class OutwardMakerDataEntryService {
 
     public List<OutwardBatch> getBatches() {
 
-        return dao.getBatches();
+        return dao.getAllBatches();
     }
 }

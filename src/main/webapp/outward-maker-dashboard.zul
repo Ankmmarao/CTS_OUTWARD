@@ -1,12 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?page title="Outward Maker Dashboard"?>
 
 <zk>
+  <style><![CDATA[
+        /* 1. Remove browser margin and prevent full page scrolling */
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+            background: #F4F7FB;
+        }
 
-    <!-- ========================================================= -->
-    <!-- OUTWARD MAKER DASHBOARD WINDOW                            -->
-    <!-- ========================================================= -->
+        /* 2. Strip default ZK Window and Borderlayout margins/paddings */
+        .z-window-embedded,
+        .z-window-embedded-cnt,
+        .z-window-content {
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .z-borderlayout {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .z-north, .z-west, .z-center, .z-south, .z-east {
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .z-north-body, .z-west-body, .z-center-body {
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 100% !important;
+        }
+
+        /* 3. Keep sidebar dark background seamless */
+        .z-west {
+            background: #081B33 !important;
+        }
+
+        /* 4. Scrollable listbox body only */
+        .batch-grid .z-listbox-body {
+            overflow-y: auto !important;
+        }
+    ]]></style>
 
     <window
         id="outwardMakerDashboardWindow"
@@ -15,385 +59,188 @@
         border="none"
         apply="com.iispl.cts.controller.outward.OutwardMakerDashboardController">
 
-        <borderlayout
-            width="100%"
-            height="100%"
-            style="background:#F4F7FB;">
+        <borderlayout width="100%" height="100%">
 
             <!-- ================================================= -->
-            <!-- HEADER                                            -->
+            <!-- HEADER (Matches exact 62px height of header.zul)  -->
             <!-- ================================================= -->
-
-            <north size="62px">
-                <include src="/header.zul"/>
+            <north size="62px" border="none" margins="0,0,0,0">
+                <include src="/header.zul" style="display:block; width:100%; height:62px;"/>
             </north>
 
             <!-- ================================================= -->
-            <!-- SIDEBAR                                           -->
+            <!-- SIDEBAR (Matches exact 280px width of sidebar)    -->
             <!-- ================================================= -->
-
-            <west size="280px">
-                <include src="/makersidebar.zul"/>
+            <west size="280px" border="none" margins="0,0,0,0">
+                <include src="/makersidebar.zul" style="display:block; width:280px; height:100%;"/>
             </west>
 
             <!-- ================================================= -->
-            <!-- CENTER                                            -->
+            <!-- CENTER (Page fixed; listbox takes remaining space)-->
             <!-- ================================================= -->
-
-            <center>
+            <center border="none" margins="0,0,0,0" style="background:#F4F7FB; overflow:hidden;">
 
                 <vlayout
-                    spacing="22px"
+                    spacing="16px"
                     width="100%"
                     height="100%"
                     style="
-                        padding:32px;
-                        overflow:auto;
+                        padding: 24px 30px;
+                        box-sizing: border-box;
+                        overflow: hidden;
                     ">
 
-                    <!-- ================================================= -->
-                    <!-- PAGE TITLE                                       -->
-                    <!-- ================================================= -->
-
+                    <!-- PAGE TITLE -->
                     <label
                         value="Outward Maker Dashboard"
                         style="
-                            font-size:30px;
-                            font-weight:bold;
-                            color:#122B49;
+                            font-size: 26px;
+                            font-weight: bold;
+                            color: #122B49;
+                            display: block;
                         "/>
 
-                    <!-- ================================================= -->
-                    <!-- SUMMARY CARDS                                    -->
-                    <!-- ================================================= -->
+                    <!-- SUMMARY METRIC CARDS (Fixed height) -->
+                    <hlayout spacing="18px" width="100%">
 
-                    <hlayout
-                        spacing="20px"
-                        width="100%">
-
-                        <!-- ============================================= -->
-                        <!-- PENDING DATA ENTRY                            -->
-                        <!-- ============================================= -->
-
-                        <groupbox
-                            width="300px"
-                            height="130px"
+                        <!-- Pending Data Entry -->
+                        <div
+                            hflex="1"
+                            height="115px"
                             style="
-                                background:white;
-                                border:1px solid #DCE5F0;
-                                border-radius:8px;
+                                background: white;
+                                border: 1px solid #DCE5F0;
+                                border-radius: 8px;
+                                padding: 18px;
+                                text-align: center;
+                                box-sizing: border-box;
                             ">
+                            <label value="Pending Data Entry" style="font-size: 15px; color: #51657D; display:block;"/>
+                            <label value="8" style="font-size: 32px; font-weight: bold; color: #F39A00; display:block; margin-top: 4px;"/>
+                        </div>
 
-                            <vlayout
-                                spacing="10px"
-                                width="100%"
-                                height="100%"
-                                style="
-                                    padding:20px;
-                                    text-align:center;
-                                ">
-
-                                <label
-                                    value="Pending Data Entry"
-                                    style="
-                                        font-size:17px;
-                                        color:#51657D;
-                                    "/>
-
-                                <label
-                                    value="8"
-                                    style="
-                                        font-size:34px;
-                                        font-weight:bold;
-                                        color:#F39A00;
-                                    "/>
-
-                            </vlayout>
-
-                        </groupbox>
-
-                        <!-- ============================================= -->
-                        <!-- MICR REPAIR                                   -->
-                        <!-- ============================================= -->
-
-                        <groupbox
-                            width="300px"
-                            height="130px"
+                        <!-- MICR Repair -->
+                        <div
+                            hflex="1"
+                            height="115px"
                             style="
-                                background:white;
-                                border:1px solid #DCE5F0;
-                                border-radius:8px;
+                                background: white;
+                                border: 1px solid #DCE5F0;
+                                border-radius: 8px;
+                                padding: 18px;
+                                text-align: center;
+                                box-sizing: border-box;
                             ">
+                            <label value="MICR Repair" style="font-size: 15px; color: #51657D; display:block;"/>
+                            <label value="4" style="font-size: 32px; font-weight: bold; color: #E74C3C; display:block; margin-top: 4px;"/>
+                        </div>
 
-                            <vlayout
-                                spacing="10px"
-                                width="100%"
-                                height="100%"
-                                style="
-                                    padding:20px;
-                                    text-align:center;
-                                ">
-
-                                <label
-                                    value="MICR Repair"
-                                    style="
-                                        font-size:17px;
-                                        color:#51657D;
-                                    "/>
-
-                                <label
-                                    value="4"
-                                    style="
-                                        font-size:34px;
-                                        font-weight:bold;
-                                        color:#E74C3C;
-                                    "/>
-
-                            </vlayout>
-
-                        </groupbox>
-
-                        <!-- ============================================= -->
-                        <!-- READY TO SUBMIT                               -->
-                        <!-- ============================================= -->
-
-                        <groupbox
-                            width="300px"
-                            height="130px"
+                        <!-- Ready to Submit -->
+                        <div
+                            hflex="1"
+                            height="115px"
                             style="
-                                background:white;
-                                border:1px solid #DCE5F0;
-                                border-radius:8px;
+                                background: white;
+                                border: 1px solid #DCE5F0;
+                                border-radius: 8px;
+                                padding: 18px;
+                                text-align: center;
+                                box-sizing: border-box;
                             ">
-
-                            <vlayout
-                                spacing="10px"
-                                width="100%"
-                                height="100%"
-                                style="
-                                    padding:20px;
-                                    text-align:center;
-                                ">
-
-                                <label
-                                    value="Ready to Submit"
-                                    style="
-                                        font-size:17px;
-                                        color:#51657D;
-                                    "/>
-
-                                <label
-                                    value="6"
-                                    style="
-                                        font-size:34px;
-                                        font-weight:bold;
-                                        color:#12B76A;
-                                    "/>
-
-                            </vlayout>
-
-                        </groupbox>
+                            <label value="Ready to Submit" style="font-size: 15px; color: #51657D; display:block;"/>
+                            <label value="6" style="font-size: 32px; font-weight: bold; color: #12B76A; display:block; margin-top: 4px;"/>
+                        </div>
 
                     </hlayout>
 
-
-                    <!-- ================================================= -->
-                    <!-- BATCHES GROUPBOX                                -->
-                    <!-- ================================================= -->
-
-                    <groupbox
+                    <!-- BATCHES SECTION (Fills rest of screen, scrolls internally) -->
+                    <div
+                        vflex="1"
                         width="100%"
-                        height="450px"
                         style="
-                            background:white;
-                            border:1px solid #DCE5F0;
-                            border-radius:8px;
+                            background: white;
+                            border: 1px solid #DCE5F0;
+                            border-radius: 8px;
+                            padding: 16px 20px;
+                            box-sizing: border-box;
+                            display: flex;
+                            flex-direction: column;
+                            min-height: 0;
                         ">
 
-                        <caption
-                            label="Batches"
+                        <label
+                            value="Batches"
                             style="
-                                font-size:18px;
-                                font-weight:bold;
-                                color:#122B49;
+                                font-size: 17px;
+                                font-weight: bold;
+                                color: #122B49;
+                                margin-bottom: 12px;
+                                display: block;
                             "/>
 
-
-                        <!-- ================================================= -->
-                        <!-- BATCH LISTBOX                                    -->
-                        <!-- ================================================= -->
-
+                        <!-- Listbox fills the panel and enables vertical scroll on records -->
                         <listbox
                             id="batchListbox"
+                            vflex="1"
                             width="100%"
-                            height="390px"
+                            sclass="batch-grid"
                             emptyMessage="No batches available."
                             nonselectableTags="button"
-                            style="
-                                font-size:14px;
-                                border:none;
-                            ">
-
-                            <!-- ============================================= -->
-                            <!-- TABLE HEADER                                  -->
-                            <!-- ============================================= -->
+                            style="border: none;">
 
                             <listhead>
-
-                                <!-- COLUMN 1 -->
-                                <listheader
-                                    label="Batch No"
-                                    width="16%"/>
-
-                                <!-- COLUMN 2 -->
-                                <listheader
-                                    label="Total Cheques"
-                                    width="18%"/>
-
-                                <!-- COLUMN 3 -->
-                                <listheader
-                                    label="Status"
-                                    width="28%"/>
-
-                                <!-- COLUMN 4 -->
-                                <listheader
-                                    label="Action"
-                                    width="18%"/>
-
-                                <!-- COLUMN 5 -->
-                                <listheader
-                                    label="Assignment"
-                                    width="20%"/>
-
+                                <listheader label="Batch No" width="26%"/>
+                                <listheader label="Total Cheques" width="16%"/>
+                                <listheader label="Status" width="22%"/>
+                                <listheader label="Action" width="18%"/>
+                                <listheader label="Assignment" width="18%"/>
                             </listhead>
 
-
-                            <!-- ================================================= -->
-                            <!-- EXAMPLE AVAILABLE BATCH                           -->
-                            <!-- ================================================= -->
-
                             <listitem value="BATCH001">
-
-                                <!-- Batch Number -->
-                                <listcell
-                                    label="BATCH001"/>
-
-                                <!-- Total Cheques -->
-                                <listcell
-                                    label="25"/>
-
-                                <!-- Status -->
-                                <listcell
-                                    label="Captured"/>
-
-                                <!-- Action -->
+                                <listcell label="OUT20260907101611469"/>
+                                <listcell label="5"/>
+                                <listcell label="ASSIGNED"/>
                                 <listcell>
-
-                                    <button
-                                        label="Open"
-                                        width="85px"
-                                        height="32px"
-                                        style="
-                                            background:#12B76A;
-                                            color:white;
-                                            border:none;
-                                            border-radius:5px;
-                                            font-weight:bold;
-                                        "
-                                        onClick="openBatch(self.parent.parent.value)"/>
-
+                                    <label value="🔒 Locked" style="color:#E74C3C; font-weight:bold;"/>
                                 </listcell>
-
-                                <!-- Assignment -->
-                                <listcell
-                                    label="Available"/>
-
+                                <listcell label="Maker 108"/>
                             </listitem>
-
-
-                            <!-- ================================================= -->
-                            <!-- EXAMPLE LOCKED BATCH                              -->
-                            <!-- ================================================= -->
 
                             <listitem value="BATCH002">
-
-                                <!-- Batch Number -->
-                                <listcell
-                                    label="BATCH002"/>
-
-                                <!-- Total Cheques -->
-                                <listcell
-                                    label="30"/>
-
-                                <!-- Status -->
-                                <listcell
-                                    label="Captured"/>
-
-                                <!-- Action -->
+                                <listcell label="OUT20260907101753482"/>
+                                <listcell label="5"/>
+                                <listcell label="ASSIGNED"/>
                                 <listcell>
-
-                                    <label
-                                        value="🔒 Locked"
-                                        style="
-                                            color:#E74C3C;
-                                            font-weight:bold;
-                                        "/>
-
+                                    <label value="🔒 Locked" style="color:#E74C3C; font-weight:bold;"/>
                                 </listcell>
-
-                                <!-- Assignment -->
-                                <listcell
-                                    label="Assigned"/>
-
+                                <listcell label="Maker 103"/>
                             </listitem>
 
-
-                            <!-- ================================================= -->
-                            <!-- EXAMPLE AVAILABLE BATCH                           -->
-                            <!-- ================================================= -->
-
                             <listitem value="BATCH003">
-
-                                <!-- Batch Number -->
-                                <listcell
-                                    label="BATCH003"/>
-
-                                <!-- Total Cheques -->
-                                <listcell
-                                    label="18"/>
-
-                                <!-- Status -->
-                                <listcell
-                                    label="Ready"/>
-
-                                <!-- Action -->
+                                <listcell label="OUT20260907101855550"/>
+                                <listcell label="5"/>
+                                <listcell label="CAPTURED"/>
                                 <listcell>
-
                                     <button
                                         label="Open"
-                                        width="85px"
-                                        height="32px"
+                                        width="80px"
+                                        height="30px"
                                         style="
                                             background:#12B76A;
                                             color:white;
                                             border:none;
                                             border-radius:5px;
                                             font-weight:bold;
+                                            cursor:pointer;
                                         "
                                         onClick="openBatch(self.parent.parent.value)"/>
-
                                 </listcell>
-
-                                <!-- Assignment -->
-                                <listcell
-                                    label="Available"/>
-
+                                <listcell label="Available"/>
                             </listitem>
-
 
                         </listbox>
 
-                    </groupbox>
+                    </div>
 
                 </vlayout>
 
@@ -402,6 +249,4 @@
         </borderlayout>
 
     </window>
-
 </zk>
-

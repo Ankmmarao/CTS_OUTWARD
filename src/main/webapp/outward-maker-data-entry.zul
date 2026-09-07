@@ -1,56 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?page title="CTS - Data Entry" contentType="text/html;charset=UTF-8"?>
 <zk>
-   <style>
-        .page-container {
-            padding: 30px;
-            background: #F8FAFC;
-            min-height: 100vh;
-        }
-        .card-container {
-            background: #FFFFFF;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #E2E8F0;
-        }
-        .page-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #0F172A;
-            margin-bottom: 24px;
+    <style><![CDATA[
+        /* Base Viewport Reset */
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+            background: #F4F7FB;
         }
 
-        /* Clean Listbox Styling */
-        .batch-grid.z-listbox {
-            border: 1px solid #E2E8F0;
-            border-radius: 8px;
+        /* Borderlayout & Window Resets */
+        .z-window-embedded,
+        .z-window-embedded-cnt,
+        .z-window-content {
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .z-borderlayout {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .z-north, .z-west, .z-center, .z-south, .z-east {
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .z-north-body, .z-west-body, .z-center-body {
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 100% !important;
+        }
+
+        .z-west {
+            background: #081B33 !important;
+        }
+
+        /* Center Layout Scaffolding */
+        .page-container {
+            padding: 24px 30px;
+            background: #F4F7FB;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #122B49;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .card-container {
+            background: #FFFFFF;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #DCE5F0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            box-sizing: border-box;
+        }
+
+        /* Dashboard-Style Blue Listbox */
+        .batch-grid.z-listbox {
+            border: none;
+            border-radius: 6px;
             background: #FFFFFF;
         }
-        
-        /* Listheader Background and Visible Text */
+
+        /* Enable vertical scroll inside the listbox body only */
+        .batch-grid .z-listbox-body {
+            overflow-y: auto !important;
+        }
+
+        /* Dashboard Blue Header Styling */
         .batch-grid .z-listhead {
-            background: #F8FAFC;
+            background: #0091FF !important;
         }
+
         .batch-grid .z-listheader {
-            background: #F8FAFC !important;
-            border-bottom: 1px solid #E2E8F0 !important;
-            border-right: 1px solid #E2E8F0 !important;
-            height: 48px;
+            background: #0091FF !important;
+            border-bottom: none !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+            height: 44px;
         }
+
         .batch-grid .z-listheader:last-child {
             border-right: none !important;
         }
+
         .batch-grid .z-listheader-content {
-            color: #475569 !important;
-            font-size: 13px !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.3px;
-            padding: 12px 16px !important;
+            color: #FFFFFF !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.2px;
+            padding: 10px 16px !important;
         }
 
-        /* Cells */
+        /* Table Data Cells */
         .batch-grid .z-listcell {
             padding: 14px 16px;
             font-size: 14px;
@@ -69,16 +129,19 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         .badge-assigned {
             background: #EFF6FF;
             color: #2563EB;
             border: 1px solid #BFDBFE;
         }
+
         .badge-completed {
             background: #ECFDF5;
             color: #059669;
             border: 1px solid #A7F3D0;
         }
+
         .badge-verification {
             background: #FFFBEB;
             color: #D97706;
@@ -87,7 +150,7 @@
 
         /* Action Button */
         .action-btn.z-button {
-            background: #2563EB !important;
+            background: #12B76A !important;
             color: #FFFFFF !important;
             border-radius: 6px;
             font-size: 13px;
@@ -95,26 +158,56 @@
             border: none !important;
             padding: 6px 18px;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
             transition: all 0.2s;
         }
+
         .action-btn.z-button:hover {
-            background: #1D4ED8 !important;
+            background: #0E9F5D !important;
         }
-    </style>
+    ]]></style>
 
-    <div sclass="page-container" apply="com.iispl.cts.controller.outward.OutwardMakerDataEntryController">
-        <label value="Data Entry" sclass="page-title"/>
+    <window
+        id="outwardMakerDataEntryWindow"
+        width="100%"
+        height="100%"
+        border="none"
+        apply="com.iispl.cts.controller.outward.OutwardMakerDataEntryController">
 
-        <div sclass="card-container">
-            <listbox id="batchListbox" sclass="batch-grid" emptyMessage="No data available">
-                <listhead>
-                    <listheader label="Batch ID" width="25%"/>
-                    <listheader label="Total Cheques" width="25%"/>
-                    <listheader label="Batch Status" width="25%"/>
-                    <listheader label="Action" width="25%" align="center"/>
-                </listhead>
-            </listbox>
-        </div>
-    </div>
+        <borderlayout width="100%" height="100%">
+
+            <!-- HEADER (Flush, height 62px) -->
+            <north size="62px" border="none" margins="0,0,0,0">
+                <include src="/header.zul" style="display:block; width:100%; height:62px;"/>
+            </north>
+
+            <!-- SIDEBAR (Highlights Data Entry tab) -->
+            <west size="280px" border="none" margins="0,0,0,0">
+                <include src="/makersidebar.zul" activeTab="dataEntry" style="display:block; width:280px; height:100%;"/>
+            </west>
+
+            <!-- CENTER CONTENT (Locked viewport, batches scroll independently) -->
+            <center border="none" margins="0,0,0,0" style="background:#F4F7FB; overflow:hidden;">
+                <div sclass="page-container">
+                    <label value="Data Entry" sclass="page-title"/>
+
+                    <div sclass="card-container" vflex="1">
+                        <listbox id="batchListbox"
+                                 sclass="batch-grid"
+                                 vflex="1"
+                                 width="100%"
+                                 emptyMessage="No batches available for Data Entry."
+                                 nonselectableTags="button">
+                            <listhead>
+                                <listheader label="Batch No" width="28%"/>
+                                <listheader label="Total Cheques" width="22%"/>
+                                <listheader label="Batch Status" width="26%"/>
+                                <listheader label="Action" width="24%" align="center"/>
+                            </listhead>
+                        </listbox>
+                    </div>
+                </div>
+            </center>
+
+        </borderlayout>
+    </window>
 </zk>

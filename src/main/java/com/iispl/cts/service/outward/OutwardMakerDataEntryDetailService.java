@@ -36,4 +36,9 @@ public class OutwardMakerDataEntryDetailService {
                 reason
         );
     }
+
+	public boolean completeBatchDataEntry(String batchId, int currentUserId) {
+		// TODO Auto-generated method stub
+		return dao.completeBatchDataEntry(batchId, currentUserId);
+	}
 }

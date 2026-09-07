@@ -3,7 +3,7 @@
 
 <zk>
     <!-- Reset default browser & ZK margins to remove spacing/scrollbars -->
-    <style>
+    <style><![CDATA[
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -11,15 +11,25 @@
             overflow: hidden !important;
             background: #F4F7FB;
         }
+
         .z-window-embedded-cnt, .z-window-content {
             padding: 0 !important;
         }
+
         .z-north, .z-west, .z-center {
             border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
+
         .z-north-body, .z-west-body, .z-center-body {
             padding: 0 !important;
             margin: 0 !important;
+            height: 100% !important;
+        }
+
+        .z-west {
+            background: #081B33 !important;
         }
 
         /* Equal-height compact card container */
@@ -53,6 +63,15 @@
             outline: none !important;
         }
 
+        /* Datebox field alignment */
+        .single-field-box.z-datebox input {
+            height: 36px !important;
+            font-size: 13px !important;
+            background: transparent !important;
+            border: none !important;
+            color: #0F172A !important;
+        }
+
         /* Prominent field labels */
         .single-field-label {
             font-size: 13px !important;
@@ -67,33 +86,32 @@
             margin-left: 2px;
         }
 
-/* Image toolbar buttons */
-
-.icon-symbol-btn {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: #334155 !important;
-    font-size: 18px !important;
-    font-weight: bold !important;
-    cursor: pointer !important;
-    height: 30px !important;
-    padding: 0 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: color 0.15s ease, transform 0.1s ease !important;
-}
-.icon-symbol-btn:hover {
-    background: #E2E8F0 !important;
-    border-radius: 4px !important;
-    color: #0F172A !important;
-}
-    </style>
+        /* Image toolbar buttons (original design) */
+        .icon-symbol-btn {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #334155 !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            height: 30px !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: color 0.15s ease, transform 0.1s ease !important;
+        }
+        .icon-symbol-btn:hover {
+            background: #E2E8F0 !important;
+            border-radius: 4px !important;
+            color: #0F172A !important;
+        }
+    ]]></style>
 
     <window
         width="100%"
-        height="100vh"
+        height="100%"
         border="none"
         style="padding:0;margin:0;"
         apply="com.iispl.cts.controller.outward.OutwardMakerDataEntryDetailController">
@@ -103,22 +121,22 @@
             height="100%"
             style="background:#F4F7FB;margin:0;padding:0;">
 
-            <!-- ================= 1. EXPANDED HEADER (72PX) ================= -->
+            <!-- ================= 1. HEADER (Flush 62px) ================= -->
             <north 
-                size="72px" 
+                size="62px" 
                 border="none" 
                 margins="0,0,0,0" 
                 style="padding:0;margin:0;border:none;overflow:hidden;">
-                <include src="/header.zul"/>
+                <include src="/header.zul" style="display:block; width:100%; height:62px;"/>
             </north>
 
-            <!-- ================= 2. SIDEBAR NAVIGATION ================= -->
+            <!-- ================= 2. SIDEBAR (Flush 280px, Data Entry Active) ================= -->
             <west 
-                size="240px" 
+                size="280px" 
                 border="none" 
                 margins="0,0,0,0" 
-                style="padding:0;margin:0;border:none;background:#0b1e36;">
-                <include src="/makersidebar.zul"/>
+                style="padding:0;margin:0;border:none;background:#081B33;">
+                <include src="/makersidebar.zul" activeTab="dataEntry" style="display:block; width:280px; height:100%;"/>
             </west>
 
             <!-- ================= 3. CENTER WORKSPACE ================= -->
@@ -140,7 +158,7 @@
                             valign="middle"
                             style="padding:4px 14px;">
                             <label
-                                value="Batch ID : "
+                                value="Batch No : "
                                 style="font-size:14px;font-weight:bold;color:#334155;"/>
                             <label
                                 id="batchIdLabel"
@@ -196,18 +214,17 @@
                                 </vlayout>
 
                                 <!-- COMPACT TOOLBAR DIRECTLY UNDER CHEQUE -->
-                          
-<!-- COMPACT TOOLBAR DIRECTLY UNDER CHEQUE -->
-<hlayout
-    width="100%"
-    spacing="4px"
-    style="justify-content:center;padding:2px 0;">
-    <button id="frontImageButton" label="Front" hflex="1" sclass="img-tool-btn"/>
-    <button id="backImageButton" label="Back" hflex="1" sclass="img-tool-btn"/>
-    <button id="zoomInButton" label="+" tooltiptext="Zoom In" hflex="1" sclass="icon-symbol-btn"/>
-    <button id="zoomOutButton" label="−" tooltiptext="Zoom Out" hflex="1" sclass="icon-symbol-btn"/>
-    <button id="rotateButton" label="↻" tooltiptext="Rotate" hflex="1" sclass="icon-symbol-btn"/>
-</hlayout>              </vlayout>
+                                <hlayout
+                                    width="100%"
+                                    spacing="4px"
+                                    style="justify-content:center;padding:2px 0;">
+                                    <button id="frontImageButton" label="Front" hflex="1" sclass="img-tool-btn"/>
+                                    <button id="backImageButton" label="Back" hflex="1" sclass="img-tool-btn"/>
+                                    <button id="zoomInButton" label="+" tooltiptext="Zoom In" hflex="1" sclass="icon-symbol-btn"/>
+                                    <button id="zoomOutButton" label="−" tooltiptext="Zoom Out" hflex="1" sclass="icon-symbol-btn"/>
+                                    <button id="rotateButton" label="↻" tooltiptext="Rotate" hflex="1" sclass="icon-symbol-btn"/>
+                                </hlayout>
+                            </vlayout>
                         </groupbox>
 
                         <!-- ================= RIGHT: CHEQUE DATA VERIFICATION FORM ================= -->
@@ -221,8 +238,6 @@
                                 width="100%"
                                 height="100%"
                                 style="padding:14px 18px;box-sizing:border-box;justify-content:space-between;">
-
-                               
 
                                 <!-- ROW 1: CHEQUE NUMBER & ACCOUNT NUMBER -->
                                 <hlayout width="100%" spacing="16px">
@@ -257,11 +272,11 @@
                                             <label value="Cheque Date" sclass="single-field-label"/>
                                             <label value="*" sclass="label-star"/>
                                         </hlayout>
-                                        <!-- Replace this: -->
-<!-- <textbox id="chequeDateTextbox" width="100%" /> -->
-
-<!-- With this: -->
-<datebox id="chequeDatebox" width="100%" format="yyyy-MM-dd" />
+                                        <datebox 
+                                            id="chequeDatebox" 
+                                            width="100%" 
+                                            format="yyyy-MM-dd"
+                                            sclass="single-field-box" />
                                     </vlayout>
                                     <vlayout hflex="1" spacing="4px">
                                         <hlayout spacing="0" valign="middle">
@@ -321,7 +336,7 @@
 
                     </hlayout>
 
-                    <!-- ================= 4. BOTTOM ACTION CONTROL BAR (REJECT BESIDE SAVE) ================= -->
+                    <!-- ================= 4. BOTTOM ACTION CONTROL BAR ================= -->
                     <hlayout
                         width="100%"
                         valign="middle"
@@ -356,7 +371,3 @@
         </borderlayout>
     </window>
 </zk>
-
-
-
-

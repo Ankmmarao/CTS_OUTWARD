@@ -1,10 +1,12 @@
 package com.iispl.cts.dao.outward;
 
+import java.security.Timestamp;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,4 +121,64 @@ public class OutwardMakerDataEntryDetailDAO {
             e.printStackTrace();
         }
     }
-}
+    public boolean completeBatchDataEntry(String batchNumber, int userId) {
+        String updateBatchSql = "UPDATE public.outward_batch "
+                              + "SET batch_status = 'READY_TO_SUBMIT' "
+                              + "WHERE batch_number = ?";
+
+        String updateAssignmentSql = "UPDATE public.outward_batch_assignment "
+                                   + "SET completed_at = ?, assignment_status = 'COMPLETED' "
+                                   + "WHERE batch_number = ? AND user_id = ? AND assignment_role = 'MAKER'";
+
+        Connection con = null;
+
+        try {
+            con = CTSStaticData.getConnection();
+            con.setAutoCommit(false); // Start transaction
+
+            // 1. Update batch status to READY_TO_SUBMIT
+            try (PreparedStatement psBatch = con.prepareStatement(updateBatchSql)) {
+                psBatch.setString(1, batchNumber);
+                int batchRows = psBatch.executeUpdate();
+                if (batchRows == 0) {
+                    con.rollback();
+                    return false;
+                }
+            }
+
+            // 2. Update assignment completion timestamp and status
+            try (PreparedStatement psAssign = con.prepareStatement(updateAssignmentSql)) {
+            	psAssign.setTimestamp(1, new java.sql.Timestamp(System.currentTimeMillis()));
+                psAssign.setString(2, batchNumber);
+                psAssign.setInt(3, userId);
+                int assignRows = psAssign.executeUpdate();
+                if (assignRows == 0) {
+                    con.rollback();
+                    return false;
+                }
+            }
+
+            con.commit(); // Commit transaction
+            return true;
+
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Rollback on error
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+}}
