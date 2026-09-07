@@ -38,11 +38,8 @@ public class OutwardValidationResult {
         return amountAccountErrors;
     }
 
-    public void setAmountAccountErrors(
-            int amountAccountErrors) {
-
-        this.amountAccountErrors =
-                amountAccountErrors;
+    public void setAmountAccountErrors(int amountAccountErrors) {
+        this.amountAccountErrors = amountAccountErrors;
     }
 
     public int getTotalErrors() {

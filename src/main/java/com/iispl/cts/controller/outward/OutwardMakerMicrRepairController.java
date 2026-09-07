@@ -13,8 +13,10 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Messagebox;
 
 import com.iispl.cts.model.outward.OutwardBatch;
+import com.iispl.cts.model.outward.UserSession;
 import com.iispl.cts.service.outward.OutwardMakerMicrRepairService;
 
 public class OutwardMakerMicrRepairController extends SelectorComposer<Component> {
@@ -32,9 +34,7 @@ public class OutwardMakerMicrRepairController extends SelectorComposer<Component
         super.doAfterCompose(comp);
 
         service = new OutwardMakerMicrRepairService();
-
         setListItemRenderer();
-
         loadMicrErrorBatches();
     }
 
@@ -74,14 +74,60 @@ public class OutwardMakerMicrRepairController extends SelectorComposer<Component
     }
 
     private void loadMicrErrorBatches() {
-        List<OutwardBatch> batches = service.getMicrErrorBatches();
-        ListModelList<OutwardBatch> model = new ListModelList<>(batches);
+
+        UserSession user =
+                LoginController.getCurrentUserSession();
+
+        if (user == null) {
+
+            Messagebox.show(
+                    "User session expired. Please login again.",
+                    "Session Error",
+                    Messagebox.OK,
+                    Messagebox.ERROR);
+
+            Executions.sendRedirect("/login.zul");
+
+            return;
+        }
+
+        /*
+         * Get current logged-in user's ID
+         */
+        int currentUserId =
+                LoginController.getCurrentUserId();
+
+        if (currentUserId <= 0) {
+
+            Messagebox.show(
+                    "Invalid logged-in user.",
+                    "Error",
+                    Messagebox.OK,
+                    Messagebox.ERROR);
+
+            return;
+        }
+
+        /*
+         * Get only MICR error batches
+         * assigned to the current logged-in Maker
+         */
+        List<OutwardBatch> batches =
+                service.getMicrErrorBatches(
+                        currentUserId);
+
+        ListModelList<OutwardBatch> model =
+                new ListModelList<>(batches);
+
         batchListbox.setModel(model);
     }
 
+
+
+
     private void openBatch(OutwardBatch batch) {
         String batchNumber = batch.getBatchNumber();
-        Executions.getCurrent().sendRedirect("outwardMakerMicrRepairDetails.zul"+ "?batchNumber="+ batchNumber);
+        Executions.getCurrent().sendRedirect("outward-maker-micr-repair-detail.zul" + "?batchNumber=" + batchNumber);
     }
 }
 

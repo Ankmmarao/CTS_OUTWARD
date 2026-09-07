@@ -1,3 +1,4 @@
+
 package com.iispl.cts.dao.outward;
 
 import java.sql.Connection;
@@ -14,51 +15,76 @@ import com.iispl.cts.model.outward.OutwardBatch;
 public class OutwardMakerMicrRepairDAO {
 
     // Stores MICR error count for each batch
-    private Map<String, Integer> micrErrorCounts = new HashMap<>();
+    private Map<String, Integer> micrErrorCounts =
+            new HashMap<>();
 
-    public List<OutwardBatch> getMicrErrorBatches() {
+    public List<OutwardBatch> getMicrErrorBatches(int userId) {
 
-        List<OutwardBatch> batches = new ArrayList<>();
+        List<OutwardBatch> batches =
+                new ArrayList<>();
 
         String sql =
                 "SELECT ob.batch_number, " +
                 "       ob.cheque_count, " +
                 "       COUNT(oc.cheque_number) AS micr_error_count " +
                 "FROM outward_batch ob " +
+                "INNER JOIN outward_batch_assignment oba " +
+                "        ON ob.batch_number = oba.batch_number " +
                 "INNER JOIN outward_cheque oc " +
                 "        ON ob.batch_number = oc.batch_number " +
-                "WHERE oc.cheque_status = 'MICR_ERROR' " +
+                "WHERE oba.user_id = ? " +
+                "AND oba.assignment_status IN " +
+                "    ('ASSIGNED', 'IN_PROGRESS') " +
+                "AND ob.batch_status = 'MICR_REPAIR' " +
+                "AND oc.cheque_status = 'MICR_ERROR' " +
                 "GROUP BY ob.batch_number, ob.cheque_count " +
                 "ORDER BY ob.batch_number";
 
-        try (Connection connection = CTSStaticData.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection connection =
+                    CTSStaticData.getConnection();
+             PreparedStatement ps =
+                    connection.prepareStatement(sql)) {
 
-            // Clear old values
-            micrErrorCounts.clear();
+            // Current logged-in user's ID
+            ps.setInt(1, userId);
 
-            while (rs.next()) {
+            try (ResultSet rs =
+                    ps.executeQuery()) {
 
-                String batchNumber = rs.getString("batch_number");
+                // Clear old MICR error counts
+                micrErrorCounts.clear();
 
-                int chequeCount = rs.getInt("cheque_count");
+                while (rs.next()) {
 
-                int micrErrorCount = rs.getInt("micr_error_count");
+                    String batchNumber =
+                            rs.getString("batch_number");
 
-                // Set values to OutwardBatch
-                OutwardBatch batch = new OutwardBatch();
+                    int chequeCount =
+                            rs.getInt("cheque_count");
 
-                batch.setBatchNumber(batchNumber);
-                batch.setNumberOfCheques(chequeCount);
+                    int micrErrorCount =
+                            rs.getInt("micr_error_count");
 
-                batches.add(batch);
+                    OutwardBatch batch =
+                            new OutwardBatch();
 
-                // Store MICR error count separately
-                micrErrorCounts.put(batchNumber,micrErrorCount);
+                    batch.setBatchNumber(
+                            batchNumber);
+
+                    batch.setNumberOfCheques(
+                            chequeCount);
+
+                    batches.add(batch);
+
+                    // Store MICR error count separately
+                    micrErrorCounts.put(
+                            batchNumber,
+                            micrErrorCount);
+                }
             }
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
 
@@ -67,6 +93,9 @@ public class OutwardMakerMicrRepairDAO {
 
     public int getMicrErrorCount(String batchNumber) {
 
-        return micrErrorCounts.getOrDefault(batchNumber,0);
+        return micrErrorCounts.getOrDefault(
+                batchNumber,
+                0);
     }
 }
+

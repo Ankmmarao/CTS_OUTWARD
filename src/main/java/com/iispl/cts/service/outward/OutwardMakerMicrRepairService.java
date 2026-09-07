@@ -13,8 +13,8 @@ public class OutwardMakerMicrRepairService {
         dao = new OutwardMakerMicrRepairDAO();
     }
 
-    public List<OutwardBatch> getMicrErrorBatches() {
-        return dao.getMicrErrorBatches();
+    public List<OutwardBatch> getMicrErrorBatches(int userId) {
+        return dao.getMicrErrorBatches(userId);
     }
 
     public int getMicrErrorCount(String batchNumber) {

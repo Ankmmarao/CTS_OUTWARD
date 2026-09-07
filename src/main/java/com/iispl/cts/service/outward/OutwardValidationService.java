@@ -3,35 +3,22 @@ package com.iispl.cts.service.outward;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import com.iispl.cts.model.outward.OutwardCheque;
 import com.iispl.cts.model.outward.OutwardValidationResult;
 
+
 public class OutwardValidationService {
 
-    /*
-     * Validate all cheques in a batch.
-     *
-     * IMPORTANT:
-     * We do NOT depend on cheque.getErrorType().
-     *
-     * Errors are detected from the actual cheque values.
-     */
-    public OutwardValidationResult validate(
-            List<OutwardCheque> cheques) {
-
-        OutwardValidationResult result =
-                new OutwardValidationResult();
+    public OutwardValidationResult validate(List<OutwardCheque> cheques) {
+        OutwardValidationResult result = new OutwardValidationResult();
 
         if (cheques == null) {
             return result;
         }
 
-        result.setTotalCheques(
-                cheques.size()
-        );
+        result.setTotalCheques(cheques.size());
 
         int dataEntryErrors = 0;
         int micrErrors = 0;
@@ -44,48 +31,27 @@ public class OutwardValidationService {
                 continue;
             }
 
-
-            /*
-             * DATA ENTRY VALIDATION
-             */
+             // DATA ENTRY VALIDATION
             if (hasDataEntryError(cheque)) {
-
                 dataEntryErrors++;
             }
-
-
-            /*
-             * MICR VALIDATION
-             */
+          
+             // MICR VALIDATION         
             if (hasMicrError(cheque)) {
-
                 micrErrors++;
             }
 
-
-            /*
-             * AMOUNT / ACCOUNT VALIDATION
-             */
+             // AMOUNT / ACCOUNT VALIDATION
             if (hasAmountAccountError(cheque)) {
-
                 amountAccountErrors++;
             }
         }
 
 
-        result.setDataEntryErrors(
-                dataEntryErrors
-        );
-
-        result.setMicrErrors(
-                micrErrors
-        );
-
-        result.setAmountAccountErrors(
-                amountAccountErrors
-        );
-
-
+        result.setDataEntryErrors(dataEntryErrors);
+        result.setMicrErrors(micrErrors);
+        result.setAmountAccountErrors(amountAccountErrors);
+        
         return result;
     }
 
@@ -93,152 +59,102 @@ public class OutwardValidationService {
     // =========================================================
     // DATA ENTRY VALIDATION
     // =========================================================
+    private boolean hasDataEntryError(OutwardCheque cheque) {
 
-    private boolean hasDataEntryError(
-            OutwardCheque cheque) {
-
-        /*
-         * CHEQUE NUMBER
-         */
-        String chequeNumber =
-                cheque.getChequeNumber();
+        // CHEQUE NUMBER
+        String chequeNumber = cheque.getChequeNumber();
 
         if (isBlank(chequeNumber)) {
-
             return true;
         }
 
 
-        /*
-         * CHEQUE DATE
-         */
-        String chequeDate =
-                cheque.getChequeDate();
+        // CHEQUE DATE
+        LocalDate chequeDate = cheque.getChequeDate();
 
-        if (isBlank(chequeDate)) {
-
+        if (chequeDate == null) {
             return true;
         }
-
-
-        /*
-         * DATE FORMAT
-         */
-        try {
-
-            LocalDate.parse(
-                    chequeDate
-            );
-
-        } catch (DateTimeParseException e) {
-
-            return true;
-        }
-
 
         return false;
     }
-
-
+    
+    
     // =========================================================
     // MICR VALIDATION
     // =========================================================
+    private boolean hasMicrError(OutwardCheque cheque) {
 
-    private boolean hasMicrError(
-            OutwardCheque cheque) {
+        // CITY CODE
+        String cityCode = cheque.getCityCode();
 
-        String micr =
-                cheque.getMicr();
+        if (isBlank(cityCode)) {
+            return true;
+        }
 
-
-        /*
-         * MICR cannot be empty.
-         */
-        if (isBlank(micr)) {
-
+        if (!cityCode.matches("^[0-9]{3}$")) {
             return true;
         }
 
 
-        /*
-         * MICR must contain exactly 9 digits.
-         */
-        if (!micr.matches(
-                "^[0-9]{9}$")) {
+        // BANK CODE
+        String bankCode = cheque.getBankCode();
 
+        if (isBlank(bankCode)) {
             return true;
         }
 
+        if (!bankCode.matches("^[0-9]{3}$")) {
+            return true;
+        }
+
+
+        // BRANCH CODE
+        String branchCode = cheque.getBranchCode();
+
+        if (isBlank(branchCode)) {
+            return true;
+        }
+
+        if (!branchCode.matches("^[0-9]{3}$")) {
+            return true;
+        }
 
         return false;
     }
-
+    
 
     // =========================================================
     // ACCOUNT / AMOUNT VALIDATION
     // =========================================================
-
-    private boolean hasAmountAccountError(
-            OutwardCheque cheque) {
-
-
-        // -----------------------------------------------------
+    private boolean hasAmountAccountError(OutwardCheque cheque) {
+    	
         // ACCOUNT NUMBER
-        // -----------------------------------------------------
-
-        String accountNumber =
-                cheque.getAccountNumber();
+    	String accountNumber = cheque.getDrawerAccountNumber();
 
         if (isBlank(accountNumber)) {
-
             return true;
         }
 
 
-        /*
-         * Current project rule:
-         * account number = exactly 12 digits.
-         */
-        if (!accountNumber.matches(
-                "^[0-9]{12}$")) {
-
+        
+         //Current project rule:
+         //account number = exactly 12 digits.
+        if (!accountNumber.matches("^[0-9]{12}$")) {
             return true;
         }
 
 
-        // -----------------------------------------------------
         // AMOUNT
-        // -----------------------------------------------------
+        BigDecimal amount = cheque.getAmount();
 
-        String amount =
-                cheque.getAmount();
-
-        if (isBlank(amount)) {
-
+        if (amount == null) {
             return true;
         }
 
-
-        try {
-
-            BigDecimal amountValue =
-                    new BigDecimal(amount);
-
-
-            /*
-             * Amount must be greater than zero.
-             */
-            if (amountValue.compareTo(
-                    BigDecimal.ZERO) <= 0) {
-
-                return true;
-            }
-
-        } catch (NumberFormatException e) {
-
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             return true;
         }
-
 
         return false;
     }
@@ -247,12 +163,8 @@ public class OutwardValidationService {
     // =========================================================
     // BLANK VALIDATION
     // =========================================================
-
-    private boolean isBlank(
-            String value) {
-
-        return value == null
-                || value.trim().isEmpty();
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }
 
