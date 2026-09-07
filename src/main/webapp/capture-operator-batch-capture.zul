@@ -101,7 +101,7 @@
                                 <textbox
     id="batchFolderPath"
     width="600px"
-    value="/home/iispl/Desktop"
+    value="C:\Users"
     placeholder="Enter batch folder path" />
                             </row>
 

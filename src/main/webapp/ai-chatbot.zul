@@ -1,0 +1,668 @@
+<?page title="CTS AI Assistant" contentType="text/html;charset=UTF-8"?>
+
+<zk>
+
+    <window
+
+        title="CTS AI Assistant"
+
+        border="normal"
+
+        width="500px"
+
+        height="650px"
+
+        position="center"
+
+        closable="true"
+
+        sizable="true"
+
+        apply="com.iispl.cts.controller.outward.AIChatbotController"
+
+        style="border-radius:32px !important;
+               background:rgba(255,255,255,0.55) !important;
+               backdrop-filter:blur(20px) saturate(1.4) !important;
+               -webkit-backdrop-filter:blur(20px) saturate(1.4) !important;
+               border:1px solid rgba(255,255,255,0.5) !important;
+               box-shadow:0 30px 80px rgba(11,31,58,0.25),0 10px 30px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.6),inset 0 -1px 0 rgba(255,255,255,0.2) !important;
+               overflow:hidden !important;
+               animation:windowAppear 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;">
+
+        <style>
+            @keyframes windowAppear {
+                0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+                100% { opacity: 1; transform: scale(1) translateY(0); }
+            }
+            @keyframes floatBackground {
+                0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+                33% { transform: translate(2%, 1%) rotate(2deg) scale(1.02); }
+                66% { transform: translate(-1%, 2%) rotate(-1deg) scale(0.98); }
+                100% { transform: translate(1%, -1%) rotate(1deg) scale(1.01); }
+            }
+            @keyframes orbFloat {
+                0% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+                50% { transform: translate(-20px, 30px) scale(1.2); opacity: 0.7; }
+                100% { transform: translate(10px, -20px) scale(0.9); opacity: 0.3; }
+            }
+            @keyframes headerShine {
+                0% { transform: translateX(-30%) rotate(-5deg); }
+                100% { transform: translateX(30%) rotate(5deg); }
+            }
+            @keyframes messageSlide {
+                0% { opacity: 0; transform: translateY(10px) scale(0.98); }
+                100% { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes buttonShine {
+                0% { transform: translateX(-20%) rotate(-3deg); }
+                100% { transform: translateX(20%) rotate(3deg); }
+            }
+            @keyframes typingDot {
+                0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+                30% { transform: translateY(-8px); opacity: 1; }
+            }
+            @keyframes pulseGlow {
+                0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.1); }
+                50% { box-shadow: 0 0 40px rgba(59,130,246,0.2); }
+            }
+            @keyframes shimmer {
+                0% { background-position: -200% 0; }
+                100% { background-position: 200% 0; }
+            }
+            
+            body {
+                background: radial-gradient(ellipse at 10% 20%, rgba(11,31,58,0.3) 0%, rgba(26,53,90,0.15) 50%, transparent 70%),
+                            radial-gradient(ellipse at 90% 80%, rgba(59,130,246,0.2) 0%, rgba(11,31,58,0.1) 50%, transparent 70%),
+                            linear-gradient(145deg, #f0f4fc 0%, #dae3f0 50%, #c8d4e6 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                position: relative;
+                overflow: hidden;
+            }
+            body::before {
+                content: '';
+                position: fixed;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle at 30% 40%, rgba(59,130,246,0.08) 0%, transparent 50%),
+                            radial-gradient(circle at 70% 60%, rgba(11,31,58,0.06) 0%, transparent 50%),
+                            radial-gradient(circle at 50% 80%, rgba(147,197,253,0.05) 0%, transparent 40%);
+                animation: floatBackground 30s ease-in-out infinite alternate;
+                pointer-events: none;
+                z-index: 0;
+            }
+            body::after {
+                content: '';
+                position: fixed;
+                top: 10%;
+                right: 5%;
+                width: 300px;
+                height: 300px;
+                background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+                border-radius: 50%;
+                animation: orbFloat 20s ease-in-out infinite alternate;
+                pointer-events: none;
+                z-index: 0;
+            }
+            .z-window-content {
+                padding: 0 !important;
+                background: transparent !important;
+                border-radius: 32px !important;
+                overflow: hidden !important;
+            }
+            .z-hlayout[style*="background:#0b1f3a"] {
+                background: linear-gradient(135deg, #0b1f3a 0%, #1a355a 40%, #2a4a75 100%) !important;
+                border-bottom: 1px solid rgba(255,255,255,0.12) !important;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+                border-radius: 32px 32px 0 0 !important;
+                height: 70px !important;
+                padding: 0 24px !important;
+                display: flex !important;
+                align-items: center !important;
+                position: relative;
+                overflow: hidden;
+            }
+            .z-hlayout[style*="background:#0b1f3a"]::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.06) 0%, transparent 60%);
+                animation: headerShine 8s ease-in-out infinite alternate;
+                pointer-events: none;
+            }
+            .z-hlayout[style*="background:#0b1f3a"] .z-label {
+                color: #ffffff !important;
+                font-size: 21px !important;
+                font-weight: 700 !important;
+                letter-spacing: -0.5px;
+                background: rgba(255,255,255,0.08) !important;
+                padding: 8px 20px !important;
+                border-radius: 60px !important;
+                backdrop-filter: blur(8px) !important;
+                border: 1px solid rgba(255,255,255,0.12) !important;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+                position: relative;
+                z-index: 1;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            }
+            #chatListbox {
+                background: transparent !important;
+                border: none !important;
+                padding: 20px 16px 12px 16px !important;
+                box-sizing: border-box;
+                height: 400px !important;
+                width: 100% !important;
+            }
+            #chatListbox .z-listbox-body {
+                background: transparent !important;
+                border: none !important;
+                overflow-y: auto !important;
+                padding: 8px 4px 8px 4px !important;
+                scroll-behavior: smooth;
+            }
+            #chatListbox .z-listbox-body .z-listitem {
+                background: transparent !important;
+                border: none !important;
+                margin-bottom: 12px !important;
+                overflow: auto !important;
+                zoom: 1 !important;
+                display: block !important;
+                width: 100% !important;
+                padding: 2px 0 !important;
+                animation: messageSlide 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+            }
+            #chatListbox .z-listbox-body .z-listcell {
+                background: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            #chatListbox .z-listbox-body .z-listitem-selected {
+                background: transparent !important;
+                border: none !important;
+            }
+            
+            /* ===== BUBBLE STYLES WITH VISUAL EFFECTS ===== */
+            #chatListbox .z-listbox-body .z-listcell .z-label {
+                display: inline-block;
+                max-width: 82%;
+                padding: 14px 22px;
+                border-radius: 24px;
+                font-size: 15px;
+                line-height: 1.6;
+                background: rgba(255,255,255,0.92);
+                color: #1a2a3a;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.8);
+                margin: 4px 0;
+                word-break: break-word;
+                border: 1px solid rgba(255,255,255,0.6);
+                backdrop-filter: blur(4px);
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                float: left !important;
+                clear: both !important;
+                margin-left: 4px !important;
+                border-bottom-left-radius: 6px !important;
+                transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+                position: relative;
+                background-size: 200% 200%;
+                animation: shimmer 3s ease-in-out infinite;
+            }
+            
+            #chatListbox .z-listbox-body .z-listcell .z-label:hover {
+                transform: translateY(-2px) scale(1.01);
+                box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            }
+            
+            /* ===== USER BUBBLE - Premium Gradient with Glow ===== */
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="You:"],
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="User:"],
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="Me:"] {
+                background: linear-gradient(135deg, #0b1f3a 0%, #1f3b5c 40%, #2a4a75 80%, #3a5a85 100%) !important;
+                color: #ffffff !important;
+                border-color: rgba(255,255,255,0.15) !important;
+                box-shadow: 0 4px 25px rgba(11,31,58,0.35), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+                border-bottom-right-radius: 6px !important;
+                border-bottom-left-radius: 24px !important;
+                float: right !important;
+                clear: both !important;
+                margin-right: 4px !important;
+                margin-left: 0 !important;
+                text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+                animation: pulseGlow 3s ease-in-out infinite;
+            }
+            
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="You:"]::after,
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="User:"]::after,
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="Me:"]::after {
+                content: '✦';
+                position: absolute;
+                bottom: -8px;
+                right: -8px;
+                font-size: 12px;
+                color: rgba(59,130,246,0.4);
+                opacity: 0.6;
+            }
+            
+            /* User bubble shine overlay */
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="You:"]::before,
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="User:"]::before,
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="Me:"]::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 55%;
+                background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%);
+                border-radius: 24px 24px 0 0;
+                pointer-events: none;
+            }
+            
+            /* ===== ASSISTANT BUBBLE - Glass with Neon Glow ===== */
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="AI:"],
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="Assistant:"],
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="CTS:"] {
+                background: linear-gradient(135deg, rgba(240,244,254,0.95), rgba(220,230,250,0.9)) !important;
+                color: #0b1f3a !important;
+                border: 1px solid rgba(59,130,246,0.15) !important;
+                box-shadow: 0 2px 20px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+                border-bottom-left-radius: 6px !important;
+                border-bottom-right-radius: 24px !important;
+                float: left !important;
+                clear: both !important;
+                margin-left: 4px !important;
+                position: relative;
+            }
+            
+            /* Assistant bubble glow ring */
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="AI:"]::before,
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="Assistant:"]::before,
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="CTS:"]::before {
+                content: '';
+                position: absolute;
+                top: -3px;
+                left: -3px;
+                right: -3px;
+                bottom: -3px;
+                background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(11,31,58,0.03));
+                border-radius: 28px;
+                z-index: -1;
+                filter: blur(8px);
+                animation: pulseGlow 4s ease-in-out infinite;
+            }
+            
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="AI:"]::after,
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="Assistant:"]::after,
+            #chatListbox .z-listbox-body .z-listcell .z-label[value*="CTS:"]::after {
+                content: '✦';
+                position: absolute;
+                bottom: -8px;
+                left: -8px;
+                font-size: 12px;
+                color: rgba(59,130,246,0.3);
+                opacity: 0.6;
+            }
+            
+            /* ===== DEFAULT BUBBLE ===== */
+            #chatListbox .z-listbox-body .z-listcell .z-label:not([value*="You:"]):not([value*="User:"]):not([value*="Me:"]):not([value*="AI:"]):not([value*="Assistant:"]):not([value*="CTS:"]) {
+                background: rgba(255,255,255,0.92) !important;
+                color: #1a2a3a !important;
+                border: 1px solid rgba(200,210,225,0.3) !important;
+                box-shadow: 0 2px 15px rgba(0,0,0,0.03) !important;
+                float: left !important;
+                clear: both !important;
+                margin-left: 4px !important;
+                border-bottom-left-radius: 6px !important;
+                border-bottom-right-radius: 24px !important;
+            }
+            
+            /* ===== TYPING INDICATOR STYLES ===== */
+            .typing-indicator {
+                display: inline-block;
+                padding: 12px 20px;
+                background: rgba(255,255,255,0.85);
+                border-radius: 24px;
+                border-bottom-left-radius: 6px;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+                margin: 4px 0;
+                float: left;
+                clear: both;
+                margin-left: 4px;
+                border: 1px solid rgba(200,210,225,0.2);
+            }
+            .typing-indicator span {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                background: #0b1f3a;
+                border-radius: 50%;
+                margin: 0 3px;
+                animation: typingDot 1.4s ease-in-out infinite;
+            }
+            .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+            .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+            
+            /* ===== SCROLLBAR ===== */
+            #chatListbox .z-listbox-body::-webkit-scrollbar {
+                width: 5px;
+            }
+            #chatListbox .z-listbox-body::-webkit-scrollbar-track {
+                background: rgba(0,0,0,0.02);
+                border-radius: 20px;
+            }
+            #chatListbox .z-listbox-body::-webkit-scrollbar-thumb {
+                background: linear-gradient(180deg, #bcc9db, #9aadc7);
+                border-radius: 20px;
+            }
+            #chatListbox .z-listbox-body::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(180deg, #9aadc7, #7a8fa8);
+            }
+            
+            /* ===== INPUT AREA ===== */
+            .z-hlayout[style*="border-top:1px solid #ddd"] {
+                background: rgba(255,255,255,0.5) !important;
+                backdrop-filter: blur(16px) saturate(1.4) !important;
+                -webkit-backdrop-filter: blur(16px) saturate(1.4) !important;
+                border-top: 1px solid rgba(255,255,255,0.5) !important;
+                border-radius: 0 0 32px 32px !important;
+                padding: 14px 20px !important;
+                height: 95px !important;
+                box-shadow: 0 -8px 30px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.8) !important;
+                align-items: center !important;
+                gap: 10px !important;
+            }
+            
+            /* ===== TEXTBOX ===== */
+            #messageTextbox {
+                background: rgba(255,255,255,0.7) !important;
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+                border: 1px solid rgba(255,255,255,0.7) !important;
+                border-radius: 28px !important;
+                padding: 14px 22px !important;
+                font-size: 15px !important;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.02), inset 0 1px 4px rgba(0,0,0,0.02) !important;
+                transition: all 0.3s cubic-bezier(0.4,0,0.2,1) !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                resize: none !important;
+                height: 62px !important;
+                line-height: 1.6 !important;
+                color: #1a2a3a !important;
+            }
+            #messageTextbox:focus {
+                outline: none !important;
+                border-color: #0b1f3a !important;
+                box-shadow: 0 0 0 4px rgba(11,31,58,0.08), 0 4px 20px rgba(11,31,58,0.06) !important;
+                background: rgba(255,255,255,0.9) !important;
+                transform: scale(1.01);
+            }
+            #messageTextbox::placeholder {
+                color: #8a9aae;
+                font-weight: 400;
+                opacity: 0.6;
+                letter-spacing: -0.2px;
+            }
+            
+            /* ===== SEND BUTTON ===== */
+            #sendButton {
+                background: linear-gradient(135deg, #0b1f3a 0%, #1a355a 40%, #2a4a75 100%) !important;
+                border: none !important;
+                border-radius: 40px !important;
+                color: #ffffff !important;
+                font-weight: 600 !important;
+                font-size: 15px !important;
+                letter-spacing: 0.4px !important;
+                padding: 0 28px !important;
+                height: 52px !important;
+                min-width: 90px !important;
+                box-shadow: 0 6px 24px rgba(11,31,58,0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+                transition: all 0.3s cubic-bezier(0.4,0,0.2,1) !important;
+                cursor: pointer !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border: 1px solid rgba(255,255,255,0.12) !important;
+                backdrop-filter: blur(4px) !important;
+                margin-left: 4px !important;
+                position: relative !important;
+                overflow: hidden !important;
+            }
+            #sendButton::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.1) 0%, transparent 60%);
+                animation: buttonShine 4s ease-in-out infinite alternate;
+                pointer-events: none;
+            }
+            #sendButton:hover {
+                transform: scale(1.03) translateY(-1px);
+                background: linear-gradient(135deg, #132c4a 0%, #26486e 40%, #3a5a85 100%) !important;
+                box-shadow: 0 10px 32px rgba(11,31,58,0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+            }
+            #sendButton:active {
+                transform: scale(0.96);
+                box-shadow: 0 4px 12px rgba(11,31,58,0.2) !important;
+            }
+            
+            .z-listbox {
+                border: none !important;
+                background: transparent !important;
+            }
+            .z-listbox .z-listbox-body {
+                border: none !important;
+            }
+            
+            @media (max-width: 600px) {
+                .z-window {
+                    width: 96vw !important;
+                    height: 94vh !important;
+                    border-radius: 24px !important;
+                }
+                .z-hlayout[style*="background:#0b1f3a"] {
+                    border-radius: 24px 24px 0 0 !important;
+                    height: 60px !important;
+                    padding: 0 16px !important;
+                }
+                .z-hlayout[style*="background:#0b1f3a"] .z-label {
+                    font-size: 17px !important;
+                    padding: 6px 14px !important;
+                }
+                #messageTextbox {
+                    height: 50px !important;
+                    font-size: 14px !important;
+                    padding: 12px 16px !important;
+                    border-radius: 24px !important;
+                }
+                .z-hlayout[style*="border-top:1px solid #ddd"] {
+                    padding: 10px 14px !important;
+                    height: 80px !important;
+                    border-radius: 0 0 24px 24px !important;
+                }
+                #sendButton {
+                    height: 46px !important;
+                    min-width: 70px !important;
+                    font-size: 14px !important;
+                    padding: 0 18px !important;
+                }
+                #chatListbox {
+                    padding: 12px 10px 8px 10px !important;
+                    height: 350px !important;
+                }
+                #chatListbox .z-listbox-body .z-listcell .z-label {
+                    padding: 10px 16px !important;
+                    font-size: 14px !important;
+                    max-width: 85% !important;
+                }
+            }
+        </style>
+
+        <vlayout
+
+            width="100%"
+
+            height="100%"
+
+            spacing="0px">
+
+            <!-- ================= HEADER ================= -->
+
+            <hlayout
+
+                width="100%"
+
+                height="55px"
+
+                style="background:linear-gradient(135deg, #0b1f3a 0%, #1a355a 40%, #2a4a75 100%);
+                       border-bottom:1px solid rgba(255,255,255,0.12);
+                       box-shadow:0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+                       border-radius:32px 32px 0 0;
+                       height:70px;
+                       padding:0 24px;
+                       display:flex;
+                       align-items:center;
+                       position:relative;
+                       overflow:hidden;">
+
+                <label
+
+                    value="✨ CTS AI Assistant"
+
+                    style="color:#ffffff;
+                           font-size:21px;
+                           font-weight:700;
+                           letter-spacing:-0.5px;
+                           background:rgba(255,255,255,0.08);
+                           padding:8px 20px;
+                           border-radius:60px;
+                           backdrop-filter:blur(8px);
+                           border:1px solid rgba(255,255,255,0.12);
+                           box-shadow:0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.15);
+                           position:relative;
+                           z-index:1;
+                           text-shadow:0 1px 2px rgba(0,0,0,0.1);"/>
+
+            </hlayout>
+
+
+            <!-- ================= CHAT AREA ================= -->
+
+            <listbox
+
+                id="chatListbox"
+
+                width="100%"
+
+                height="400px"
+
+                style="border:none;
+                       background:transparent;
+                       padding:20px 16px 12px 16px;
+                       box-sizing:border-box;"/>
+
+
+            <!-- ================= INPUT AREA ================= -->
+
+            <hlayout
+
+                width="100%"
+
+                height="95px"
+
+                spacing="8px"
+
+                style="padding:14px 20px;
+                       border-top:1px solid rgba(255,255,255,0.5);
+                       box-sizing:border-box;
+                       background:rgba(255,255,255,0.5);
+                       backdrop-filter:blur(16px) saturate(1.4);
+                       -webkit-backdrop-filter:blur(16px) saturate(1.4);
+                       border-radius:0 0 32px 32px;
+                       box-shadow:0 -8px 30px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.8);
+                       align-items:center;
+                       gap:10px;">
+
+                <textbox
+
+                    id="messageTextbox"
+
+                    width="350px"
+
+                    placeholder="💬 Ask something about CTS..."
+
+                    multiline="true"
+
+                    rows="3"
+
+                    style="background:rgba(255,255,255,0.7);
+                           backdrop-filter:blur(8px);
+                           -webkit-backdrop-filter:blur(8px);
+                           border:1px solid rgba(255,255,255,0.7);
+                           border-radius:28px;
+                           padding:14px 22px;
+                           font-size:15px;
+                           font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+                           box-shadow:0 2px 12px rgba(0,0,0,0.02), inset 0 1px 4px rgba(0,0,0,0.02);
+                           transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+                           width:100%;
+                           max-width:100%;
+                           box-sizing:border-box;
+                           resize:none;
+                           height:62px;
+                           line-height:1.6;
+                           color:#1a2a3a;"/>
+
+                <button
+
+                    id="sendButton"
+
+                    label="Send ✦"
+
+                    width="70px"
+
+                    height="40px"
+
+                    style="background:linear-gradient(135deg, #0b1f3a 0%, #1a355a 40%, #2a4a75 100%);
+                           border:none;
+                           border-radius:40px;
+                           color:#ffffff;
+                           font-weight:600;
+                           font-size:15px;
+                           letter-spacing:0.4px;
+                           padding:0 28px;
+                           height:52px;
+                           min-width:90px;
+                           box-shadow:0 6px 24px rgba(11,31,58,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+                           transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+                           cursor:pointer;
+                           display:flex;
+                           align-items:center;
+                           justify-content:center;
+                           border:1px solid rgba(255,255,255,0.12);
+                           backdrop-filter:blur(4px);
+                           margin-left:4px;
+                           position:relative;
+                           overflow:hidden;"/>
+
+            </hlayout>
+
+        </vlayout>
+
+    </window>
+
+</zk>

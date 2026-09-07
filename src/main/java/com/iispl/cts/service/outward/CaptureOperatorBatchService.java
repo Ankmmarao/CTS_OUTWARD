@@ -13,11 +13,13 @@ public class CaptureOperatorBatchService {
 
     private final CaptureOperatorBatchDAO dao;
     private final CaptureOperatorXMLParser parser;
+    private final NotificationService notificationService;
 
     public CaptureOperatorBatchService() {
 
         dao = new CaptureOperatorBatchDAO();
         parser = new CaptureOperatorXMLParser();
+        notificationService = new NotificationService();
     }
 
     // =========================================================
@@ -270,6 +272,41 @@ public class CaptureOperatorBatchService {
         System.out.println(
                 "Batch saved successfully: "
                 + batchNumber);
+
+        // =====================================================
+        // AUTOMATIC NOTIFICATION
+        // =====================================================
+
+        /*
+         * The notification is created ONLY after the batch
+         * has been successfully saved.
+         *
+         * Role 3 = Outward Maker
+         *
+         * No Maker user ID is hardcoded here.
+         */
+
+        List<Integer> makerUserIds =
+                notificationService
+                        .getActiveUserIdsByRole(3);
+
+        for (Integer makerUserId : makerUserIds) {
+
+            notificationService.notifyUser(
+                    makerUserId,
+                    batchNumber,
+                    null,
+                    NotificationService.NEW_BATCH,
+                    "New batch "
+                            + batchNumber
+                            + " has been received and is available for processing."
+            );
+        }
+
+        System.out.println(
+                "New batch notification sent to "
+                + makerUserIds.size()
+                + " active Outward Maker(s).");
 
         return batch;
     }

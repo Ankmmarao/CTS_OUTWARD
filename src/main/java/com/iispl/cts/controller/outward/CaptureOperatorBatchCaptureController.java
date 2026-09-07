@@ -85,7 +85,7 @@ public class CaptureOperatorBatchCaptureController
 
         // Temporary default folder path
         batchFolderPath.setValue(
-                "/home/iispl/Desktop");
+                "C:\\Users");
     }
 
     // =========================================================
@@ -367,6 +367,6 @@ public class CaptureOperatorBatchCaptureController
         // Keep temporary default path
      // Temporary default folder path
         batchFolderPath.setValue(
-                "/home/iispl/Desktop");
+                "C:\\Users");
     }
 }
