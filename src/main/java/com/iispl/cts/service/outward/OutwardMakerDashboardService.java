@@ -12,14 +12,22 @@ public class OutwardMakerDashboardService {
 
     private final OutwardMakerDashboardDAO dao;
 
+    private final OutwardValidationService validationService;
+
+
     // ============================================================
     // CONSTRUCTOR
     // ============================================================
 
     public OutwardMakerDashboardService() {
 
-        this.dao = new OutwardMakerDashboardDAO();
+        this.dao =
+                new OutwardMakerDashboardDAO();
+
+        this.validationService =
+                new OutwardValidationService();
     }
+
 
     // ============================================================
     // GET BATCHES
@@ -30,6 +38,7 @@ public class OutwardMakerDashboardService {
 
         return dao.getBatches();
     }
+
 
     // ============================================================
     // FIND BATCH
@@ -49,6 +58,7 @@ public class OutwardMakerDashboardService {
                 dao.getBatches();
 
         if (batches == null) {
+
             return null;
         }
 
@@ -66,6 +76,7 @@ public class OutwardMakerDashboardService {
 
         return null;
     }
+
 
     // ============================================================
     // ASSIGN BATCH
@@ -94,6 +105,7 @@ public class OutwardMakerDashboardService {
         );
     }
 
+
     // ============================================================
     // GET CHEQUES
     // ============================================================
@@ -112,6 +124,7 @@ public class OutwardMakerDashboardService {
                 batchNumber.trim()
         );
     }
+
 
     // ============================================================
     // VALIDATE BATCH
@@ -132,18 +145,18 @@ public class OutwardMakerDashboardService {
         );
     }
 
+
     // ============================================================
     // ASSIGN + VALIDATE
     // ============================================================
     //
-    // IMPORTANT:
+    // Maker clicks OPEN.
     //
-    // This method now returns OutwardValidationResult
-    // because the Controller uses:
-    //
-    //     result.getDataEntryErrors()
-    //     result.getMicrErrors()
-    //     result.getAmountAccountErrors()
+    // 1. Assign batch to logged-in Maker
+    // 2. Load all cheques
+    // 3. Run current validation service
+    // 4. Update batch status
+    // 5. Return validation result to Controller
     //
     // ============================================================
 
@@ -174,8 +187,10 @@ public class OutwardMakerDashboardService {
         String cleanUserId =
                 userId.trim();
 
+
         // --------------------------------------------------------
-        // ASSIGN BATCH
+        // STEP 1
+        // ASSIGN BATCH TO CURRENT MAKER
         // --------------------------------------------------------
 
         boolean assigned =
@@ -183,6 +198,7 @@ public class OutwardMakerDashboardService {
                         cleanBatchNumber,
                         cleanUserId
                 );
+
 
         // --------------------------------------------------------
         // ASSIGNMENT FAILED
@@ -193,14 +209,17 @@ public class OutwardMakerDashboardService {
             return null;
         }
 
+
         // --------------------------------------------------------
-        // GET CHEQUES
+        // STEP 2
+        // LOAD CHEQUES
         // --------------------------------------------------------
 
         List<OutwardCheque> cheques =
                 dao.getCheques(
                         cleanBatchNumber
                 );
+
 
         // --------------------------------------------------------
         // NO CHEQUES
@@ -209,194 +228,100 @@ public class OutwardMakerDashboardService {
         if (cheques == null
                 || cheques.isEmpty()) {
 
-            /*
-             * Assignment succeeded but the batch
-             * contains no cheque records.
-             *
-             * Return a validation result with zero
-             * cheque count rather than returning
-             * boolean.
-             */
-
             return createEmptyValidationResult();
         }
 
+
         // --------------------------------------------------------
-        // CREATE VALIDATION RESULT
+        // STEP 3
+        // RUN CURRENT VALIDATION SERVICE
+        // --------------------------------------------------------
+        //
+        // IMPORTANT:
+        //
+        // OutwardValidationService now performs:
+        //
+        // Data Entry:
+        //     Cheque Number
+        //     Cheque Date
+        //     City Code
+        //     Bank Code
+        //     Branch Code
+        //
+        // Amount / Account:
+        //     Drawer Account Number
+        //     Payee Account Number
+        //     Amount
+        //
+        // MICR:
+        //     NOT VALIDATED
+        //
         // --------------------------------------------------------
 
         OutwardValidationResult result =
-                new OutwardValidationResult();
+                validationService.validate(
+                        cheques
+                );
 
-        result.setTotalCheques(
-                cheques.size()
-        );
-
-        int dataEntryErrors = 0;
-        int micrErrors = 0;
-        int amountAccountErrors = 0;
 
         // --------------------------------------------------------
-        // VALIDATE EACH CHEQUE
+        // STEP 4
+        // UPDATE BATCH STATUS
         // --------------------------------------------------------
 
-        for (OutwardCheque cheque : cheques) {
+        int dataEntryErrors =
+                result.getDataEntryErrors();
 
-            if (cheque == null) {
-                continue;
-            }
+        int amountAccountErrors =
+                result.getAmountAccountErrors();
 
-            // ----------------------------------------------------
-            // DATA ENTRY VALIDATION
-            // ----------------------------------------------------
 
-            if (isDataEntryError(cheque)) {
+        // --------------------------------------------------------
+        // DATA ENTRY ERRORS
+        // --------------------------------------------------------
 
-                dataEntryErrors++;
-            }
+        if (dataEntryErrors > 0) {
 
-            // ----------------------------------------------------
-            // MICR VALIDATION
-            // ----------------------------------------------------
+            dao.updateBatchStatusAfterValidation(
+                    cleanBatchNumber,
+                    "DATA_ENTRY"
+            );
 
-            if (isMicrError(cheque)) {
-
-                micrErrors++;
-            }
-
-            // ----------------------------------------------------
-            // AMOUNT / ACCOUNT VALIDATION
-            // ----------------------------------------------------
-
-            if (isAmountAccountError(cheque)) {
-
-                amountAccountErrors++;
-            }
         }
 
         // --------------------------------------------------------
-        // SET VALIDATION COUNTS
+        // AMOUNT / ACCOUNT ERRORS
         // --------------------------------------------------------
 
-        result.setDataEntryErrors(
-                dataEntryErrors
-        );
+        else if (amountAccountErrors > 0) {
 
-        result.setMicrErrors(
-                micrErrors
-        );
+            dao.updateBatchStatusAfterValidation(
+                    cleanBatchNumber,
+                    "AMOUNT_ACCOUNT"
+            );
 
-        result.setAmountAccountErrors(
-                amountAccountErrors
-        );
+        }
+
+        // --------------------------------------------------------
+        // NO ERRORS
+        // --------------------------------------------------------
+
+        else {
+
+            dao.updateBatchStatusAfterValidation(
+                    cleanBatchNumber,
+                    "READY_FOR_CHECKER"
+            );
+        }
+
+
+        // --------------------------------------------------------
+        // RETURN VALIDATION RESULT
+        // --------------------------------------------------------
 
         return result;
     }
 
-    // ============================================================
-    // DATA ENTRY VALIDATION
-    // ============================================================
-
-    private boolean isDataEntryError(
-            OutwardCheque cheque) {
-
-        /*
-         * Required cheque data:
-         *
-         * cheque number
-         * drawer account
-         * drawer name
-         * amount
-         *
-         * These fields exist in the current
-         * OutwardCheque model.
-         */
-
-        if (isEmpty(
-                cheque.getChequeNumber()
-        )) {
-
-            return true;
-        }
-
-        if (isEmpty(
-                cheque.getDrawerAccountNumber()
-        )) {
-
-            return true;
-        }
-
-        if (isEmpty(
-                cheque.getDrawerName()
-        )) {
-
-            return true;
-        }
-
-        if (cheque.getAmount() == null) {
-
-            return true;
-        }
-
-        return false;
-    }
-
-    // ============================================================
-    // MICR VALIDATION
-    // ============================================================
-
-    private boolean isMicrError(
-            OutwardCheque cheque) {
-
-        /*
-         * Your current OutwardCheque model does not contain
-         * a micrCode property.
-         *
-         * Therefore MICR validation cannot be performed
-         * directly here without changing the model.
-         *
-         * The DAO can handle MICR validation if your
-         * database contains micr_code.
-         */
-
-        return false;
-    }
-
-    // ============================================================
-    // AMOUNT / ACCOUNT VALIDATION
-    // ============================================================
-
-    private boolean isAmountAccountError(
-            OutwardCheque cheque) {
-
-        // --------------------------------------------------------
-        // AMOUNT
-        // --------------------------------------------------------
-
-        if (cheque.getAmount() == null) {
-
-            return true;
-        }
-
-        if (cheque.getAmount()
-                .signum() <= 0) {
-
-            return true;
-        }
-
-        // --------------------------------------------------------
-        // DRAWER ACCOUNT
-        // --------------------------------------------------------
-
-        if (isEmpty(
-                cheque.getDrawerAccountNumber()
-        )) {
-
-            return true;
-        }
-
-        return false;
-    }
 
     // ============================================================
     // EMPTY VALIDATION RESULT
@@ -419,16 +344,6 @@ public class OutwardMakerDashboardService {
         return result;
     }
 
-    // ============================================================
-    // STRING CHECK
-    // ============================================================
-
-    private boolean isEmpty(
-            String value) {
-
-        return value == null
-                || value.trim().isEmpty();
-    }
 
     // ============================================================
     // COMPLETE BATCH
