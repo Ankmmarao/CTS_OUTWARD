@@ -3,6 +3,7 @@ package com.iispl.cts.controller.outward;
 import java.util.List;
 
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
@@ -13,6 +14,7 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 
 import com.iispl.cts.model.outward.OutwardBatch;
+import com.iispl.cts.model.outward.UserSession;
 import com.iispl.cts.service.outward.CaptureOperatorBatchService;
 
 public class CaptureOperatorBatchCaptureController
@@ -43,6 +45,38 @@ public class CaptureOperatorBatchCaptureController
             throws Exception {
 
         super.doAfterCompose(component);
+
+        // -------------------------------------------------
+        // CURRENT LOGGED-IN USER
+        // -------------------------------------------------
+
+        UserSession sessionUser =
+                LoginController.getCurrentUserSession();
+
+        if (sessionUser == null) {
+
+            Executions.sendRedirect("/login.zul");
+            return;
+        }
+
+        // Capture Operator role = 5
+        if (sessionUser.getRoleId() != 5) {
+
+            Messagebox.show(
+                    "Access denied. Capture Operator access is required.",
+                    "Access Denied",
+                    Messagebox.OK,
+                    Messagebox.ERROR);
+
+            Executions.sendRedirect("/login.zul");
+            return;
+        }
+
+        System.out.println(
+                "CAPTURE OPERATOR SESSION: "
+                + "userId=" + sessionUser.getUserId()
+                + ", username=" + sessionUser.getUsername()
+                + ", roleId=" + sessionUser.getRoleId());
 
         service =
                 new CaptureOperatorBatchService();
@@ -235,16 +269,29 @@ public class CaptureOperatorBatchCaptureController
                     + folderPath);
 
             // -------------------------------------------------
-            // TEMPORARY USER
-            //
-            // NO LOGIN
-            // NO SESSION
+            // CURRENT LOGGED-IN USER
             // -------------------------------------------------
 
-            int createdBy = 102;
+            UserSession sessionUser =
+                    LoginController.getCurrentUserSession();
+
+            if (sessionUser == null) {
+
+                Messagebox.show(
+                        "Your session has expired. Please login again.",
+                        "Session Expired",
+                        Messagebox.OK,
+                        Messagebox.EXCLAMATION);
+
+                Executions.sendRedirect("/login.zul");
+                return;
+            }
+
+            int createdBy =
+                    sessionUser.getUserId();
 
             System.out.println(
-                    "Temporary Created By: "
+                    "Created By (Logged-in User ID): "
                     + createdBy);
 
             // -------------------------------------------------

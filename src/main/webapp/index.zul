@@ -13,8 +13,6 @@
             <label value="CTS Application"
                    style="font-size:30px;font-weight:bold;"/>
 
-
-
             <!-- ================= CAPTURE OPERATOR ================= -->
 
             <label value="Capture Operator Flow"
@@ -57,7 +55,6 @@
             <button label="Send to NPCI"
                     width="250px"
                     onClick='Executions.sendRedirect("outward/checker/sendToNPCI.zul")'/>
-
 
 
             <!-- ================= OUTWARD MAKER ================= -->

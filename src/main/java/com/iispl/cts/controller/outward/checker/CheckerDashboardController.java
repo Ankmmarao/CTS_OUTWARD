@@ -14,8 +14,11 @@ import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.ListModelList;
+import org.zkoss.zul.Messagebox;
 
+import com.iispl.cts.controller.outward.LoginController;
 import com.iispl.cts.model.outward.OutwardBatch;
+import com.iispl.cts.model.outward.UserSession;
 import com.iispl.cts.service.outward.checker.CheckerDashboardService;
 
 public class CheckerDashboardController
@@ -38,18 +41,62 @@ public class CheckerDashboardController
     private CheckerDashboardService service;
 
     /*
-     * Temporary Checker user.
-     *
-     * Replace with session user later when login/session
-     * integration is enabled.
+     * ============================================================
+     * CURRENT LOGGED-IN CHECKER
+     * ============================================================
      */
-    private final String currentCheckerUser = "104";
+
+    private String currentCheckerUser;
 
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
 
         super.doAfterCompose(comp);
+
+        /*
+         * ---------------------------------------------------------
+         * CURRENT LOGIN SESSION
+         * ---------------------------------------------------------
+         */
+
+        UserSession sessionUser =
+                LoginController.getCurrentUserSession();
+
+        if (sessionUser == null) {
+
+            Executions.sendRedirect("/login.zul");
+            return;
+        }
+
+        /*
+         * Outward Checker role = 4
+         */
+
+        if (sessionUser.getRoleId() != 4) {
+
+            Messagebox.show(
+                    "Access denied. Outward Checker access is required.",
+                    "Access Denied",
+                    Messagebox.OK,
+                    Messagebox.ERROR);
+
+            Executions.sendRedirect("/login.zul");
+            return;
+        }
+
+        /*
+         * Use logged-in user's actual database user ID.
+         */
+
+        currentCheckerUser =
+                String.valueOf(sessionUser.getUserId());
+
+        System.out.println(
+                "CHECKER SESSION: "
+                + "userId=" + sessionUser.getUserId()
+                + ", username=" + sessionUser.getUsername()
+                + ", roleId=" + sessionUser.getRoleId());
 
         service = new CheckerDashboardService();
 

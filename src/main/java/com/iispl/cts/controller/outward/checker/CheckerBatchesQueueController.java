@@ -47,13 +47,19 @@ public class CheckerBatchesQueueController
         );
 
         System.out.println(
-                "Queue ZUL URL = "
+                "Queue Request Path = "
                 + Executions.getCurrent()
                         .getDesktop()
                         .getRequestPath()
         );
 
-        service = new CheckerBatchService();
+        System.out.println(
+                "queueListbox = "
+                + queueListbox
+        );
+
+        service =
+                new CheckerBatchService();
 
         System.out.println(
                 "CheckerBatchService created successfully."
@@ -70,6 +76,10 @@ public class CheckerBatchesQueueController
         );
     }
 
+    // =========================================================
+    // LOAD ALL BATCHES
+    // =========================================================
+
     private void loadBatches() {
 
         try {
@@ -85,7 +95,7 @@ public class CheckerBatchesQueueController
             if (batches == null) {
 
                 System.out.println(
-                        "CHECKER QUEUE: DAO returned NULL"
+                        "CHECKER QUEUE: Service returned NULL"
                 );
 
                 return;
@@ -96,14 +106,35 @@ public class CheckerBatchesQueueController
                     + batches.size()
             );
 
+            if (queueListbox == null) {
+
+                System.out.println(
+                        "CHECKER QUEUE ERROR: "
+                        + "queueListbox is NULL"
+                );
+
+                return;
+            }
+
             queueListbox.getItems().clear();
 
             for (OutwardBatch batch : batches) {
+
+                if (batch == null) {
+
+                    System.out.println(
+                            "CHECKER QUEUE: NULL batch skipped"
+                    );
+
+                    continue;
+                }
 
                 System.out.println(
                         "CHECKER QUEUE: Adding batch"
                         + " | Batch = "
                         + batch.getBatchNumber()
+                        + " | Branch = "
+                        + batch.getBranchCode()
                         + " | Cheques = "
                         + batch.getNumberOfCheques()
                         + " | Status = "
@@ -122,7 +153,15 @@ public class CheckerBatchesQueueController
 
             System.out.println();
             System.out.println(
+                    "=================================================="
+            );
+
+            System.out.println(
                     "CHECKER QUEUE ERROR"
+            );
+
+            System.out.println(
+                    "=================================================="
             );
 
             e.printStackTrace();
@@ -137,6 +176,10 @@ public class CheckerBatchesQueueController
         }
     }
 
+    // =========================================================
+    // CREATE BATCH ROW
+    // =========================================================
+
     private void createBatchRow(
             final OutwardBatch batch) {
 
@@ -144,7 +187,7 @@ public class CheckerBatchesQueueController
                 new Listitem();
 
         // =====================================================
-        // BATCH NUMBER
+        // 1. BATCH NUMBER
         // =====================================================
 
         Listcell batchCell =
@@ -171,18 +214,47 @@ public class CheckerBatchesQueueController
         );
 
         // =====================================================
-        // TOTAL CHEQUES
+        // 2. BRANCH
+        // =====================================================
+
+        Listcell branchCell =
+                new Listcell();
+
+        Label branchLabel =
+                new Label(
+                        safe(
+                                batch.getBranchCode()
+                        )
+                );
+
+        branchLabel.setStyle(
+                "color:#173B63;"
+        );
+
+        branchCell.appendChild(
+                branchLabel
+        );
+
+        item.appendChild(
+                branchCell
+        );
+
+        // =====================================================
+        // 3. TOTAL CHEQUES
         // =====================================================
 
         Listcell chequeCell =
                 new Listcell();
 
-        chequeCell.appendChild(
+        Label chequeLabel =
                 new Label(
                         String.valueOf(
                                 batch.getNumberOfCheques()
                         )
-                )
+                );
+
+        chequeCell.appendChild(
+                chequeLabel
         );
 
         item.appendChild(
@@ -190,7 +262,7 @@ public class CheckerBatchesQueueController
         );
 
         // =====================================================
-        // STATUS
+        // 4. STATUS
         // =====================================================
 
         Listcell statusCell =
@@ -217,7 +289,7 @@ public class CheckerBatchesQueueController
         );
 
         // =====================================================
-        // ACTION
+        // 5. ACTION
         // =====================================================
 
         Listcell actionCell =
@@ -268,6 +340,10 @@ public class CheckerBatchesQueueController
         item.appendChild(
                 actionCell
         );
+
+        // =====================================================
+        // ADD ROW TO LIST
+        // =====================================================
 
         queueListbox.appendChild(
                 item
@@ -324,7 +400,7 @@ public class CheckerBatchesQueueController
     }
 
     // =========================================================
-    // SAFE VALUE
+    // SAFE STRING
     // =========================================================
 
     private String safe(

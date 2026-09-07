@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+
+    <window title="CTS Login"
+            border="normal"
+            width="420px"
+            closable="false"
+            sizable="false"
+            apply="com.iispl.cts.controller.outward.LoginController"
+            style="margin:100px auto;">
+
+        <vlayout spacing="15px"
+                 style="padding:30px;">
+
+            <label value="CTS Outward System"
+                   style="font-size:24px;
+                          font-weight:bold;
+                          text-align:center;
+                          width:100%;"/>
+
+            <separator/>
+
+            <grid>
+
+                <columns>
+                    <column width="120px"/>
+                    <column/>
+                </columns>
+
+                <rows>
+
+                    <row>
+                        <label value="Username"/>
+
+                        <textbox id="username"
+                                 width="100%"
+                                 placeholder="Enter username"/>
+                    </row>
+
+                    <row>
+                        <label value="Password"/>
+
+                        <textbox id="password"
+                                 type="password"
+                                 width="100%"
+                                 placeholder="Enter password"/>
+                    </row>
+
+                </rows>
+
+            </grid>
+
+            <button id="loginButton"
+                    label="Login"
+                    width="100%"
+                    style="font-weight:bold;"/>
+
+        </vlayout>
+
+    </window>
+
+</zk>

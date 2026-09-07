@@ -21,6 +21,7 @@ import org.zkoss.zul.Messagebox;
 
 import com.iispl.cts.model.outward.OutwardBatch;
 import com.iispl.cts.model.outward.OutwardValidationResult;
+import com.iispl.cts.model.outward.UserSession;
 import com.iispl.cts.service.outward.OutwardMakerDashboardService;
 
 public class OutwardMakerDashboardController
@@ -53,15 +54,8 @@ public class OutwardMakerDashboardController
     // =========================================================
     // CURRENT MAKER USER
     // =========================================================
-    //
-    // Temporary testing user.
-    // User 103 = Maker.
-    //
-    // Later this can be replaced with the logged-in
-    // session user ID.
-    // =========================================================
 
-    private final String currentUserId = "103";
+    private String currentUserId;
 
     // =========================================================
     // AFTER COMPOSE
@@ -73,10 +67,71 @@ public class OutwardMakerDashboardController
 
         super.doAfterCompose(comp);
 
+        // =====================================================
+        // GET LOGGED-IN USER FROM SESSION
+        // =====================================================
+
+        UserSession sessionUser =
+                LoginController.getCurrentUserSession();
+
+        if (sessionUser == null) {
+
+            System.out.println(
+                    "No logged-in user session found."
+            );
+
+            Executions.sendRedirect("/login.zul");
+
+            return;
+        }
+
+        // =====================================================
+        // CHECK OUTWARD MAKER ROLE
+        // =====================================================
+
+        if (sessionUser.getRoleId() != 3) {
+
+            System.out.println(
+                    "Unauthorized role for Outward Maker: "
+                    + sessionUser.getRoleId()
+            );
+
+            Messagebox.show(
+                    "You are not authorized to access the Outward Maker module.",
+                    "Access Denied",
+                    Messagebox.OK,
+                    Messagebox.ERROR
+            );
+
+            Executions.sendRedirect("/login.zul");
+
+            return;
+        }
+
+        // =====================================================
+        // DYNAMIC LOGGED-IN USER ID
+        // =====================================================
+
+        currentUserId =
+                String.valueOf(
+                        sessionUser.getUserId()
+                );
+
         System.out.println("======================================");
         System.out.println("OUTWARD MAKER DASHBOARD");
         System.out.println("doAfterCompose() START");
-        System.out.println("Current Maker User : " + currentUserId);
+        System.out.println(
+                "Current Maker User : "
+                + currentUserId
+        );
+        System.out.println(
+                "Username           : "
+                + sessionUser.getUsername()
+        );
+        System.out.println(
+                "Role ID            : "
+                + sessionUser.getRoleId()
+        );
         System.out.println("======================================");
 
         service =
@@ -180,8 +235,6 @@ public class OutwardMakerDashboardController
                         "Maker User        : "
                         + batch.getMakerUserNumber()
                 );
-
-               
 
                 System.out.println(
                         "Lock Status       : "
@@ -507,13 +560,6 @@ public class OutwardMakerDashboardController
 
         // -----------------------------------------------------
         // CURRENT MAKER
-        // -----------------------------------------------------
-        //
-        // User 103 is used for the current test.
-        //
-        // We intentionally do NOT read the session here,
-        // because your current login/session was returning
-        // "Logged-in user was not found."
         // -----------------------------------------------------
 
         String userId =
