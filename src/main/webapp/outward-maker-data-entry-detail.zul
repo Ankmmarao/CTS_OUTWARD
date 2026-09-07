@@ -1,32 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?page title="Data Entry Detail"?>
+<?page title="Data Entry Detail" contentType="text/html;charset=UTF-8"?>
 
 <zk>
-    <!-- Reset default browser & ZK margins to remove spacing/scrollbars -->
-    <style>
+    <style><![CDATA[
+        /* Base Viewport Reset */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
             height: 100% !important;
+            width: 100% !important;
             overflow: hidden !important;
             background: #F4F7FB;
         }
-        .z-window-embedded-cnt, .z-window-content {
+
+        /* Borderlayout & Window Resets */
+        .z-window-embedded,
+        .z-window-embedded-cnt,
+        .z-window-content {
             padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            width: 100% !important;
+            height: 100% !important;
         }
-        .z-north, .z-west, .z-center {
+
+        .z-borderlayout {
+            background: transparent !important;
             border: none !important;
         }
+
+        .z-north, .z-west, .z-center, .z-south, .z-east {
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
         .z-north-body, .z-west-body, .z-center-body {
             padding: 0 !important;
             margin: 0 !important;
+            height: 100% !important;
+        }
+
+        .z-west {
+            background: #081B33 !important;
+        }
+
+        /* Sidebar Navigation States */
+        .nav-btn-active {
+            background: #075BC8 !important;
+            color: #FFFFFF !important;
+        }
+        .nav-btn-inactive {
+            background: transparent !important;
+            color: #C4D1E5 !important;
         }
 
         /* Equal-height compact card container */
         .equal-card {
             background: #FFFFFF !important;
             border: 1px solid #DCE5F0 !important;
-            border-radius: 6px !important;
+            border-radius: 8px !important;
             box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04) !important;
         }
         .equal-card > .z-groupbox-content {
@@ -34,23 +67,35 @@
             height: 100% !important;
         }
 
-        /* Professional banking input boxes */
-        .single-field-box {
+        /* Form Inputs & Datebox */
+        .single-field-box,
+        .single-field-box input {
             height: 38px !important;
             font-size: 13px !important;
             border: 1px solid #CBD5E1 !important;
             border-radius: 6px !important;
-            padding: 6px 12px !important;
             color: #0F172A !important;
             background: #F8FAFC !important;
             font-weight: 500 !important;
             transition: all 0.2s ease !important;
+            box-sizing: border-box !important;
         }
-        .single-field-box:focus {
+        .single-field-box:focus,
+        .single-field-box input:focus {
             background: #FFFFFF !important;
             border-color: #2457D6 !important;
             box-shadow: 0 0 0 3px rgba(36, 87, 214, 0.15) !important;
             outline: none !important;
+        }
+
+        /* Datebox Button */
+        .single-field-box.z-datebox .z-datebox-button {
+            height: 38px !important;
+            line-height: 36px !important;
+            border: 1px solid #CBD5E1 !important;
+            border-left: none !important;
+            border-radius: 0 6px 6px 0 !important;
+            background: #F8FAFC !important;
         }
 
         /* Prominent field labels */
@@ -67,118 +112,156 @@
             margin-left: 2px;
         }
 
-/* Image toolbar buttons */
+        /* Image toolbar buttons */
+        .img-tool-btn.z-button {
+            background: #F1F5F9 !important;
+            border: 1px solid #CBD5E1 !important;
+            color: #334155 !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            height: 30px !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+        }
+        .img-tool-btn.z-button:hover {
+            background: #E2E8F0 !important;
+            color: #0F172A !important;
+        }
 
-.icon-symbol-btn {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: #334155 !important;
-    font-size: 18px !important;
-    font-weight: bold !important;
-    cursor: pointer !important;
-    height: 30px !important;
-    padding: 0 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: color 0.15s ease, transform 0.1s ease !important;
-}
-.icon-symbol-btn:hover {
-    background: #E2E8F0 !important;
-    border-radius: 4px !important;
-    color: #0F172A !important;
-}
-    </style>
+        .icon-symbol-btn.z-button {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #334155 !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            height: 30px !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: color 0.15s ease, transform 0.1s ease !important;
+        }
+        .icon-symbol-btn.z-button:hover {
+            background: #E2E8F0 !important;
+            border-radius: 4px !important;
+            color: #0F172A !important;
+        }
+    ]]></style>
 
     <window
+        id="outwardMakerDataEntryDetailWindow"
         width="100%"
-        height="100vh"
+        height="100%"
         border="none"
-        style="padding:0;margin:0;"
         apply="com.iispl.cts.controller.outward.OutwardMakerDataEntryDetailController">
 
-        <borderlayout
-            width="100%"
-            height="100%"
-            style="background:#F4F7FB;margin:0;padding:0;">
+        <borderlayout width="100%" height="100%">
 
-            <!-- ================= 1. EXPANDED HEADER (72PX) ================= -->
-            <north 
-                size="72px" 
-                border="none" 
-                margins="0,0,0,0" 
-                style="padding:0;margin:0;border:none;overflow:hidden;">
-                <include src="/header.zul"/>
+            <!-- ================= HEADER (Flush 62px) ================= -->
+            <north size="62px" border="none" margins="0,0,0,0">
+                <include src="/header.zul" style="display:block; width:100%; height:62px;"/>
             </north>
 
-            <!-- ================= 2. SIDEBAR NAVIGATION ================= -->
-            <west 
-                size="240px" 
-                border="none" 
-                margins="0,0,0,0" 
-                style="padding:0;margin:0;border:none;background:#0b1e36;">
-                <include src="/makersidebar.zul"/>
+            <!-- ================= SIDEBAR NAVIGATION (Flush 280px) ================= -->
+            <west size="280px" border="none" margins="0,0,0,0">
+                <vlayout width="280px"
+                         height="100%"
+                         spacing="5px"
+                         style="background:#081B33; padding: 18px 0 0 0; box-sizing: border-box;">
+
+                    <button label="⌂   Dashboard"
+                            width="100%"
+                            height="52px"
+                            sclass="nav-btn-inactive"
+                            style="border:none; text-align:left; padding-left:22px; font-size:16px; cursor:pointer;"
+                            onClick='Executions.sendRedirect("outward-maker-dashboard.zul")'/>
+
+                    <button label="☑   Data Entry"
+                            width="100%"
+                            height="52px"
+                            sclass="nav-btn-active"
+                            style="border:none; text-align:left; padding-left:22px; font-size:16px; cursor:pointer;"
+                            onClick='Executions.sendRedirect("outward-maker-data-entry.zul")'/>
+
+                    <button label="⚒   MICR Repair"
+                            width="100%"
+                            height="52px"
+                            sclass="nav-btn-inactive"
+                            style="border:none; text-align:left; padding-left:22px; font-size:16px; cursor:pointer;"
+                            onClick='Executions.sendRedirect("outward-maker-micr-repair.zul")'/>
+
+                    <button label="▦   Amount And Account"
+                            width="100%"
+                            height="52px"
+                            sclass="nav-btn-inactive"
+                            style="border:none; text-align:left; padding-left:22px; font-size:16px; cursor:pointer;"
+                            onClick='Executions.sendRedirect("outward-maker-amount-account.zul")'/>
+
+                    <button label="➤   Send to Checker"
+                            width="100%"
+                            height="52px"
+                            sclass="nav-btn-inactive"
+                            style="border:none; text-align:left; padding-left:22px; font-size:16px; cursor:pointer;"
+                            onClick='Executions.sendRedirect("outward-maker-send-to-checker.zul")'/>
+                </vlayout>
             </west>
 
-            <!-- ================= 3. CENTER WORKSPACE ================= -->
-            <center 
-                border="none" 
-                margins="0,0,0,0" 
-                style="overflow:hidden;border:none;background:#F4F7FB;">
+            <!-- ================= CENTER WORKSPACE ================= -->
+            <center border="none" margins="0,0,0,0" style="background:#F4F7FB; overflow:hidden;">
                 
                 <vlayout
-                    spacing="8px"
-                    style="padding:10px 16px; box-sizing:border-box;">
+                    spacing="12px"
+                    width="100%"
+                    height="100%"
+                    style="padding: 16px 24px; box-sizing: border-box; overflow: hidden;">
 
-                    <!-- ================= BATCH HEADER STRIP ================= -->
-                    <groupbox
+                    <!-- BATCH HEADER STRIP -->
+                    <div
                         width="100%"
-                        style="background:white;border:1px solid #DCE5F0;border-radius:6px;">
-                        <hlayout
-                            width="100%"
-                            valign="middle"
-                            style="padding:4px 14px;">
+                        style="background:white; border:1px solid #DCE5F0; border-radius:8px; padding:10px 18px; box-sizing:border-box;">
+                        <hlayout width="100%" valign="middle">
                             <label
                                 value="Batch ID : "
-                                style="font-size:14px;font-weight:bold;color:#334155;"/>
+                                style="font-size:14px; font-weight:bold; color:#334155;"/>
                             <label
                                 id="batchIdLabel"
                                 value=""
-                                style="font-size:15px;font-weight:bold;color:#175CD3;"/>
+                                style="font-size:15px; font-weight:bold; color:#175CD3;"/>
                             <space hflex="1"/>
                             <label
                                 id="chequeProgressLabel"
                                 value=""
-                                style="font-size:14px;font-weight:bold;color:#175CD3;"/>
+                                style="font-size:14px; font-weight:bold; color:#175CD3;"/>
                         </hlayout>
-                    </groupbox>
+                    </div>
 
-                    <!-- ================= MAIN SPLIT ROW (HEIGHT: 430PX) ================= -->
+                    <!-- MAIN SPLIT ROW (CHEQUE + FORM) -->
                     <hlayout
                         width="100%"
-                        height="430px"
-                        spacing="14px"
+                        vflex="1"
+                        spacing="16px"
                         valign="top">
 
-                        <!-- ================= LEFT: SCANNED CHEQUE CARD ================= -->
+                        <!-- LEFT: SCANNED CHEQUE CARD -->
                         <groupbox
-                            hflex="7"
-                            height="430px"
+                            hflex="1"
+                            vflex="1"
                             sclass="equal-card">
-                            <caption label="Scanned Cheque" style="font-size:13px;font-weight:bold;color:#122B49;"/>
+                            <caption label="Scanned Cheque" style="font-size:13px; font-weight:bold; color:#122B49;"/>
 
                             <vlayout
                                 width="100%"
                                 height="100%"
-                                spacing="6px"
-                                style="padding:6px;box-sizing:border-box;justify-content:space-between;">
+                                spacing="8px"
+                                style="padding:10px; box-sizing:border-box; justify-content:space-between;">
 
-                                <!-- CHEQUE CANVAS (STRICTLY CONFINED TO CARD DIMENSIONS) -->
+                                <!-- CHEQUE CANVAS -->
                                 <vlayout
                                     width="100%"
-                                    height="340px"
-                                    style="overflow:hidden; text-align:center; align-items:center; justify-content:center; background:#F8FAFC; border:1px solid #EAECF0; border-radius:4px; padding:6px; box-sizing:border-box;">
+                                    vflex="1"
+                                    style="overflow:hidden; text-align:center; align-items:center; justify-content:center; background:#F8FAFC; border:1px solid #EAECF0; border-radius:6px; padding:6px; box-sizing:border-box;">
                                     <image
                                         id="frontImage"
                                         src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Subcheck_FRONT.png"
@@ -195,34 +278,31 @@
                                         style="object-fit:contain; max-width:100%; max-height:100%; display:block; margin:auto;"/>
                                 </vlayout>
 
-                                <!-- COMPACT TOOLBAR DIRECTLY UNDER CHEQUE -->
-                          
-<!-- COMPACT TOOLBAR DIRECTLY UNDER CHEQUE -->
-<hlayout
-    width="100%"
-    spacing="4px"
-    style="justify-content:center;padding:2px 0;">
-    <button id="frontImageButton" label="Front" hflex="1" sclass="img-tool-btn"/>
-    <button id="backImageButton" label="Back" hflex="1" sclass="img-tool-btn"/>
-    <button id="zoomInButton" label="+" tooltiptext="Zoom In" hflex="1" sclass="icon-symbol-btn"/>
-    <button id="zoomOutButton" label="−" tooltiptext="Zoom Out" hflex="1" sclass="icon-symbol-btn"/>
-    <button id="rotateButton" label="↻" tooltiptext="Rotate" hflex="1" sclass="icon-symbol-btn"/>
-</hlayout>              </vlayout>
+                                <!-- COMPACT IMAGE TOOLBAR -->
+                                <hlayout
+                                    width="100%"
+                                    spacing="6px"
+                                    style="justify-content:center; padding:2px 0;">
+                                    <button id="frontImageButton" label="Front" hflex="1" sclass="img-tool-btn"/>
+                                    <button id="backImageButton" label="Back" hflex="1" sclass="img-tool-btn"/>
+                                    <button id="zoomInButton" label="+" tooltiptext="Zoom In" hflex="1" sclass="icon-symbol-btn"/>
+                                    <button id="zoomOutButton" label="−" tooltiptext="Zoom Out" hflex="1" sclass="icon-symbol-btn"/>
+                                    <button id="rotateButton" label="↻" tooltiptext="Rotate" hflex="1" sclass="icon-symbol-btn"/>
+                                </hlayout>
+                            </vlayout>
                         </groupbox>
 
-                        <!-- ================= RIGHT: CHEQUE DATA VERIFICATION FORM ================= -->
+                        <!-- RIGHT: DATA VERIFICATION FORM -->
                         <groupbox
-                            hflex="7"
-                            height="430px"
+                            hflex="1"
+                            vflex="1"
                             sclass="equal-card">
-                            <caption label="Cheque Data Verification" style="font-size:13px;font-weight:bold;color:#122B49;"/>
+                            <caption label="Cheque Data Verification" style="font-size:13px; font-weight:bold; color:#122B49;"/>
 
                             <vlayout
                                 width="100%"
                                 height="100%"
-                                style="padding:14px 18px;box-sizing:border-box;justify-content:space-between;">
-
-                               
+                                style="padding:16px 20px; box-sizing:border-box; justify-content:space-between;">
 
                                 <!-- ROW 1: CHEQUE NUMBER & ACCOUNT NUMBER -->
                                 <hlayout width="100%" spacing="16px">
@@ -257,11 +337,12 @@
                                             <label value="Cheque Date" sclass="single-field-label"/>
                                             <label value="*" sclass="label-star"/>
                                         </hlayout>
-                                        <!-- Replace this: -->
-<!-- <textbox id="chequeDateTextbox" width="100%" /> -->
-
-<!-- With this: -->
-<datebox id="chequeDatebox" width="100%" format="yyyy-MM-dd" />
+                                        <datebox
+                                            id="chequeDatebox"
+                                            width="100%"
+                                            format="yyyy-MM-dd"
+                                            placeholder="YYYY-MM-DD"
+                                            sclass="single-field-box"/>
                                     </vlayout>
                                     <vlayout hflex="1" spacing="4px">
                                         <hlayout spacing="0" valign="middle">
@@ -321,31 +402,31 @@
 
                     </hlayout>
 
-                    <!-- ================= 4. BOTTOM ACTION CONTROL BAR (REJECT BESIDE SAVE) ================= -->
+                    <!-- BOTTOM ACTION CONTROL BAR -->
                     <hlayout
                         width="100%"
                         valign="middle"
-                        style="padding-top:4px;align-items:center;">
+                        style="padding-top:2px; align-items:center;">
 
                         <button
                             id="prevButton"
                             label="Prev"
                             width="90px"
-                            style="height:38px;font-size:13px;font-weight:600;cursor:pointer;"/>
+                            style="height:38px; font-size:13px; font-weight:600; cursor:pointer;"/>
 
                         <button
                             id="saveNextButton"
                             label="💾 Save &amp; Next"
                             width="145px"
-                            style="height:38px;background:#2457D6;color:white;border:none;margin-left:8px;font-size:13px;font-weight:bold;cursor:pointer;"/>
+                            style="height:38px; background:#2457D6; color:white; border:none; border-radius:6px; margin-left:8px; font-size:13px; font-weight:bold; cursor:pointer;"/>
 
                         <button
                             id="rejectButton"
                             label="Reject"
                             width="110px"
-                            style="height:38px;background:white;color:#D92D20;border:1px solid #D92D20;margin-left:8px;font-size:13px;font-weight:bold;cursor:pointer;"/>
+                            style="height:38px; background:white; color:#D92D20; border:1px solid #D92D20; border-radius:6px; margin-left:8px; font-size:13px; font-weight:bold; cursor:pointer;"/>
 
-                        <!-- Hidden autowire buttons for controller safety -->
+                        <!-- Hidden autowired controls for controller compatibility -->
                         <button id="nextButton" visible="false"/>
                         <button id="backButton" visible="false"/>
                     </hlayout>
@@ -356,7 +437,3 @@
         </borderlayout>
     </window>
 </zk>
-
-
-
-
