@@ -9,14 +9,16 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Button;
-import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 
+import com.iispl.cts.controller.outward.LoginController;
 import com.iispl.cts.model.outward.OutwardBatch;
+import com.iispl.cts.model.outward.UserSession;
 import com.iispl.cts.service.outward.checker.CheckerBatchService;
 
 public class CheckerBatchesQueueController
@@ -24,10 +26,40 @@ public class CheckerBatchesQueueController
 
     private static final long serialVersionUID = 1L;
 
+
+    /*
+     * ============================================================
+     * ZUL COMPONENT
+     * ============================================================
+     */
+
     @Wire
     private Listbox queueListbox;
 
+
+    /*
+     * ============================================================
+     * SERVICE
+     * ============================================================
+     */
+
     private CheckerBatchService service;
+
+
+    /*
+     * ============================================================
+     * CURRENT LOGGED-IN CHECKER
+     * ============================================================
+     */
+
+    private String currentCheckerUser;
+
+
+    /*
+     * ============================================================
+     * PAGE LOAD
+     * ============================================================
+     */
 
     @Override
     public void doAfterCompose(Component comp)
@@ -37,48 +69,104 @@ public class CheckerBatchesQueueController
 
         System.out.println();
         System.out.println(
-                "=================================================="
+                "=========================================="
         );
         System.out.println(
-                "CHECKER BATCH QUEUE CONTROLLER STARTED"
+                "CHECKER BATCHES QUEUE CONTROLLER STARTED"
         );
         System.out.println(
-                "=================================================="
+                "=========================================="
         );
 
-        System.out.println(
-                "Queue Request Path = "
-                + Executions.getCurrent()
-                        .getDesktop()
-                        .getRequestPath()
-        );
+
+        /*
+         * --------------------------------------------------------
+         * GET CURRENT LOGGED-IN USER
+         * --------------------------------------------------------
+         */
+
+        UserSession sessionUser =
+                LoginController.getCurrentUserSession();
+
+
+        /*
+         * No session
+         */
+
+        if (sessionUser == null) {
+
+            Executions.sendRedirect(
+                    "/login.zul"
+            );
+
+            return;
+        }
+
+
+        /*
+         * Check role.
+         *
+         * Role ID 4 = Outward Checker
+         */
+
+        if (sessionUser.getRoleId() != 4) {
+
+            Messagebox.show(
+                    "Access denied. Outward Checker access is required.",
+                    "Access Denied",
+                    Messagebox.OK,
+                    Messagebox.ERROR
+            );
+
+            Executions.sendRedirect(
+                    "/login.zul"
+            );
+
+            return;
+        }
+
+
+        /*
+         * Get actual logged-in Checker ID.
+         *
+         * Example:
+         *
+         * userId = 104
+         */
+
+        currentCheckerUser =
+                String.valueOf(
+                        sessionUser.getUserId()
+                );
+
 
         System.out.println(
-                "queueListbox = "
-                + queueListbox
+                "CURRENT CHECKER USER ID = "
+                + currentCheckerUser
         );
+
+
+        /*
+         * Create Service
+         */
 
         service =
                 new CheckerBatchService();
 
-        System.out.println(
-                "CheckerBatchService created successfully."
-        );
+
+        /*
+         * Load batches locked by this Checker
+         */
 
         loadBatches();
-
-        System.out.println(
-                "CHECKER BATCH QUEUE CONTROLLER FINISHED"
-        );
-
-        System.out.println(
-                "=================================================="
-        );
     }
 
-    // =========================================================
-    // LOAD ALL BATCHES
-    // =========================================================
+
+    /*
+     * ============================================================
+     * LOAD BATCHES
+     * ============================================================
+     */
 
     private void loadBatches() {
 
@@ -86,239 +174,197 @@ public class CheckerBatchesQueueController
 
             System.out.println();
             System.out.println(
-                    "CHECKER QUEUE: Loading ALL batches..."
+                    "=========================================="
             );
+            System.out.println(
+                    "LOADING BATCHES LOCKED BY CHECKER"
+            );
+            System.out.println(
+                    "Checker User ID = "
+                    + currentCheckerUser
+            );
+            System.out.println(
+                    "=========================================="
+            );
+
+
+            /*
+             * Get only batches locked by this Checker.
+             */
 
             List<OutwardBatch> batches =
-                    service.getCheckerQueueBatches();
+                    service.getCheckerQueueBatches(
+                            currentCheckerUser
+                    );
 
-            if (batches == null) {
 
-                System.out.println(
-                        "CHECKER QUEUE: Service returned NULL"
-                );
-
-                return;
-            }
-
-            System.out.println(
-                    "CHECKER QUEUE: Batch count = "
-                    + batches.size()
-            );
-
-            if (queueListbox == null) {
-
-                System.out.println(
-                        "CHECKER QUEUE ERROR: "
-                        + "queueListbox is NULL"
-                );
-
-                return;
-            }
+            /*
+             * Clear old rows
+             */
 
             queueListbox.getItems().clear();
 
-            for (OutwardBatch batch : batches) {
 
-                if (batch == null) {
+            /*
+             * Print number of batches
+             */
 
-                    System.out.println(
-                            "CHECKER QUEUE: NULL batch skipped"
-                    );
+            System.out.println(
+                    "TOTAL BATCHES FOUND = "
+                    + batches.size()
+            );
 
-                    continue;
-                }
+
+            /*
+             * If no batches
+             */
+
+            if (batches.isEmpty()) {
 
                 System.out.println(
-                        "CHECKER QUEUE: Adding batch"
-                        + " | Batch = "
-                        + batch.getBatchNumber()
-                        + " | Branch = "
-                        + batch.getBranchCode()
-                        + " | Cheques = "
-                        + batch.getNumberOfCheques()
-                        + " | Status = "
-                        + batch.getBatchStatus()
+                        "NO LOCKED BATCHES FOUND FOR CHECKER "
+                        + currentCheckerUser
                 );
+
+                return;
+            }
+
+
+            /*
+             * Create table rows
+             */
+
+            for (OutwardBatch batch : batches) {
 
                 createBatchRow(batch);
             }
 
+
             System.out.println(
-                    "CHECKER QUEUE: UI row count = "
-                    + queueListbox.getItemCount()
+                    "TOTAL BATCHES DISPLAYED = "
+                    + batches.size()
             );
 
         } catch (Exception e) {
 
-            System.out.println();
-            System.out.println(
-                    "=================================================="
-            );
-
-            System.out.println(
-                    "CHECKER QUEUE ERROR"
-            );
-
-            System.out.println(
-                    "=================================================="
-            );
-
             e.printStackTrace();
 
-            Messagebox.show(
-                    "Unable to load checker batches.\n\n"
-                    + e.getMessage(),
-                    "Checker Queue",
-                    Messagebox.OK,
-                    Messagebox.ERROR
+            Clients.showNotification(
+                    "Unable to load Batches Queue.",
+                    Clients.NOTIFICATION_TYPE_ERROR,
+                    null,
+                    "top_center",
+                    4000
             );
         }
     }
 
-    // =========================================================
-    // CREATE BATCH ROW
-    // =========================================================
+
+    /*
+     * ============================================================
+     * CREATE TABLE ROW
+     * ============================================================
+     */
 
     private void createBatchRow(
             final OutwardBatch batch) {
 
+
+        /*
+         * Create row
+         */
+
         Listitem item =
                 new Listitem();
 
-        // =====================================================
-        // 1. BATCH NUMBER
-        // =====================================================
 
-        Listcell batchCell =
+        /*
+         * --------------------------------------------------------
+         * BATCH NUMBER
+         * --------------------------------------------------------
+         */
+
+        Listcell batchNumberCell =
                 new Listcell();
 
-        Label batchLabel =
-                new Label(
-                        safe(
-                                batch.getBatchNumber()
-                        )
-                );
-
-        batchLabel.setStyle(
-                "font-weight:bold;"
-                + "color:#173B63;"
-        );
-
-        batchCell.appendChild(
-                batchLabel
+        batchNumberCell.setLabel(
+                batch.getBatchNumber()
         );
 
         item.appendChild(
-                batchCell
+                batchNumberCell
         );
 
-        // =====================================================
-        // 2. BRANCH
-        // =====================================================
 
-        Listcell branchCell =
-                new Listcell();
-
-        Label branchLabel =
-                new Label(
-                        safe(
-                                batch.getBranchCode()
-                        )
-                );
-
-        branchLabel.setStyle(
-                "color:#173B63;"
-        );
-
-        branchCell.appendChild(
-                branchLabel
-        );
-
-        item.appendChild(
-                branchCell
-        );
-
-        // =====================================================
-        // 3. TOTAL CHEQUES
-        // =====================================================
+        /*
+         * --------------------------------------------------------
+         * TOTAL CHEQUES
+         * --------------------------------------------------------
+         */
 
         Listcell chequeCell =
                 new Listcell();
 
-        Label chequeLabel =
-                new Label(
-                        String.valueOf(
-                                batch.getNumberOfCheques()
-                        )
-                );
-
-        chequeCell.appendChild(
-                chequeLabel
+        chequeCell.setLabel(
+                String.valueOf(
+                        batch.getNumberOfCheques()
+                )
         );
 
         item.appendChild(
                 chequeCell
         );
 
-        // =====================================================
-        // 4. STATUS
-        // =====================================================
+
+        /*
+         * --------------------------------------------------------
+         * STATUS
+         * --------------------------------------------------------
+         *
+         * Always display:
+         *
+         * Locked by Checker
+         */
 
         Listcell statusCell =
                 new Listcell();
 
-        Label statusLabel =
-                new Label(
-                        safe(
-                                batch.getBatchStatus()
-                        )
-                );
-
-        statusLabel.setStyle(
-                "font-weight:bold;"
-                + "color:#173B63;"
-        );
-
-        statusCell.appendChild(
-                statusLabel
+        statusCell.setLabel(
+                "Locked by Checker"
         );
 
         item.appendChild(
                 statusCell
         );
 
-        // =====================================================
-        // 5. ACTION
-        // =====================================================
+
+        /*
+         * --------------------------------------------------------
+         * ACTION
+         * --------------------------------------------------------
+         */
 
         Listcell actionCell =
                 new Listcell();
 
+
         Button openButton =
-                new Button(
-                        "Open"
-                );
+                new Button("Open");
 
-        openButton.setWidth(
-                "80px"
+
+        openButton.setSclass(
+                "btn btn-primary"
         );
 
-        openButton.setHeight(
-                "34px"
-        );
 
-        openButton.setStyle(
-                "background:#078FE5;"
-                + "color:white;"
-                + "border:none;"
-                + "border-radius:4px;"
-                + "font-weight:bold;"
-                + "cursor:pointer;"
-        );
+        /*
+         * Open selected batch
+         */
 
         openButton.addEventListener(
+
                 Events.ON_CLICK,
+
                 new EventListener<Event>() {
 
                     @Override
@@ -333,6 +379,7 @@ public class CheckerBatchesQueueController
                 }
         );
 
+
         actionCell.appendChild(
                 openButton
         );
@@ -341,18 +388,28 @@ public class CheckerBatchesQueueController
                 actionCell
         );
 
-        // =====================================================
-        // ADD ROW TO LIST
-        // =====================================================
+
+        /*
+         * Add row to Listbox
+         */
 
         queueListbox.appendChild(
                 item
         );
+
+
+        System.out.println(
+                "DISPLAYED BATCH = "
+                + batch.getBatchNumber()
+        );
     }
 
-    // =========================================================
-    // OPEN BATCH
-    // =========================================================
+
+    /*
+     * ============================================================
+     * OPEN BATCH
+     * ============================================================
+     */
 
     private void openBatch(
             String batchNumber) {
@@ -360,58 +417,27 @@ public class CheckerBatchesQueueController
         if (batchNumber == null
                 || batchNumber.trim().isEmpty()) {
 
-            Messagebox.show(
-                    "Invalid batch number.",
-                    "Batch",
-                    Messagebox.OK,
-                    Messagebox.ERROR
-            );
-
             return;
         }
 
+
         System.out.println(
-                "CHECKER QUEUE: Opening batch = "
+                "OPENING BATCH = "
                 + batchNumber
         );
 
-        try {
 
-            Executions.sendRedirect(
-                    "/outward/checker/batchVerification.zul"
-                    + "?batchNumber="
-                    + Executions.encodeURL(
-                            batchNumber.trim()
-                    )
-            );
+        /*
+         * Go to Batch Verification page.
+         */
 
-        } catch (Exception e) {
+        Executions.sendRedirect(
 
-            e.printStackTrace();
-
-            Messagebox.show(
-                    "Unable to open batch.\n\n"
-                    + e.getMessage(),
-                    "Batch",
-                    Messagebox.OK,
-                    Messagebox.ERROR
-            );
-        }
-    }
-
-    // =========================================================
-    // SAFE STRING
-    // =========================================================
-
-    private String safe(
-            String value) {
-
-        if (value == null
-                || value.trim().isEmpty()) {
-
-            return "-";
-        }
-
-        return value.trim();
+                "/outward/checker/batchVerification.zul"
+                + "?batchNumber="
+                + Executions.encodeURL(
+                        batchNumber
+                )
+        );
     }
 }

@@ -5,53 +5,50 @@ import java.util.List;
 
 import com.iispl.cts.dao.outward.checker.CheckerBatchDAO;
 import com.iispl.cts.model.outward.OutwardBatch;
-import com.iispl.cts.model.outward.OutwardCheque;
 
 public class CheckerBatchService {
 
     private final CheckerBatchDAO batchDAO;
 
-    // =========================================================
-    // CONSTRUCTOR
-    // =========================================================
+
+    /*
+     * ============================================================
+     * CONSTRUCTOR
+     * ============================================================
+     */
 
     public CheckerBatchService() {
 
-        batchDAO = new CheckerBatchDAO();
+        batchDAO =
+                new CheckerBatchDAO();
     }
 
-    // =========================================================
-    // GET CHEQUES BY BATCH NUMBER
-    // =========================================================
 
-    public List<OutwardCheque> getChequesByBatchId(
-            String batchId) {
+    /*
+     * ============================================================
+     * GET CURRENT CHECKER'S LOCKED BATCHES
+     * ============================================================
+     */
 
-        if (batchId == null ||
-            batchId.trim().isEmpty()) {
+    public List<OutwardBatch> getCheckerQueueBatches(
+            String checkerUserId) {
+
+        /*
+         * Validate Checker ID
+         */
+
+        if (checkerUserId == null
+                || checkerUserId.trim().isEmpty()) {
 
             return Collections.emptyList();
         }
 
-        return batchDAO.getChequesByBatchId(
-                batchId.trim()
+        /*
+         * Get batches locked by this Checker only
+         */
+
+        return batchDAO.getCheckerBatches(
+                checkerUserId.trim()
         );
-    }
-
-    // =========================================================
-    // GET CHECKER QUEUE BATCHES
-    // =========================================================
-
-    public List<OutwardBatch> getCheckerQueueBatches() {
-
-        List<OutwardBatch> batches =
-                batchDAO.getCheckerBatches();
-
-        if (batches == null) {
-
-            return Collections.emptyList();
-        }
-
-        return batches;
     }
 }
