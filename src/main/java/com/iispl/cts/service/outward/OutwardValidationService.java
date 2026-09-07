@@ -1,9 +1,7 @@
-
 package com.iispl.cts.service.outward;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import com.iispl.cts.model.outward.OutwardCheque;
@@ -14,10 +12,17 @@ public class OutwardValidationService {
     /*
      * Validate all cheques in a batch.
      *
-     * IMPORTANT:
-     * We do NOT depend on cheque.getErrorType().
+     * Validation is performed using the actual cheque data.
      *
-     * Errors are detected from the actual cheque values.
+     * City Code   -> exactly 3 digits
+     * Bank Code   -> exactly 3 digits
+     * Branch Code -> exactly 3 digits
+     *
+     * Any alphabet, special character, blank value,
+     * less than 3 digits or more than 3 digits = error.
+     *
+     * IMPORTANT:
+     * No old MICR validation is used.
      */
     public OutwardValidationResult validate(
             List<OutwardCheque> cheques) {
@@ -34,9 +39,7 @@ public class OutwardValidationService {
         );
 
         int dataEntryErrors = 0;
-        int micrErrors = 0;
         int amountAccountErrors = 0;
-
 
         for (OutwardCheque cheque : cheques) {
 
@@ -44,94 +47,128 @@ public class OutwardValidationService {
                 continue;
             }
 
-
             /*
-             * DATA ENTRY VALIDATION
+             * DATA / CITY / BANK / BRANCH VALIDATION
              */
             if (hasDataEntryError(cheque)) {
-
                 dataEntryErrors++;
             }
-
-
-            /*
-             * MICR VALIDATION
-             */
-            if (hasMicrError(cheque)) {
-
-                micrErrors++;
-            }
-
 
             /*
              * AMOUNT / ACCOUNT VALIDATION
              */
             if (hasAmountAccountError(cheque)) {
-
                 amountAccountErrors++;
             }
         }
-
 
         result.setDataEntryErrors(
                 dataEntryErrors
         );
 
-        result.setMicrErrors(
-                micrErrors
-        );
+        /*
+         * MICR is no longer validated.
+         */
+        result.setMicrErrors(0);
 
         result.setAmountAccountErrors(
                 amountAccountErrors
         );
-
 
         return result;
     }
 
 
     // =========================================================
-    // DATA ENTRY VALIDATION
+    // DATA ENTRY / CITY / BANK / BRANCH VALIDATION
     // =========================================================
 
     private boolean hasDataEntryError(
             OutwardCheque cheque) {
 
         /*
+         * -----------------------------------------------------
          * CHEQUE NUMBER
+         * -----------------------------------------------------
          */
+
         String chequeNumber =
                 cheque.getChequeNumber();
 
         if (isBlank(chequeNumber)) {
-
             return true;
         }
 
 
         /*
+         * -----------------------------------------------------
          * CHEQUE DATE
+         * -----------------------------------------------------
+         *
+         * chequeDate is already LocalDate.
+         *
+         * No parsing is required.
          */
-        String chequeDate =
+
+        LocalDate chequeDate =
                 cheque.getChequeDate();
 
-        if (isBlank(chequeDate)) {
-
+        if (chequeDate == null) {
             return true;
         }
 
 
         /*
-         * DATE FORMAT
+         * -----------------------------------------------------
+         * CITY CODE
+         * -----------------------------------------------------
+         *
+         * Must contain exactly 3 digits.
+         *
+         * 123   -> VALID
+         * 12    -> ERROR
+         * 1234  -> ERROR
+         * ABC   -> ERROR
+         * 1A3   -> ERROR
+         * 1@3   -> ERROR
          */
-        try {
 
-            LocalDate.parse(
-                    chequeDate
-            );
+        String cityCode =
+                cheque.getCityCode();
 
-        } catch (DateTimeParseException e) {
+        if (!isExactlyThreeDigits(cityCode)) {
+            return true;
+        }
 
+
+        /*
+         * -----------------------------------------------------
+         * BANK CODE
+         * -----------------------------------------------------
+         *
+         * Must contain exactly 3 digits.
+         */
+
+        String bankCode =
+                cheque.getBankCode();
+
+        if (!isExactlyThreeDigits(bankCode)) {
+            return true;
+        }
+
+
+        /*
+         * -----------------------------------------------------
+         * BRANCH CODE
+         * -----------------------------------------------------
+         *
+         * Must contain exactly 3 digits.
+         */
+
+        String branchCode =
+                cheque.getBranchCode();
+
+        if (!isExactlyThreeDigits(branchCode)) {
             return true;
         }
 
@@ -141,106 +178,115 @@ public class OutwardValidationService {
 
 
     // =========================================================
-    // MICR VALIDATION
-    // =========================================================
-
-    private boolean hasMicrError(
-            OutwardCheque cheque) {
-
-        String micr =
-                cheque.getMicr();
-
-
-        /*
-         * MICR cannot be empty.
-         */
-        if (isBlank(micr)) {
-
-            return true;
-        }
-
-
-        /*
-         * MICR must contain exactly 9 digits.
-         */
-        if (!micr.matches(
-                "^[0-9]{9}$")) {
-
-            return true;
-        }
-
-
-        return false;
-    }
-
-
-    // =========================================================
-    // ACCOUNT / AMOUNT VALIDATION
+    // AMOUNT / ACCOUNT VALIDATION
     // =========================================================
 
     private boolean hasAmountAccountError(
             OutwardCheque cheque) {
 
+        /*
+         * -----------------------------------------------------
+         * DRAWER ACCOUNT NUMBER
+         * -----------------------------------------------------
+         */
 
-        // -----------------------------------------------------
-        // ACCOUNT NUMBER
-        // -----------------------------------------------------
+        String drawerAccountNumber =
+                cheque.getDrawerAccountNumber();
 
-        String accountNumber =
-                cheque.getAccountNumber();
-
-        if (isBlank(accountNumber)) {
-
+        if (isBlank(drawerAccountNumber)) {
             return true;
         }
 
-
         /*
-         * Current project rule:
-         * account number = exactly 12 digits.
+         * Account number = exactly 12 digits.
          */
-        if (!accountNumber.matches(
+
+        if (!drawerAccountNumber.matches(
                 "^[0-9]{12}$")) {
 
             return true;
         }
 
 
-        // -----------------------------------------------------
-        // AMOUNT
-        // -----------------------------------------------------
+        /*
+         * -----------------------------------------------------
+         * PAYEE ACCOUNT NUMBER
+         * -----------------------------------------------------
+         */
 
-        String amount =
-                cheque.getAmount();
+        String payeeAccountNumber =
+                cheque.getDepositorAccountNumber();
 
-        if (isBlank(amount)) {
+        if (isBlank(payeeAccountNumber)) {
+            return true;
+        }
+
+        /*
+         * Payee account number = exactly 12 digits.
+         */
+
+        if (!payeeAccountNumber.matches(
+                "^[0-9]{12}$")) {
 
             return true;
         }
 
 
-        try {
+        /*
+         * -----------------------------------------------------
+         * AMOUNT
+         * -----------------------------------------------------
+         */
+     // -----------------------------------------------------
+     // AMOUNT
+     // -----------------------------------------------------
 
-            BigDecimal amountValue =
-                    new BigDecimal(amount);
+     BigDecimal amount =
+             cheque.getAmount();
 
+     if (amount == null) {
+         return true;
+     }
 
-            /*
-             * Amount must be greater than zero.
-             */
-            if (amountValue.compareTo(
-                    BigDecimal.ZERO) <= 0) {
+     /*
+      * Amount must be greater than zero.
+      */
+     if (amount.compareTo(
+             BigDecimal.ZERO) <= 0) {
 
-                return true;
-            }
+         return true;
+     }
 
-        } catch (NumberFormatException e) {
+     return false;
+    }
 
-            return true;
+    // =========================================================
+    // EXACTLY 3 DIGITS
+    // =========================================================
+
+    private boolean isExactlyThreeDigits(
+            String value) {
+
+        if (value == null) {
+            return false;
         }
 
+        /*
+         * Exactly 3 numeric digits.
+         *
+         * 123    -> VALID
+         * 12     -> ERROR
+         * 1234   -> ERROR
+         * 1A3    -> ERROR
+         * 1@3    -> ERROR
+         * ABC    -> ERROR
+         * " 123" -> ERROR
+         * "123 " -> ERROR
+         */
 
-        return false;
+        return value.matches(
+                "^[0-9]{3}$"
+        );
     }
 
 
@@ -255,4 +301,3 @@ public class OutwardValidationService {
                 || value.trim().isEmpty();
     }
 }
-

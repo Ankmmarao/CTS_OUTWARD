@@ -86,6 +86,7 @@ public class OutwardMakerDashboardDAO {
                 int createdBy = rs.getInt("created_by");
 
                 if (!rs.wasNull()) {
+
                     batch.setCreatedBy(
                             String.valueOf(createdBy)
                     );
@@ -99,6 +100,7 @@ public class OutwardMakerDashboardDAO {
                         rs.getTimestamp("created_at");
 
                 if (createdAt != null) {
+
                     batch.setCreatedAt(
                             createdAt.toLocalDateTime()
                     );
@@ -229,10 +231,12 @@ public class OutwardMakerDashboardDAO {
 
                 batches.add(batch);
             }
+
         }
 
         return batches;
     }
+
 
     // ============================================================
     // ASSIGN BATCH TO MAKER
@@ -242,25 +246,40 @@ public class OutwardMakerDashboardDAO {
             String batchNumber,
             String userId) throws SQLException {
 
-        if (batchNumber == null || batchNumber.trim().isEmpty()) {
-            throw new SQLException("Batch number is required.");
+        if (batchNumber == null ||
+                batchNumber.trim().isEmpty()) {
+
+            throw new SQLException(
+                    "Batch number is required."
+            );
         }
 
-        if (userId == null || userId.trim().isEmpty()) {
-            throw new SQLException("User ID is required.");
+        if (userId == null ||
+                userId.trim().isEmpty()) {
+
+            throw new SQLException(
+                    "User ID is required."
+            );
         }
 
         int makerId;
 
         try {
-            makerId = Integer.parseInt(userId.trim());
+
+            makerId =
+                    Integer.parseInt(
+                            userId.trim()
+                    );
+
         } catch (NumberFormatException e) {
+
             throw new SQLException(
                     "Invalid maker user ID: " + userId
             );
         }
 
-        try (Connection con = CTSStaticData.getConnection()) {
+        try (Connection con =
+                     CTSStaticData.getConnection()) {
 
             con.setAutoCommit(false);
 
@@ -282,7 +301,8 @@ public class OutwardMakerDashboardDAO {
 
                     ps.setInt(1, makerId);
 
-                    try (ResultSet rs = ps.executeQuery()) {
+                    try (ResultSet rs =
+                                 ps.executeQuery()) {
 
                         if (!rs.next()) {
 
@@ -310,19 +330,26 @@ public class OutwardMakerDashboardDAO {
                 try (PreparedStatement ps =
                              con.prepareStatement(batchSql)) {
 
-                    ps.setString(1, batchNumber.trim());
+                    ps.setString(
+                            1,
+                            batchNumber.trim()
+                    );
 
-                    try (ResultSet rs = ps.executeQuery()) {
+                    try (ResultSet rs =
+                                 ps.executeQuery()) {
 
                         if (!rs.next()) {
 
                             throw new SQLException(
-                                    "Batch not found: " + batchNumber
+                                    "Batch not found: "
+                                    + batchNumber
                             );
                         }
 
                         currentStatus =
-                                rs.getString("batch_status");
+                                rs.getString(
+                                        "batch_status"
+                                );
                     }
                 }
 
@@ -343,11 +370,16 @@ public class OutwardMakerDashboardDAO {
                 String existingAssignmentStatus = null;
 
                 try (PreparedStatement ps =
-                             con.prepareStatement(assignmentSql)) {
+                             con.prepareStatement(
+                                     assignmentSql)) {
 
-                    ps.setString(1, batchNumber.trim());
+                    ps.setString(
+                            1,
+                            batchNumber.trim()
+                    );
 
-                    try (ResultSet rs = ps.executeQuery()) {
+                    try (ResultSet rs =
+                                 ps.executeQuery()) {
 
                         if (rs.next()) {
 
@@ -355,7 +387,9 @@ public class OutwardMakerDashboardDAO {
                                     rs.getInt("user_id");
 
                             existingAssignmentStatus =
-                                    rs.getString("assignment_status");
+                                    rs.getString(
+                                            "assignment_status"
+                                    );
                         }
                     }
                 }
@@ -382,6 +416,7 @@ public class OutwardMakerDashboardDAO {
                             existingAssignmentStatus)) {
 
                         con.commit();
+
                         return true;
                     }
 
@@ -401,10 +436,18 @@ public class OutwardMakerDashboardDAO {
                                 "AND UPPER(assignment_status) = 'ASSIGNED'";
 
                         try (PreparedStatement ps =
-                                     con.prepareStatement(resumeSql)) {
+                                     con.prepareStatement(
+                                             resumeSql)) {
 
-                            ps.setString(1, batchNumber.trim());
-                            ps.setInt(2, makerId);
+                            ps.setString(
+                                    1,
+                                    batchNumber.trim()
+                            );
+
+                            ps.setInt(
+                                    2,
+                                    makerId
+                            );
 
                             ps.executeUpdate();
                         }
@@ -415,14 +458,19 @@ public class OutwardMakerDashboardDAO {
                                 "WHERE batch_number = ?";
 
                         try (PreparedStatement ps =
-                                     con.prepareStatement(statusSql)) {
+                                     con.prepareStatement(
+                                             statusSql)) {
 
-                            ps.setString(1, batchNumber.trim());
+                            ps.setString(
+                                    1,
+                                    batchNumber.trim()
+                            );
 
                             ps.executeUpdate();
                         }
 
                         con.commit();
+
                         return true;
                     }
                 }
@@ -431,7 +479,8 @@ public class OutwardMakerDashboardDAO {
                 // 5. NEW ASSIGNMENT ONLY WHEN BATCH IS AVAILABLE
                 // =================================================
 
-                if (!"CAPTURED".equalsIgnoreCase(currentStatus)) {
+                if (!"CAPTURED".equalsIgnoreCase(
+                        currentStatus)) {
 
                     throw new SQLException(
                             "Batch " + batchNumber +
@@ -455,8 +504,15 @@ public class OutwardMakerDashboardDAO {
                 try (PreparedStatement ps =
                              con.prepareStatement(insertSql)) {
 
-                    ps.setString(1, batchNumber.trim());
-                    ps.setInt(2, makerId);
+                    ps.setString(
+                            1,
+                            batchNumber.trim()
+                    );
+
+                    ps.setInt(
+                            2,
+                            makerId
+                    );
 
                     ps.executeUpdate();
                 }
@@ -473,7 +529,10 @@ public class OutwardMakerDashboardDAO {
                 try (PreparedStatement ps =
                              con.prepareStatement(updateSql)) {
 
-                    ps.setString(1, batchNumber.trim());
+                    ps.setString(
+                            1,
+                            batchNumber.trim()
+                    );
 
                     ps.executeUpdate();
                 }
@@ -493,244 +552,292 @@ public class OutwardMakerDashboardDAO {
                 con.setAutoCommit(true);
             }
         }
-    }    // ============================================================
+    }
+
+
+    // ============================================================
     // GET CHEQUES
     // ============================================================
- // ============================================================
- // GET CHEQUES
- // ============================================================
 
- public List<OutwardCheque> getCheques(String batchNumber) throws SQLException {
+    public List<OutwardCheque> getCheques(
+            String batchNumber) throws SQLException {
 
-     List<OutwardCheque> cheques = new ArrayList<>();
+        List<OutwardCheque> cheques =
+                new ArrayList<>();
 
-     if (batchNumber == null || batchNumber.trim().isEmpty()) {
-         throw new SQLException("Batch number is required.");
-     }
+        if (batchNumber == null ||
+                batchNumber.trim().isEmpty()) {
 
-     String sql =
-             "SELECT " +
-             "    oc.batch_number, " +
-             "    oc.cheque_number, " +
-             "    oc.city_code, " +
-             "    oc.bank_code, " +
-             "    oc.branch_code, " +
-             "    oc.drawer_account_number, " +
-             "    oc.drawer_name, " +
-             "    oc.payee_account_number, " +
-             "    oc.payee_name, " +
-             "    oc.amount, " +
-             "    oc.amount_in_words, " +
-             "    oc.cheque_date, " +
-             "    oc.front_image_path, " +
-             "    oc.back_image_path, " +
-             "    oc.cheque_status, " +
-             "    ob.created_by AS batch_created_by, " +
-             "    ob.created_at AS batch_created_at " +
-             "FROM public.outward_cheque oc " +
-             "INNER JOIN public.outward_batch ob " +
-             "    ON ob.batch_number = oc.batch_number " +
-             "WHERE oc.batch_number = ? " +
-             "ORDER BY oc.cheque_number";
+            throw new SQLException(
+                    "Batch number is required."
+            );
+        }
 
-     try (Connection con = CTSStaticData.getConnection();
-          PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql =
+                "SELECT " +
+                "    oc.batch_number, " +
+                "    oc.cheque_number, " +
+                "    oc.city_code, " +
+                "    oc.bank_code, " +
+                "    oc.branch_code, " +
+                "    oc.drawer_account_number, " +
+                "    oc.drawer_name, " +
+                "    oc.payee_account_number, " +
+                "    oc.payee_name, " +
+                "    oc.amount, " +
+                "    oc.amount_in_words, " +
+                "    oc.cheque_date, " +
+                "    oc.front_image_path, " +
+                "    oc.back_image_path, " +
+                "    oc.cheque_status, " +
+                "    ob.created_by AS batch_created_by, " +
+                "    ob.created_at AS batch_created_at " +
 
-         ps.setString(1, batchNumber.trim());
+                "FROM public.outward_cheque oc " +
 
-         try (ResultSet rs = ps.executeQuery()) {
+                "INNER JOIN public.outward_batch ob " +
+                "    ON ob.batch_number = oc.batch_number " +
 
-             while (rs.next()) {
+                "WHERE oc.batch_number = ? " +
 
-                 OutwardCheque cheque = new OutwardCheque();
+                "ORDER BY oc.cheque_number";
 
-                 // =================================================
-                 // BATCH NUMBER
-                 // =================================================
+        try (Connection con =
+                     CTSStaticData.getConnection();
 
-                 cheque.setBatchNumber(
-                         rs.getString("batch_number")
-                 );
+             PreparedStatement ps =
+                     con.prepareStatement(sql)) {
 
-                 // =================================================
-                 // CHEQUE NUMBER
-                 // =================================================
+            ps.setString(
+                    1,
+                    batchNumber.trim()
+            );
 
-                 cheque.setChequeNumber(
-                         rs.getString("cheque_number")
-                 );
+            try (ResultSet rs =
+                         ps.executeQuery()) {
 
-                 // =================================================
-                 // CITY CODE
-                 // =================================================
+                while (rs.next()) {
 
-                 cheque.setCityCode(
-                         rs.getString("city_code")
-                 );
+                    OutwardCheque cheque =
+                            new OutwardCheque();
 
-                 // =================================================
-                 // BANK CODE
-                 // =================================================
+                    // =================================================
+                    // BATCH NUMBER
+                    // =================================================
 
-                 cheque.setBankCode(
-                         rs.getString("bank_code")
-                 );
+                    cheque.setBatchNumber(
+                            rs.getString("batch_number")
+                    );
 
-                 // =================================================
-                 // BRANCH CODE
-                 // =================================================
+                    // =================================================
+                    // CHEQUE NUMBER
+                    // =================================================
 
-                 cheque.setBranchCode(
-                         rs.getString("branch_code")
-                 );
+                    cheque.setChequeNumber(
+                            rs.getString("cheque_number")
+                    );
 
-                 // =================================================
-                 // DRAWER ACCOUNT NUMBER
-                 // =================================================
+                    // =================================================
+                    // CITY CODE
+                    // =================================================
 
-                 cheque.setDrawerAccountNumber(
-                         rs.getString("drawer_account_number")
-                 );
+                    cheque.setCityCode(
+                            rs.getString("city_code")
+                    );
 
-                 // =================================================
-                 // DRAWER NAME
-                 // =================================================
+                    // =================================================
+                    // BANK CODE
+                    // =================================================
 
-                 cheque.setDrawerName(
-                         rs.getString("drawer_name")
-                 );
+                    cheque.setBankCode(
+                            rs.getString("bank_code")
+                    );
 
-                 // =================================================
-                 // DEPOSITOR ACCOUNT NUMBER
-                 // =================================================
+                    // =================================================
+                    // BRANCH CODE
+                    // =================================================
 
-                 cheque.setDepositorAccountNumber(
-                         rs.getString("payee_account_number")
-                 );
+                    cheque.setBranchCode(
+                            rs.getString("branch_code")
+                    );
 
-                 // =================================================
-                 // DEPOSITOR NAME
-                 // =================================================
+                    // =================================================
+                    // DRAWER ACCOUNT NUMBER
+                    // =================================================
 
-                 cheque.setDepositorName(
-                         rs.getString("payee_name")
-                 );
+                    cheque.setDrawerAccountNumber(
+                            rs.getString(
+                                    "drawer_account_number"
+                            )
+                    );
 
-                 // =================================================
-                 // PAYEE NAME
-                 // =================================================
+                    // =================================================
+                    // DRAWER NAME
+                    // =================================================
 
-                 cheque.setPayeeName(
-                         rs.getString("payee_name")
-                 );
+                    cheque.setDrawerName(
+                            rs.getString("drawer_name")
+                    );
 
-                 // =================================================
-                 // AMOUNT
-                 // =================================================
+                    // =================================================
+                    // DEPOSITOR ACCOUNT NUMBER
+                    // =================================================
 
-                 cheque.setAmount(
-                         rs.getBigDecimal("amount")
-                 );
+                    cheque.setDepositorAccountNumber(
+                            rs.getString(
+                                    "payee_account_number"
+                            )
+                    );
 
-                 // =================================================
-                 // AMOUNT IN WORDS
-                 // =================================================
+                    // =================================================
+                    // DEPOSITOR NAME
+                    // =================================================
 
-                 cheque.setAmountInWords(
-                         rs.getString("amount_in_words")
-                 );
+                    cheque.setDepositorName(
+                            rs.getString("payee_name")
+                    );
 
-                 // =================================================
-                 // CHEQUE DATE
-                 // =================================================
+                    // =================================================
+                    // PAYEE NAME
+                    // =================================================
 
-                 Date chequeDate = rs.getDate("cheque_date");
+                    cheque.setPayeeName(
+                            rs.getString("payee_name")
+                    );
 
-                 if (chequeDate != null) {
-                     cheque.setChequeDate(
-                             chequeDate.toLocalDate()
-                     );
-                 } else {
-                     cheque.setChequeDate(null);
-                 }
+                    // =================================================
+                    // AMOUNT
+                    // =================================================
 
-                 // =================================================
-                 // FRONT IMAGE PATH
-                 // =================================================
+                    cheque.setAmount(
+                            rs.getBigDecimal("amount")
+                    );
 
-                 cheque.setFrontImagePath(
-                         rs.getString("front_image_path")
-                 );
+                    // =================================================
+                    // AMOUNT IN WORDS
+                    // =================================================
 
-                 // =================================================
-                 // BACK IMAGE PATH
-                 // =================================================
+                    cheque.setAmountInWords(
+                            rs.getString(
+                                    "amount_in_words"
+                            )
+                    );
 
-                 cheque.setBackImagePath(
-                         rs.getString("back_image_path")
-                 );
+                    // =================================================
+                    // CHEQUE DATE
+                    // =================================================
 
-                 // =================================================
-                 // CHEQUE STATUS
-                 // =================================================
+                    Date chequeDate =
+                            rs.getDate("cheque_date");
 
-                 cheque.setChequeStatus(
-                         rs.getString("cheque_status")
-                 );
+                    if (chequeDate != null) {
 
-                 // =================================================
-                 // CREATED BY
-                 // =================================================
+                        cheque.setChequeDate(
+                                chequeDate.toLocalDate()
+                        );
 
-                 int batchCreatedBy =
-                         rs.getInt("batch_created_by");
+                    } else {
 
-                 if (!rs.wasNull()) {
-                     cheque.setCreatedBy(
-                             String.valueOf(batchCreatedBy)
-                     );
-                 } else {
-                     cheque.setCreatedBy(null);
-                 }
+                        cheque.setChequeDate(null);
+                    }
 
-                 // =================================================
-                 // CREATED AT
-                 // =================================================
+                    // =================================================
+                    // FRONT IMAGE PATH
+                    // =================================================
 
-                 Timestamp batchCreatedAt =
-                         rs.getTimestamp("batch_created_at");
+                    cheque.setFrontImagePath(
+                            rs.getString(
+                                    "front_image_path"
+                            )
+                    );
 
-                 if (batchCreatedAt != null) {
-                     cheque.setCreatedAt(
-                             batchCreatedAt.toLocalDateTime()
-                     );
-                 } else {
-                     cheque.setCreatedAt(null);
-                 }
+                    // =================================================
+                    // BACK IMAGE PATH
+                    // =================================================
 
-                 // =================================================
-                 // UPDATED BY
-                 // =================================================
+                    cheque.setBackImagePath(
+                            rs.getString(
+                                    "back_image_path"
+                            )
+                    );
 
-                 cheque.setUpdatedBy(null);
+                    // =================================================
+                    // CHEQUE STATUS
+                    // =================================================
 
-                 // =================================================
-                 // UPDATED AT
-                 // =================================================
+                    cheque.setChequeStatus(
+                            rs.getString(
+                                    "cheque_status"
+                            )
+                    );
 
-                 cheque.setUpdatedAt(null);
+                    // =================================================
+                    // CREATED BY
+                    // =================================================
 
-                 // =================================================
-                 // ADD CHEQUE
-                 // =================================================
+                    int batchCreatedBy =
+                            rs.getInt(
+                                    "batch_created_by"
+                            );
 
-                 cheques.add(cheque);
-             }
-         }
-     }
+                    if (!rs.wasNull()) {
 
-     return cheques;
- }
+                        cheque.setCreatedBy(
+                                String.valueOf(
+                                        batchCreatedBy
+                                )
+                        );
+
+                    } else {
+
+                        cheque.setCreatedBy(null);
+                    }
+
+                    // =================================================
+                    // CREATED AT
+                    // =================================================
+
+                    Timestamp batchCreatedAt =
+                            rs.getTimestamp(
+                                    "batch_created_at"
+                            );
+
+                    if (batchCreatedAt != null) {
+
+                        cheque.setCreatedAt(
+                                batchCreatedAt.toLocalDateTime()
+                        );
+
+                    } else {
+
+                        cheque.setCreatedAt(null);
+                    }
+
+                    // =================================================
+                    // UPDATED BY
+                    // =================================================
+
+                    cheque.setUpdatedBy(null);
+
+                    // =================================================
+                    // UPDATED AT
+                    // =================================================
+
+                    cheque.setUpdatedAt(null);
+
+                    // =================================================
+                    // ADD CHEQUE
+                    // =================================================
+
+                    cheques.add(cheque);
+                }
+            }
+        }
+
+        return cheques;
+    }
+
+
     // ============================================================
     // CHECK BATCH EXISTS
     // ============================================================
@@ -767,6 +874,91 @@ public class OutwardMakerDashboardDAO {
             }
         }
     }
+
+
+    // ============================================================
+    // UPDATE BATCH STATUS AFTER VALIDATION
+    // ============================================================
+    /*
+     * This method is used immediately after Maker validation.
+     *
+     * DATA_ENTRY errors
+     *      -> DATA_ENTRY
+     *
+     * AMOUNT_ACCOUNT errors
+     *      -> AMOUNT_ACCOUNT
+     *
+     * No errors
+     *      -> READY_FOR_CHECKER
+     *
+     * MICR is intentionally not handled because
+     * MICR validation has been removed.
+     */
+
+    public boolean updateBatchStatusAfterValidation(
+            String batchNumber,
+            String status) throws SQLException {
+
+        if (batchNumber == null ||
+                batchNumber.trim().isEmpty()) {
+
+            throw new SQLException(
+                    "Batch number is required."
+            );
+        }
+
+        if (status == null ||
+                status.trim().isEmpty()) {
+
+            throw new SQLException(
+                    "Batch status is required."
+            );
+        }
+
+        String cleanStatus =
+                status.trim().toUpperCase();
+
+        /*
+         * Only these statuses are allowed from
+         * the Maker validation stage.
+         */
+
+        if (!"DATA_ENTRY".equals(cleanStatus)
+                && !"AMOUNT_ACCOUNT".equals(cleanStatus)
+                && !"READY_FOR_CHECKER".equals(cleanStatus)) {
+
+            throw new SQLException(
+                    "Invalid validation status: "
+                    + cleanStatus
+            );
+        }
+
+        String sql =
+                "UPDATE public.outward_batch " +
+                "SET batch_status = ?, " +
+                "updated_at = CURRENT_TIMESTAMP " +
+                "WHERE batch_number = ?";
+
+        try (Connection con =
+                     CTSStaticData.getConnection();
+
+             PreparedStatement ps =
+                     con.prepareStatement(sql)) {
+
+            ps.setString(
+                    1,
+                    cleanStatus
+            );
+
+            ps.setString(
+                    2,
+                    batchNumber.trim()
+            );
+
+            return ps.executeUpdate() > 0;
+        }
+    }
+
 
     // ============================================================
     // COMPLETE BATCH

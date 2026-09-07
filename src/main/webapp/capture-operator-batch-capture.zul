@@ -99,10 +99,10 @@
                                     style="font-weight:bold;" />
 
                                 <textbox
-                                    id="batchFolderPath"
-                                    width="600px"
-                                    value="C:\Users"
-                                    placeholder="Enter batch folder path" />
+    id="batchFolderPath"
+    width="600px"
+    value="/home/iispl/Desktop"
+    placeholder="Enter batch folder path" />
                             </row>
 
                             <!-- XML INFORMATION -->

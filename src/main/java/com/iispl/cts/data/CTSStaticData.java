@@ -5,13 +5,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class CTSStaticData {
-
-    private static final String DRIVER =
-            "org.postgresql.Driver";
+	private static final String DRIVER ="org.postgresql.Driver";
 
     /*
      * Supabase Transaction Pooler
-     *
+     *uygmm
      * 6543 = Transaction mode
      * 5432 = Session mode
      */
