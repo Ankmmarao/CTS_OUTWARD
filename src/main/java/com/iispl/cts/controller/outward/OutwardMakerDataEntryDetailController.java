@@ -279,15 +279,30 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
         if (currentIndex < cheques.size() - 1) {
             currentIndex++;
             loadCheque();
+            
         } else {
-            Messagebox.show(
-                    "All cheques in batch " + batchId + " have been completed.",
-                    "Batch Completed",
-                    Messagebox.OK,
-                    Messagebox.INFORMATION,
-                    event -> Executions.sendRedirect("outward-maker-data-entry.zul")
-            );
+        	int currentUserId = LoginController.getCurrentUserId();
+         
+            boolean completed = service.completeBatchDataEntry(batchId, currentUserId);
+
+            if (completed) {
+                Messagebox.show(
+                        "All cheques in batch " + batchId + " have been completed and moved to Send to Checker.",
+                        "Batch Completed",
+                        Messagebox.OK,
+                        Messagebox.INFORMATION,
+                        event -> Executions.sendRedirect("outward-maker-data-entry.zul")
+                );
+            } else {
+                Messagebox.show(
+                        "Cheque saved, but failed to update batch status to READY_TO_SUBMIT.",
+                        "Warning",
+                        Messagebox.OK,
+                        Messagebox.ERROR
+                );
+            }
         }
+      
     }
     @Listen("onClick = #rejectButton")
     public void rejectCheque() {

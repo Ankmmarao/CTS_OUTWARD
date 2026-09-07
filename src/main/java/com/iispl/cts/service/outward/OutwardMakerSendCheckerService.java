@@ -9,67 +9,33 @@ public class OutwardMakerSendCheckerService {
 
     private final OutwardMakerSendCheckerDAO dao;
 
-
     public OutwardMakerSendCheckerService() {
-
-        dao = new OutwardMakerSendCheckerDAO();
+        this.dao = new OutwardMakerSendCheckerDAO();
     }
-
 
     /**
-     * Get batches which are ready for Checker
-     * and belong to the current Maker.
+     * Get batches which are ready for Checker and belong to the current Maker.
      */
-    public List<OutwardBatch> getReadyBatches(
-            String userId) throws Exception {
-
-        if (userId == null
-                || userId.trim().isEmpty()) {
-
-            throw new IllegalArgumentException(
-                    "Invalid Maker user ID."
-            );
+    public List<OutwardBatch> getReadyBatches(int userId) throws Exception {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("Invalid Maker user ID: " + userId);
         }
 
-        return dao.getReadyBatches(userId);
+        return dao.getBatchesReadyForChecker(userId);
     }
-
 
     /**
      * Send batch to Checker.
      */
-    public boolean sendToChecker(
-            String batchId,
-            String userId) throws Exception {
-
-        if (batchId == null
-                || batchId.trim().isEmpty()) {
-
-            throw new IllegalArgumentException(
-                    "Batch ID is required."
-            );
+    public boolean sendToChecker(String batchId, int userId) throws Exception {
+        if (batchId == null || batchId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Batch ID is required.");
         }
 
-
-        if (userId == null
-                || userId.trim().isEmpty()) {
-
-            throw new IllegalArgumentException(
-                    "Maker user ID is required."
-            );
+        if (userId <= 0) {
+            throw new IllegalArgumentException("Maker user ID is required.");
         }
 
-
-        /*
-         * DAO performs:
-         *
-         * 1. Check batch belongs to Maker
-         * 2. Check status = READY_FOR_CHECKER
-         * 3. Change status
-         */
-        return dao.sendToChecker(
-                batchId,
-                userId
-        );
+        return dao.sendToChecker(batchId.trim(), userId);
     }
 }

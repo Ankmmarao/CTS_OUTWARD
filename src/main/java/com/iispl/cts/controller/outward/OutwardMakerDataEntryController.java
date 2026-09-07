@@ -12,7 +12,6 @@ import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 
 import com.iispl.cts.dao.outward.OutwardMakerDataEntryDAO;
-import com.iispl.cts.data.CTSStaticData;
 import com.iispl.cts.model.outward.OutwardBatch;
 
 public class OutwardMakerDataEntryController extends SelectorComposer<Component> {
@@ -22,19 +21,31 @@ public class OutwardMakerDataEntryController extends SelectorComposer<Component>
     @Wire
     private Listbox batchListbox;
 
+    private final OutwardMakerDataEntryDAO dataEntryDAO = new OutwardMakerDataEntryDAO();
+
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        // 1. Guard against expired/missing session
+        if (!LoginController.isLoggedIn()) {
+            Executions.sendRedirect("/login.zul");
+            return;
+        }
+
+        // 2. Load user-specific batches
         loadBatches();
     }
-
-    private OutwardMakerDataEntryDAO dataEntryDAO = new OutwardMakerDataEntryDAO();
 
     private void loadBatches() {
         if (batchListbox == null) return;
         batchListbox.getItems().clear();
 
-        List<OutwardBatch> batches = dataEntryDAO.getAllBatches();
+        // Retrieve the integer userId stored in UserSession
+        int currentUserId = LoginController.getCurrentUserId();
+
+        // Fetch only batches assigned to this maker
+        List<OutwardBatch> batches = dataEntryDAO.getBatchesForMaker(currentUserId);
 
         if (batches != null) {
             for (OutwardBatch batch : batches) {
@@ -47,7 +58,8 @@ public class OutwardMakerDataEntryController extends SelectorComposer<Component>
                 item.appendChild(cellBatchId);
 
                 // 2. Total Cheques
-                item.appendChild(new Listcell(String.valueOf(batch.getNumberOfCheques())));
+                int totalCheques = batch.getNumberOfCheques() != null ? batch.getNumberOfCheques() : 0;
+                item.appendChild(new Listcell(String.valueOf(totalCheques)));
 
                 // 3. Batch Status
                 Listcell cellStatus = new Listcell();
