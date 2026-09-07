@@ -68,24 +68,33 @@ public class OutwardMakerDataEntryDetailDAO {
                                   + "ON CONFLICT (batch_number, cheque_number, verified_by) "
                                   + "DO UPDATE SET verification_status = 'VERIFIED', verified_at = CURRENT_TIMESTAMP";
 
-        try (Connection con = CTSStaticData.getConnection();
-             PreparedStatement ps1 = con.prepareStatement(updateCheque);
-             PreparedStatement ps2 = con.prepareStatement(insertVerification)) {
+        try (Connection con = CTSStaticData.getConnection()) {
+            con.setAutoCommit(false);
 
-            ps1.setString(1, cheque.getDrawerAccountNumber());
-            ps1.setString(2, cheque.getDrawerName());
-            ps1.setString(3, cheque.getPayeeName());
-            ps1.setBigDecimal(4, cheque.getAmount());
-            ps1.setString(5, cheque.getAmountInWords());
-            ps1.setDate(6, cheque.getChequeDate() != null ? Date.valueOf(cheque.getChequeDate()) : null);
-            ps1.setString(7, cheque.getBatchNumber());
-            ps1.setString(8, cheque.getChequeNumber());
-            ps1.executeUpdate();
+            try (PreparedStatement ps1 = con.prepareStatement(updateCheque);
+                 PreparedStatement ps2 = con.prepareStatement(insertVerification)) {
 
-            ps2.setString(1, cheque.getBatchNumber());
-            ps2.setString(2, cheque.getChequeNumber());
-            ps2.executeUpdate();
+                ps1.setString(1, cheque.getDrawerAccountNumber());
+                ps1.setString(2, cheque.getDrawerName());
+                ps1.setString(3, cheque.getPayeeName());
+                ps1.setBigDecimal(4, cheque.getAmount());
+                ps1.setString(5, cheque.getAmountInWords());
+                ps1.setDate(6, cheque.getChequeDate() != null ? java.sql.Date.valueOf(cheque.getChequeDate()) : null);
+                ps1.setString(7, cheque.getBatchNumber());
+                ps1.setString(8, cheque.getChequeNumber());
+                
+                int rowsUpdated = ps1.executeUpdate();
+                System.out.println("DEBUG: Updated rows in outward_cheque: " + rowsUpdated);
 
+                ps2.setString(1, cheque.getBatchNumber());
+                ps2.setString(2, cheque.getChequeNumber());
+                ps2.executeUpdate();
+
+                con.commit();
+            } catch (SQLException ex) {
+                con.rollback();
+                ex.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

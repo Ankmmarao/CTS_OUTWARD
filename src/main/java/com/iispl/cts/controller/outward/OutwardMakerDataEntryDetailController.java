@@ -25,14 +25,28 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
 
     private static final long serialVersionUID = 1L;
 
+    // Header & Meta Labels
     @Wire
     private Label batchIdLabel;
 
     @Wire
     private Label chequeProgressLabel;
 
+    // Form Input / Display Textboxes
+    @Wire
+    private Textbox chequeNumberTextbox;
+
     @Wire
     private Textbox accountNumberTextbox;
+
+    @Wire
+    private Textbox drawerNameTextbox;
+
+    @Wire
+    private Textbox payeeAccountTextbox;
+
+    @Wire
+    private Textbox payeeNameTextbox;
 
     @Wire
     private Textbox chequeDateTextbox;
@@ -41,30 +55,45 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
     private Decimalbox amountTextbox;
 
     @Wire
-    private Textbox drawerNameTextbox;
+    private Textbox amountInWordsTextbox;
 
-    @Wire
-    private Textbox payeeNameTextbox;
-
+    // Image Elements
     @Wire
     private Image frontImage;
 
     @Wire
     private Image backImage;
 
+    // Action & Nav Buttons
     @Wire
     private Button prevButton;
 
     @Wire
     private Button nextButton;
 
+    @Wire
+    private Button frontImageButton;
+
+    @Wire
+    private Button backImageButton;
+
+    @Wire
+    private Button zoomInButton;
+
+    @Wire
+    private Button zoomOutButton;
+
+    @Wire
+    private Button rotateButton;
+
     private OutwardMakerDataEntryDetailService service;
-
     private List<OutwardCheque> cheques;
-
     private int currentIndex = 0;
-
     private String batchId;
+
+    private boolean showingBackImage = false;
+    private int zoomLevel = 100;
+    private int rotationAngle = 0;
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -73,7 +102,6 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
         service = new OutwardMakerDataEntryDetailService();
 
         batchId = Executions.getCurrent().getParameter("batchId");
-
         if (batchId == null || batchId.trim().isEmpty()) {
             batchId = "BATCH001";
         }
@@ -90,60 +118,71 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
             return;
         }
 
+        currentIndex = 0;
         loadCheque();
     }
 
     private void loadCheque() {
-        if (cheques == null || cheques.isEmpty()) {
-            return;
-        }
+        if (cheques == null || cheques.isEmpty()) return;
 
         OutwardCheque cheque = cheques.get(currentIndex);
 
-        // 1. Batch & Progress Info
-        if (batchIdLabel != null) {
-            batchIdLabel.setValue(cheque.getBatchNumber());
-        }
+        // Reset image transformations
+        showingBackImage = false;
+        zoomLevel = 100;
+        rotationAngle = 0;
 
-        if (chequeProgressLabel != null) {
-            chequeProgressLabel.setValue(
-                    "Cheque " + (currentIndex + 1) + " of " + cheques.size()
-            );
-        }
-
-        // 2. Account Number
-        if (accountNumberTextbox != null) {
-            accountNumberTextbox.setValue(
-                    cheque.getDrawerAccountNumber() != null ? cheque.getDrawerAccountNumber() : ""
-            );
-        }
-
-        // 3. Cheque Date (LocalDate -> String for Textbox)
-        if (chequeDateTextbox != null) {
-            chequeDateTextbox.setValue(
-                    cheque.getChequeDate() != null ? cheque.getChequeDate().toString() : ""
-            );
-        }
-
-        // 4. Amount (Direct BigDecimal assignment to Decimalbox)
-        if (amountTextbox != null) {
-            amountTextbox.setValue(cheque.getAmount());
-        }
-
-        // 5. Optional Name Fields (if wired in ZUL)
-        if (drawerNameTextbox != null) {
-            drawerNameTextbox.setValue(cheque.getDrawerName() != null ? cheque.getDrawerName() : "");
-        }
-        if (payeeNameTextbox != null) {
-            payeeNameTextbox.setValue(cheque.getPayeeName() != null ? cheque.getPayeeName() : "");
-        }
-
-        // 6. Optional Image Paths (if wired in ZUL)
+        // Set Images
         if (frontImage != null && cheque.getFrontImagePath() != null) {
             frontImage.setSrc(cheque.getFrontImagePath());
         }
         if (backImage != null && cheque.getBackImagePath() != null) {
             backImage.setSrc(cheque.getBackImagePath());
+        }
+        showFrontImage();
+
+        // 1. Batch & Cheque Counters
+        if (batchIdLabel != null) {
+            batchIdLabel.setValue(cheque.getBatchNumber());
+        }
+        if (chequeProgressLabel != null) {
+            chequeProgressLabel.setValue("Cheque " + (currentIndex + 1) + " of " + cheques.size());
+        }
+
+        // 2. Cheque Number
+        if (chequeNumberTextbox != null) {
+            chequeNumberTextbox.setValue(cheque.getChequeNumber() != null ? cheque.getChequeNumber() : "");
+        }
+
+        // 3. Drawer Details (Account & Name)
+        if (accountNumberTextbox != null) {
+            accountNumberTextbox.setValue(cheque.getDrawerAccountNumber() != null ? cheque.getDrawerAccountNumber() : "");
+        }
+        if (drawerNameTextbox != null) {
+            drawerNameTextbox.setValue(cheque.getDrawerName() != null ? cheque.getDrawerName() : "");
+        }
+
+        // 4. Payee Details (Account & Name)
+        if (payeeAccountTextbox != null) {
+            payeeAccountTextbox.setValue(cheque.getDepositorAccountNumber() != null ? cheque.getDepositorAccountNumber() : "");
+        }
+        if (payeeNameTextbox != null) {
+            payeeNameTextbox.setValue(cheque.getPayeeName() != null ? cheque.getPayeeName() : "");
+        }
+
+        // 5. Cheque Date
+        if (chequeDateTextbox != null) {
+            chequeDateTextbox.setValue(cheque.getChequeDate() != null ? cheque.getChequeDate().toString() : "");
+        }
+
+        // 6. Amount (Direct BigDecimal)
+        if (amountTextbox != null) {
+            amountTextbox.setValue(cheque.getAmount() != null ? cheque.getAmount() : BigDecimal.ZERO);
+        }
+
+        // 7. Amount In Words
+        if (amountInWordsTextbox != null) {
+            amountInWordsTextbox.setValue(cheque.getAmountInWords() != null ? cheque.getAmountInWords() : "");
         }
 
         updateButtons();
@@ -153,7 +192,6 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
         if (prevButton != null) {
             prevButton.setDisabled(currentIndex == 0);
         }
-
         if (nextButton != null) {
             nextButton.setDisabled(currentIndex >= cheques.size() - 1);
         }
@@ -180,27 +218,38 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
         OutwardCheque cheque = cheques.get(currentIndex);
 
         String account = accountNumberTextbox != null ? accountNumberTextbox.getValue() : null;
+        String drawerName = drawerNameTextbox != null ? drawerNameTextbox.getValue() : null;
+        String payeeName = payeeNameTextbox != null ? payeeNameTextbox.getValue() : null;
         String date = chequeDateTextbox != null ? chequeDateTextbox.getValue() : null;
         BigDecimal amount = amountTextbox != null ? amountTextbox.getValue() : null;
+        String amountWords = amountInWordsTextbox != null ? amountInWordsTextbox.getValue() : null;
 
-        // Validations
         if (account == null || account.trim().isEmpty()) {
             Messagebox.show("Please enter Account Number.", "Validation", Messagebox.OK, Messagebox.EXCLAMATION);
             return;
         }
-
         if (date == null || date.trim().isEmpty()) {
             Messagebox.show("Please enter Cheque Date.", "Validation", Messagebox.OK, Messagebox.EXCLAMATION);
             return;
         }
-
         if (amount == null) {
             Messagebox.show("Please enter Amount.", "Validation", Messagebox.OK, Messagebox.EXCLAMATION);
             return;
         }
 
-        // Apply changes to current OutwardCheque model
+        // Apply all modified fields to the model
         cheque.setDrawerAccountNumber(account.trim());
+        
+        if (drawerName != null) {
+            cheque.setDrawerName(drawerName.trim());
+        }
+        if (payeeName != null) {
+            cheque.setPayeeName(payeeName.trim());
+        }
+        if (amountWords != null) {
+            cheque.setAmountInWords(amountWords.trim());
+        }
+        cheque.setAmount(amount);
 
         try {
             cheque.setChequeDate(LocalDate.parse(date.trim()));
@@ -209,12 +258,9 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
             return;
         }
 
-        cheque.setAmount(amount);
-
-        // Persist via Service / DAO
+        // Persist via Service -> DAO -> Supabase
         service.saveCheque(cheque);
 
-        // Advance or Complete
         if (currentIndex < cheques.size() - 1) {
             currentIndex++;
             loadCheque();
@@ -265,7 +311,7 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
             rejectWindow.detach();
 
             Messagebox.show(
-                    "Cheque " + (currentIndex + 1) + " rejected.",
+                    "Cheque " + (currentIndex + 1) + " rejected and sent back to Maker.",
                     "Rejected",
                     Messagebox.OK,
                     Messagebox.INFORMATION,
@@ -284,5 +330,67 @@ public class OutwardMakerDataEntryDetailController extends SelectorComposer<Comp
     @Listen("onClick = #backButton")
     public void backToList() {
         Executions.sendRedirect("outward-maker-data-entry.zul");
+    }
+
+    private void showFrontImage() {
+        showingBackImage = false;
+        zoomLevel = 100;
+        rotationAngle = 0;
+        if (frontImage != null) frontImage.setVisible(true);
+        if (backImage != null) backImage.setVisible(false);
+        applyZoom();
+    }
+
+    private void showBackImage() {
+        showingBackImage = true;
+        zoomLevel = 100;
+        rotationAngle = 0;
+        if (frontImage != null) frontImage.setVisible(false);
+        if (backImage != null) backImage.setVisible(true);
+        applyZoom();
+    }
+
+    private void applyZoom() {
+        Image currentImage = showingBackImage ? backImage : frontImage;
+        if (currentImage == null) return;
+
+        currentImage.setStyle(
+                "object-fit:contain;"
+                + "transform:scale(" + (zoomLevel / 100.0) + ") rotate(" + rotationAngle + "deg);"
+                + "transform-origin:center center;"
+                + "transition:transform 0.2s ease;"
+        );
+    }
+
+    @Listen("onClick = #frontImageButton")
+    public void frontImage() {
+        showFrontImage();
+    }
+
+    @Listen("onClick = #backImageButton")
+    public void backImage() {
+        showBackImage();
+    }
+
+    @Listen("onClick = #zoomInButton")
+    public void zoomIn() {
+        if (zoomLevel < 200) {
+            zoomLevel += 20;
+            applyZoom();
+        }
+    }
+
+    @Listen("onClick = #zoomOutButton")
+    public void zoomOut() {
+        if (zoomLevel > 60) {
+            zoomLevel -= 20;
+            applyZoom();
+        }
+    }
+
+    @Listen("onClick = #rotateButton")
+    public void rotateImage() {
+        rotationAngle = (rotationAngle + 90) % 360;
+        applyZoom();
     }
 }

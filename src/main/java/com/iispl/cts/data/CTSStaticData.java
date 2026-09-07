@@ -14,7 +14,7 @@ public class CTSStaticData {
             "org.postgresql.Driver";
 
     private static final String DB_URL =
-            "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+            "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
             + "?sslmode=require";
 
     private static final String DB_USER =
