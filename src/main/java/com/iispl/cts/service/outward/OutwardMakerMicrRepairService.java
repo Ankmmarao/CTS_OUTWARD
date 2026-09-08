@@ -1,3 +1,4 @@
+
 package com.iispl.cts.service.outward;
 
 import java.util.List;
@@ -10,14 +11,21 @@ public class OutwardMakerMicrRepairService {
     private OutwardMakerMicrRepairDAO dao;
 
     public OutwardMakerMicrRepairService() {
+
         dao = new OutwardMakerMicrRepairDAO();
     }
 
-    public List<OutwardBatch> getMicrErrorBatches(int userId) {
+    public List<OutwardBatch> getMicrErrorBatches(
+            int userId) {
+
         return dao.getMicrErrorBatches(userId);
     }
 
-    public int getMicrErrorCount(String batchNumber) {
-        return dao.getMicrErrorCount(batchNumber);
+    public int getMicrErrorCount(
+            String batchNumber) {
+
+        return dao.getMicrErrorCount(
+                batchNumber);
     }
 }
+

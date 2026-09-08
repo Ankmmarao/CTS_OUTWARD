@@ -19,7 +19,8 @@ import com.iispl.cts.model.outward.OutwardBatch;
 import com.iispl.cts.model.outward.UserSession;
 import com.iispl.cts.service.outward.OutwardMakerMicrRepairService;
 
-public class OutwardMakerMicrRepairController extends SelectorComposer<Component> {
+public class OutwardMakerMicrRepairController
+        extends SelectorComposer<Component> {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,43 +35,62 @@ public class OutwardMakerMicrRepairController extends SelectorComposer<Component
         super.doAfterCompose(comp);
 
         service = new OutwardMakerMicrRepairService();
+
         setListItemRenderer();
+
         loadMicrErrorBatches();
     }
 
     private void setListItemRenderer() {
 
-        batchListbox.setItemRenderer(new ListitemRenderer<OutwardBatch>() {
+        batchListbox.setItemRenderer(
+                new ListitemRenderer<OutwardBatch>() {
 
                     @Override
-                    public void render(Listitem item,OutwardBatch batch,int index) {
+                    public void render(
+                            Listitem item,
+                            OutwardBatch batch,
+                            int index) {
 
-                        // Store the batch object
                         item.setValue(batch);
 
-                        // Batch ID
-                        item.appendChild(new Listcell(batch.getBatchNumber()));
+                        // Batch Number
+                        item.appendChild(
+                                new Listcell(
+                                        batch.getBatchNumber()));
 
                         // Total Cheques
-                        item.appendChild(new Listcell(String.valueOf(batch.getNumberOfCheques())));
+                        item.appendChild(
+                                new Listcell(
+                                        String.valueOf(
+                                                batch.getNumberOfCheques())));
 
                         // MICR Error Count
-                        int micrErrorCount = service.getMicrErrorCount(batch.getBatchNumber());
-                        item.appendChild(new Listcell(String.valueOf(micrErrorCount)));
+                        int micrErrorCount =
+                                service.getMicrErrorCount(
+                                        batch.getBatchNumber());
 
-                      
+                        item.appendChild(
+                                new Listcell(
+                                        String.valueOf(
+                                                micrErrorCount)));
+
                         // Action
-                        Listcell actionCell = new Listcell();
+                        Listcell actionCell =
+                                new Listcell();
 
-                        Button openButton = new Button("OPEN");
+                        Button openButton =
+                                new Button("OPEN");
 
-                        openButton.addEventListener("onClick",event -> openBatch(batch));
+                        openButton.addEventListener(
+                                "onClick",
+                                event -> openBatch(batch));
+
                         actionCell.appendChild(openButton);
 
                         item.appendChild(actionCell);
                     }
-                }
-        );
+                });
     }
 
     private void loadMicrErrorBatches() {
@@ -91,9 +111,6 @@ public class OutwardMakerMicrRepairController extends SelectorComposer<Component
             return;
         }
 
-        /*
-         * Get current logged-in user's ID
-         */
         int currentUserId =
                 LoginController.getCurrentUserId();
 
@@ -108,26 +125,49 @@ public class OutwardMakerMicrRepairController extends SelectorComposer<Component
             return;
         }
 
-        /*
-         * Get only MICR error batches
-         * assigned to the current logged-in Maker
-         */
+        System.out.println(
+                "MICR REPAIR - CURRENT USER ID = "
+                + currentUserId);
+
         List<OutwardBatch> batches =
                 service.getMicrErrorBatches(
                         currentUserId);
 
+        System.out.println(
+                "MICR REPAIR - BATCHES FOUND = "
+                + (batches == null ? 0 : batches.size()));
+
+        if (batches != null) {
+
+            for (OutwardBatch batch : batches) {
+
+                System.out.println(
+                        "MICR REPAIR - BATCH = "
+                        + batch.getBatchNumber());
+            }
+        }
+
         ListModelList<OutwardBatch> model =
-                new ListModelList<>(batches);
+                new ListModelList<>(
+                        batches);
 
         batchListbox.setModel(model);
     }
 
-
-
-
     private void openBatch(OutwardBatch batch) {
-        String batchNumber = batch.getBatchNumber();
-        Executions.getCurrent().sendRedirect("outward-maker-micr-repair-detail.zul" + "?batchNumber=" + batchNumber);
+
+        if (batch == null ||
+            batch.getBatchNumber() == null) {
+            return;
+        }
+
+        String batchNumber =
+                batch.getBatchNumber();
+
+        Executions.sendRedirect(
+                "outward-maker-micr-repair-detail.zul"
+                + "?batchNumber="
+                + batchNumber);
     }
 }
 

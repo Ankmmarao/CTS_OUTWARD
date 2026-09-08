@@ -7,49 +7,49 @@ import com.iispl.cts.model.outward.OutwardCheque;
 
 public class OutwardMakerMicrRepairDetailService {
 
-    private OutwardMakerMicrRepairDetailDAO dao;
 
-    public OutwardMakerMicrRepairDetailService() {
-        dao = new OutwardMakerMicrRepairDetailDAO();
-    }
+private OutwardMakerMicrRepairDetailDAO dao;
 
-
-    public List<OutwardCheque> getMicrErrorCheques(
-            String batchNumber) {
-
-        return dao.getMicrErrorCheques(batchNumber);
-    }
+public OutwardMakerMicrRepairDetailService() {
+    dao = new OutwardMakerMicrRepairDetailDAO();
+}
 
 
-    public boolean updateCorrectedMicr(
-            String batchNumber,
-            String chequeNumber,
-            String cityCode,
-            String bankCode,
-            String branchCode) {
+public List<OutwardCheque> getMicrErrorCheques(
+        String batchNumber) {
 
-        return dao.updateCorrectedMicr(
-                batchNumber,
-                chequeNumber,
-                cityCode,
-                bankCode,
-                branchCode);
-    }
+    return dao.getMicrErrorCheques(batchNumber);
+}
 
 
-    public boolean hasRemainingMicrErrors(
-            String batchNumber) {
+public boolean updateCorrectedMicr(
+        String batchNumber,
+        String chequeNumber,
+        String cityCode,
+        String bankCode,
+        String branchCode) {
 
-        return dao.hasRemainingMicrErrors(batchNumber);
-    }
+    return dao.updateCorrectedMicr(
+            batchNumber,
+            chequeNumber,
+            cityCode,
+            bankCode,
+            branchCode);
+}
 
 
-    public boolean updateBatchStatus(
-            String batchNumber,
-            String status) {
+public boolean hasRemainingMicrErrors(
+        String batchNumber) {
 
-        return dao.updateBatchStatus(
-                batchNumber,
-                status);
-    }
+    return dao.hasRemainingMicrErrors(batchNumber);
+}
+
+
+public boolean updateBatchStatus(
+        String batchNumber) {
+
+    return dao.updateBatchStatus(batchNumber);
+}
+
+
 }

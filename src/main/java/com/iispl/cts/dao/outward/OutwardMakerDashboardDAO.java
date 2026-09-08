@@ -848,4 +848,58 @@ public class OutwardMakerDashboardDAO {
             }
         }
     }
+    
+ // ============================================================
+ // UPDATE CHEQUE STATUS
+ // ============================================================
+
+ public boolean updateChequeStatus(
+         String batchNumber,
+         String chequeNumber,
+         String status) throws SQLException {
+
+     String sql =
+             "UPDATE public.outward_cheque "
+             + "SET cheque_status = ? "
+             + "WHERE batch_number = ? "
+             + "AND cheque_number = ?";
+
+     try (Connection con =
+                  CTSStaticData.getConnection();
+          PreparedStatement ps =
+                  con.prepareStatement(sql)) {
+
+         ps.setString(1, status);
+         ps.setString(2, batchNumber);
+         ps.setString(3, chequeNumber);
+
+         return ps.executeUpdate() > 0;
+     }
+ }
+
+
+ // ============================================================
+ // UPDATE BATCH STATUS
+ // ============================================================
+
+ public boolean updateBatchStatus(
+         String batchNumber,
+         String status) throws SQLException {
+
+     String sql =
+             "UPDATE public.outward_batch "
+             + "SET batch_status = ? "
+             + "WHERE batch_number = ?";
+
+     try (Connection con =
+                  CTSStaticData.getConnection();
+          PreparedStatement ps =
+                  con.prepareStatement(sql)) {
+
+         ps.setString(1, status);
+         ps.setString(2, batchNumber);
+
+         return ps.executeUpdate() > 0;
+     }
+ }
 }
