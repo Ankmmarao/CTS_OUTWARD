@@ -1,128 +1,545 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?page title="Batch Verification"?>
+<?page title="Cheque Verification"?>
 
 <zk>
 
-    <borderlayout width="100%"
-                  height="100%"
-                  style="background:#F4F7FB;">
+    <borderlayout
+        width="100%"
+        height="100%"
+        style="background:#F4F7FB;">
 
+
+        <!-- ============================================== -->
         <!-- HEADER -->
+        <!-- ============================================== -->
 
         <north size="62px">
+
             <include src="/header.zul"/>
+
         </north>
 
 
+        <!-- ============================================== -->
         <!-- SIDEBAR -->
+        <!-- ============================================== -->
 
         <west size="280px">
+
             <include src="/checkersidebar.zul"/>
+
         </west>
 
 
-        <!-- CONTENT -->
+        <!-- ============================================== -->
+        <!-- MAIN CONTENT -->
+        <!-- ============================================== -->
 
         <center>
 
-            <vlayout spacing="20px"
-                     style="padding:30px;">
+            <vlayout
+                width="100%"
+                spacing="20px"
+                style="padding:30px;">
 
+
+                <!-- ====================================== -->
                 <!-- PAGE TITLE -->
+                <!-- ====================================== -->
 
-                <label value="Batch Verification"
-                       style="font-size:30px;
-                              font-weight:bold;
-                              color:#122B49;"/>
+                <hlayout width="100%"
+                         valign="middle">
 
+                    <vlayout>
 
-                <!-- MAIN CARD -->
+                        <label
+                            value="Cheque Verification"
+                            style="
+                                font-size:30px;
+                                font-weight:bold;
+                                color:#122B49;
+                            "/>
 
-                <groupbox width="100%"
-                          style="background:white;
-                                 border:1px solid #DCE5F0;
-                                 border-radius:8px;">
+                        <hlayout spacing="10px">
 
-                    <vlayout spacing="20px"
-                             style="padding:25px;">
+                            <label
+                                value="Batch ID:"
+                                style="
+                                    font-size:14px;
+                                    color:#667085;
+                                "/>
 
-
-                        <!-- BATCH HEADER -->
-
-                        <hlayout width="100%"
-                                 style="background:#F8FAFC;
-                                        border:1px solid #DCE5F0;
-                                        border-radius:8px;
-                                        padding:18px 25px;">
-
-                            <label value="Batch ID : "
-                                   style="font-size:18px;
-                                          font-weight:bold;"/>
-
-                            <label value="B006"
-                                   style="font-size:22px;
-                                          font-weight:bold;
-                                          color:#175CD3;"/>
-
-                            <space hflex="1"/>
-
-                            <label value="Total Cheques: 12"
-                                   style="font-size:18px;
-                                          font-weight:bold;
-                                          color:#175CD3;"/>
+                            <label
+                                id="verificationBatchId"
+                                value="-"
+                                style="
+                                    font-size:14px;
+                                    font-weight:bold;
+                                    color:#175CD3;
+                                "/>
 
                         </hlayout>
 
-
-                        <!-- CHEQUE + DETAILS -->
-
-                        <hlayout width="100%"
-                                 spacing="30px">
+                    </vlayout>
 
 
+                    <space hflex="1"/>
+
+
+                    <label
+                        id="chequeSequence"
+                        value="Cheque 0 of 0"
+                        style="
+                            font-size:16px;
+                            font-weight:bold;
+                            color:#475467;
+                        "/>
+
+                </hlayout>
+
+
+                <!-- ====================================== -->
+                <!-- MAIN CARD -->
+                <!-- ====================================== -->
+
+                <groupbox
+                    width="100%"
+                    style="
+                        background:white;
+                        border:1px solid #DCE5F0;
+                        border-radius:8px;
+                    ">
+
+
+                    <vlayout
+                        width="100%"
+                        spacing="20px"
+                        style="padding:25px;">
+
+
+                        <!-- ================================== -->
+                        <!-- IMAGE + DETAILS -->
+                        <!-- ================================== -->
+
+                        <hlayout
+                            width="100%"
+                            spacing="30px"
+                            valign="top">
+
+
+                            <!-- ============================== -->
                             <!-- LEFT SIDE -->
+                            <!-- CHEQUE IMAGE -->
+                            <!-- ============================== -->
 
-                            <vlayout hflex="1"
-                                     spacing="12px">
-
-                                <label value="Scanned Cheque"
-                                       style="font-size:20px;
-                                              font-weight:bold;"/>
+                            <vlayout
+                                hflex="1"
+                                spacing="12px">
 
 
-                                <groupbox width="100%"
-                                          height="390px"
-                                          style="background:white;
-                                                 border:1px solid #DCE5F0;
-                                                 border-radius:7px;">
+                                <label
+                                    value="Scanned Cheque"
+                                    style="
+                                        font-size:20px;
+                                        font-weight:bold;
+                                        color:#122B49;
+                                    "/>
 
-                                    <vlayout width="100%"
-                                             align="center"
-                                             spacing="12px">
 
-                                        <!-- IMAGE CONTROLS -->
+                                <groupbox
+                                    width="100%"
+                                    style="
+                                        background:#F8FAFC;
+                                        border:1px solid #DCE5F0;
+                                        border-radius:7px;
+                                    ">
 
-                                        <hlayout spacing="10px">
 
-                                            <button label="⌕ Zoom In"
-                                                    width="115px"/>
+                                    <vlayout
+                                        width="100%"
+                                        align="center"
+                                        style="padding:15px;">
 
-                                            <button label="⌕ Zoom Out"
-                                                    width="115px"/>
 
-                                            <button label="↻ Rotate"
-                                                    width="105px"/>
+                                        <!-- ACTUAL CHEQUE IMAGE -->
+
+                                        <image
+                                            id="chequeImage"
+                                            width="100%"
+                                            height="420px"
+                                            style="
+                                                object-fit:contain;
+                                                background:white;
+                                            "
+                                        />
+
+                                    </vlayout>
+
+                                </groupbox>
+
+
+                                <!-- ========================== -->
+                                <!-- PREVIOUS / NEXT -->
+                                <!-- ========================== -->
+
+                                <hlayout
+                                    width="100%"
+                                    style="
+                                        padding-top:10px;
+                                    ">
+
+
+                                    <button
+                                        id="previousButton"
+                                        label="← Previous"
+                                        width="130px"
+                                        style="
+                                            background:white;
+                                            color:#344054;
+                                            border:1px solid #D0D5DD;
+                                        "
+                                    />
+
+
+                                    <space hflex="1"/>
+
+
+                                    <button
+                                        id="nextButton"
+                                        label="Next →"
+                                        width="130px"
+                                        style="
+                                            background:#175CD3;
+                                            color:white;
+                                            border:none;
+                                        "
+                                    />
+
+                                </hlayout>
+
+
+                            </vlayout>
+
+
+                            <!-- ============================== -->
+                            <!-- RIGHT SIDE -->
+                            <!-- CHEQUE DETAILS -->
+                            <!-- ============================== -->
+
+                            <vlayout
+                                width="480px"
+                                spacing="12px">
+
+
+                                <label
+                                    value="Cheque Details"
+                                    style="
+                                        font-size:20px;
+                                        font-weight:bold;
+                                        color:#122B49;
+                                    "
+                                />
+
+
+                                <groupbox
+                                    width="100%"
+                                    style="
+                                        background:white;
+                                        border:1px solid #DCE5F0;
+                                        border-radius:7px;
+                                    ">
+
+
+                                    <vlayout
+                                        spacing="18px"
+                                        style="padding:25px;">
+
+
+                                        <!-- ================== -->
+                                        <!-- CHEQUE NUMBER -->
+                                        <!-- ================== -->
+
+                                        <hlayout width="100%">
+
+                                            <label
+                                                value="Cheque Number"
+                                                width="180px"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                value=":"
+                                                width="15px"
+                                            />
+
+                                            <label
+                                                id="chequeNumberLabel"
+                                                value="-"
+                                                style="
+                                                    font-size:15px;
+                                                    font-weight:bold;
+                                                "
+                                            />
 
                                         </hlayout>
 
 
-                                        <!-- CHEQUE IMAGE -->
+                                        <!-- ================== -->
+                                        <!-- ACCOUNT NUMBER -->
+                                        <!-- ================== -->
 
-                                        <image src="/images/cheque-front.jpg"
-                                               width="95%"
-                                               height="315px"
-                                               style="object-fit:contain;"/>
+                                        <hlayout width="100%">
+
+                                            <label
+                                                value="Account Number"
+                                                width="180px"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                value=":"
+                                                width="15px"
+                                            />
+
+                                            <label
+                                                id="accountNumberLabel"
+                                                value="-"
+                                                style="
+                                                    font-size:15px;
+                                                    font-weight:bold;
+                                                "
+                                            />
+
+                                        </hlayout>
+
+
+                                        <!-- ================== -->
+                                        <!-- DRAWER NAME -->
+                                        <!-- ================== -->
+
+                                        <hlayout width="100%">
+
+                                            <label
+                                                value="Drawer Name"
+                                                width="180px"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                value=":"
+                                                width="15px"
+                                            />
+
+                                            <label
+                                                id="drawerNameLabel"
+                                                value="-"
+                                                style="
+                                                    font-size:15px;
+                                                    font-weight:bold;
+                                                "
+                                            />
+
+                                        </hlayout>
+
+
+                                        <!-- ================== -->
+                                        <!-- PAYEE NAME -->
+                                        <!-- ================== -->
+
+                                        <hlayout width="100%">
+
+                                            <label
+                                                value="Payee Name"
+                                                width="180px"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                value=":"
+                                                width="15px"
+                                            />
+
+                                            <label
+                                                id="payeeNameLabel"
+                                                value="-"
+                                                style="
+                                                    font-size:15px;
+                                                    font-weight:bold;
+                                                "
+                                            />
+
+                                        </hlayout>
+
+
+                                        <!-- ================== -->
+                                        <!-- CHEQUE DATE -->
+                                        <!-- ================== -->
+
+                                        <hlayout width="100%">
+
+                                            <label
+                                                value="Cheque Date"
+                                                width="180px"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                value=":"
+                                                width="15px"
+                                            />
+
+                                            <label
+                                                id="chequeDateLabel"
+                                                value="-"
+                                                style="
+                                                    font-size:15px;
+                                                    font-weight:bold;
+                                                "
+                                            />
+
+                                        </hlayout>
+
+
+                                        <!-- ================== -->
+                                        <!-- AMOUNT -->
+                                        <!-- ================== -->
+
+                                        <hlayout width="100%">
+
+                                            <label
+                                                value="Cheque Amount"
+                                                width="180px"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                value=":"
+                                                width="15px"
+                                            />
+
+                                            <label
+                                                id="amountLabel"
+                                                value="-"
+                                                style="
+                                                    font-size:17px;
+                                                    font-weight:bold;
+                                                    color:#039855;
+                                                "
+                                            />
+
+                                        </hlayout>
+
+
+                                        <!-- ================== -->
+                                        <!-- AMOUNT IN WORDS -->
+                                        <!-- ================== -->
+
+                                        <vlayout
+                                            spacing="5px">
+
+                                            <label
+                                                value="Amount In Words"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                id="amountInWordsLabel"
+                                                value="-"
+                                                style="
+                                                    font-size:15px;
+                                                    font-weight:bold;
+                                                "
+                                            />
+
+                                        </vlayout>
+
+
+                                        <!-- ================== -->
+                                        <!-- MICR -->
+                                        <!-- ================== -->
+
+                                        <hlayout width="100%">
+
+                                            <label
+                                                value="MICR"
+                                                width="180px"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                value=":"
+                                                width="15px"
+                                            />
+
+                                            <label
+                                                id="micrLabel"
+                                                value="-"
+                                                style="
+                                                    font-size:15px;
+                                                    font-weight:bold;
+                                                "
+                                            />
+
+                                        </hlayout>
+
+
+                                        <!-- ================== -->
+                                        <!-- STATUS -->
+                                        <!-- ================== -->
+
+                                        <hlayout width="100%">
+
+                                            <label
+                                                value="Status"
+                                                width="180px"
+                                                style="
+                                                    font-size:15px;
+                                                    color:#667085;
+                                                "
+                                            />
+
+                                            <label
+                                                value=":"
+                                                width="15px"
+                                            />
+
+                                            <label
+                                                id="statusLabel"
+                                                value="PENDING"
+                                                style="
+                                                    font-size:15px;
+                                                    font-weight:bold;
+                                                    color:#D97706;
+                                                "
+                                            />
+
+                                        </hlayout>
+
 
                                     </vlayout>
 
@@ -130,119 +547,6 @@
 
                             </vlayout>
 
-
-                            <!-- RIGHT SIDE -->
-
-                            <vlayout width="450px"
-                                     spacing="12px">
-
-                                <label value="Cheque Details"
-                                       style="font-size:20px;
-                                              font-weight:bold;"/>
-
-
-                                <groupbox width="450px"
-                                          height="390px"
-                                          style="background:white;
-                                                 border:1px solid #DCE5F0;
-                                                 border-radius:7px;">
-
-                                    <vlayout spacing="22px"
-                                             style="padding:25px;">
-
-
-                                        <!-- CHEQUE NUMBER -->
-
-                                        <grid width="100%">
-
-                                            <columns>
-
-                                                <column width="150px"/>
-
-                                                <column width="20px"/>
-
-                                                <column/>
-
-                                            </columns>
-
-                                            <rows>
-
-                                                <row>
-
-                                                    <label value="Cheque Number"
-                                                           style="font-size:16px;
-                                                                  color:#667085;"/>
-
-                                                    <label value=":"/>
-
-                                                    <label value="123456"
-                                                           style="font-size:16px;
-                                                                  font-weight:bold;"/>
-
-                                                </row>
-
-
-                                                <!-- DATE -->
-
-                                                <row>
-
-                                                    <label value="Cheque Date"
-                                                           style="font-size:16px;
-                                                                  color:#667085;"/>
-
-                                                    <label value=":"/>
-
-                                                    <label value="21-06-2025"
-                                                           style="font-size:16px;
-                                                                  font-weight:bold;"/>
-
-                                                </row>
-
-
-                                                <!-- AMOUNT -->
-
-                                                <row>
-
-                                                    <label value="Cheque Amount"
-                                                           style="font-size:16px;
-                                                                  color:#667085;"/>
-
-                                                    <label value=":"/>
-
-                                                    <label value="₹ 10,00,000.00"
-                                                           style="font-size:17px;
-                                                                  font-weight:bold;
-                                                                  color:#039855;"/>
-
-                                                </row>
-
-
-                                                <!-- DRAWEE BANK -->
-
-                                                <row>
-
-                                                    <label value="Drawee Bank"
-                                                           style="font-size:16px;
-                                                                  color:#667085;"/>
-
-                                                    <label value=":"/>
-
-                                                    <label value="STATE BANK OF INDIA&#10;(SBIN0001234)"
-                                                           multiline="true"
-                                                           style="font-size:16px;
-                                                                  font-weight:bold;"/>
-
-                                                </row>
-
-                                            </rows>
-
-                                        </grid>
-
-                                    </vlayout>
-
-                                </groupbox>
-
-                            </vlayout>
 
                         </hlayout>
 
@@ -250,50 +554,77 @@
                         <separator/>
 
 
-                        <!-- ACTION BUTTONS -->
+                        <!-- ================================== -->
+                        <!-- BOTTOM ACTION -->
+                        <!-- ================================== -->
 
-                        <hlayout width="100%"
-                                 valign="middle">
+                        <hlayout
+                            width="100%"
+                            valign="middle">
 
-                            <button label="← Back to Queue"
-                                    width="150px"
-                                    onClick='Executions.sendRedirect("outward-checker-dashboard.zul")'
-                                    style="background:white;
-                                           color:#475467;
-                                           border:1px solid #D0D5DD;"/>
+
+                            <button
+                                id="backButton"
+                                label="← Back to Batch"
+                                width="160px"
+                                style="
+                                    background:white;
+                                    color:#475467;
+                                    border:1px solid #D0D5DD;
+                                "
+                            />
+
 
                             <space hflex="1"/>
 
 
-                            <button label="⊗ Reject"
-                                    width="130px"
-                                    style="background:white;
-                                           color:#D92D20;
-                                           border:1px solid #D92D20;"/>
+                            <button
+                                label="⊗ Reject"
+                                width="130px"
+                                style="
+                                    background:white;
+                                    color:#D92D20;
+                                    border:1px solid #D92D20;
+                                "
+                            />
 
 
-                            <button label="★ Send to Maker"
-                                    width="155px"
-                                    style="background:white;
-                                           color:#D97706;
-                                           border:1px solid #F59E0B;"/>
+                            <button
+                                label="★ Send to Maker"
+                                width="160px"
+                                style="
+                                    background:white;
+                                    color:#D97706;
+                                    border:1px solid #F59E0B;
+                                "
+                            />
 
 
-                            <button label="✓ Approve &amp; Complete Verification"
-                                    width="270px"
-                                    style="background:#12B76A;
-                                           color:white;
-                                           border:none;"/>
+                            <button
+                                label="✓ Approve"
+                                width="150px"
+                                style="
+                                    background:#12B76A;
+                                    color:white;
+                                    border:none;
+                                "
+                            />
+
 
                         </hlayout>
 
+
                     </vlayout>
+
 
                 </groupbox>
 
+
             </vlayout>
 
+
         </center>
+
 
     </borderlayout>
 
