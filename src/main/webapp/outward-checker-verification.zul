@@ -4,11 +4,11 @@
 
 <zk>
 
-    <borderlayout
-        width="100%"
-        height="100%"
-        style="background:#F4F7FB;">
-
+<borderlayout
+    width="100%"
+    height="100%"
+    apply="com.iispl.cts.controller.outward.checker.CheckerChequeVeficationController"
+    style="background:#F4F7FB;">
 
         <!-- ============================================== -->
         <!-- HEADER -->
@@ -563,16 +563,16 @@
                             valign="middle">
 
 
-                            <button
-                                id="backButton"
-                                label="← Back to Batch"
-                                width="160px"
-                                style="
-                                    background:white;
-                                    color:#475467;
-                                    border:1px solid #D0D5DD;
-                                "
-                            />
+                          <button
+    id="backButton"
+    label="← Back to Queue"
+    width="160px"
+    style="
+        background:white;
+        color:#475467;
+        border:1px solid #D0D5DD;
+    "
+/>
 
 
                             <space hflex="1"/>
