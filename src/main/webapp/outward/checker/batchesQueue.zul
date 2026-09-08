@@ -4,11 +4,11 @@
 
     <borderlayout
         width="100%"
-        height="100%"
+        height= "100%"
         apply="com.iispl.cts.controller.outward.checker.CheckerBatchesQueueController">
 
         <!-- ================= HEADER ================= -->
-
+   
         <north
             size="70px"
             border="0">
