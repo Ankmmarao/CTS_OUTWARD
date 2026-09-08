@@ -23,10 +23,15 @@ public class CheckerChequeVerificationController
     private static final long serialVersionUID = 1L;
 
 
-    // =========================================================
+    // ============================================
     // ZUL COMPONENTS
-    // =========================================================
+    // ============================================
+    @Wire
+    private Label accountVerificationIcon;
 
+    @Wire
+    private Label accountVerificationMessage;
+    
     @Wire
     private Label verificationBatchId;
 
@@ -60,8 +65,6 @@ public class CheckerChequeVerificationController
     @Wire
     private Label micrLabel;
 
-    @Wire
-    private Label statusLabel;
 
     @Wire
     private Button previousButton;
@@ -70,24 +73,22 @@ public class CheckerChequeVerificationController
     private Button nextButton;
 
 
-    // =========================================================
+    // ============================================
     // VARIABLES
-    // =========================================================
+    // ============================================
 
     private CheckerBatchService batchService;
 
     private String batchNumber;
-
-    private String selectedChequeNumber;
 
     private List<OutwardCheque> chequeList;
 
     private int currentIndex = 0;
 
 
-    // =========================================================
-    // INITIALIZE
-    // =========================================================
+    // ============================================
+    // PAGE INITIALIZATION
+    // ============================================
 
     @Override
     public void doAfterCompose(Component comp)
@@ -95,38 +96,52 @@ public class CheckerChequeVerificationController
 
         super.doAfterCompose(comp);
 
-        System.out.println("==========================================");
-        System.out.println("CHEQUE VERIFICATION CONTROLLER STARTED");
-        System.out.println("==========================================");
+        System.out.println();
+        System.out.println(
+                "======================================"
+        );
+        System.out.println(
+                "CHEQUE VERIFICATION CONTROLLER STARTED"
+        );
+        System.out.println(
+                "======================================"
+        );
 
 
-        // Create Service
+        // ========================================
+        // CREATE SERVICE
+        // ========================================
 
         batchService = new CheckerBatchService();
 
 
-        // Get Batch Number from URL
+        // ========================================
+        // GET BATCH NUMBER FROM URL
+        //
+        // URL WILL BE:
+        //
+        // chequeVerification.zul?batchNumber=XXXX
+        // ========================================
 
         batchNumber = Executions.getCurrent()
-                .getParameter("batchId");
+                .getParameter("batchNumber");
 
 
-        // Get Selected Cheque Number from URL
-
-        selectedChequeNumber = Executions.getCurrent()
-                .getParameter("chequeNumber");
-
-
-        System.out.println("BATCH NUMBER = " + batchNumber);
-        System.out.println("SELECTED CHEQUE = " + selectedChequeNumber);
+        System.out.println(
+                "BATCH NUMBER = " + batchNumber
+        );
 
 
-        // Validate Batch Number
+        // ========================================
+        // VALIDATE BATCH NUMBER
+        // ========================================
 
         if (batchNumber == null
                 || batchNumber.trim().isEmpty()) {
 
-            System.out.println("BATCH NUMBER IS EMPTY");
+            System.out.println(
+                    "BATCH NUMBER NOT FOUND"
+            );
 
             goBackToQueue();
 
@@ -134,89 +149,85 @@ public class CheckerChequeVerificationController
         }
 
 
-        // Load Cheques
+        // ========================================
+        // LOAD CHEQUES
+        // ========================================
 
         loadCheques();
     }
 
 
-    // =========================================================
-    // LOAD ALL CHEQUES FROM BATCH
-    // =========================================================
+    // ============================================
+    // LOAD CHEQUES
+    // ============================================
 
     private void loadCheques() {
 
         try {
 
-            System.out.println("==========================================");
-            System.out.println("LOADING CHEQUES FOR BATCH");
-            System.out.println("BATCH = " + batchNumber);
-            System.out.println("==========================================");
+            System.out.println();
+            System.out.println(
+                    "LOADING CHEQUES FOR BATCH = "
+                            + batchNumber
+            );
 
 
-            chequeList = batchService
-                    .getChequesByBatchNumber(batchNumber);
+            // ========================================
+            // GET CHEQUES
+            // ========================================
+
+            chequeList =
+                    batchService.getChequesByBatchNumber(
+                            batchNumber
+                    );
 
 
-            // Null Safety
+            // ========================================
+            // NULL SAFETY
+            // ========================================
 
             if (chequeList == null) {
 
-                chequeList = new ArrayList<>();
+                chequeList =
+                        new ArrayList<>();
+
             }
 
 
             System.out.println(
-                    "TOTAL CHEQUES FOUND = "
+                    "TOTAL CHEQUES = "
                             + chequeList.size()
             );
 
 
-            // No Cheques
+            // ========================================
+            // NO CHEQUES
+            // ========================================
 
             if (chequeList.isEmpty()) {
 
-                System.out.println(
-                        "NO CHEQUES FOUND"
+                chequeSequence.setValue(
+                        "No cheques found"
                 );
+
+                previousButton.setDisabled(true);
+
+                nextButton.setDisabled(true);
 
                 return;
             }
 
 
-            // =================================================
-            // FIND THE CHEQUE USER CLICKED OPEN ON
-            // =================================================
+            // ========================================
+            // START FROM FIRST CHEQUE
+            // ========================================
 
-            if (selectedChequeNumber != null
-                    && !selectedChequeNumber.trim().isEmpty()) {
-
-                for (int i = 0;
-                        i < chequeList.size();
-                        i++) {
-
-                    String chequeNumber =
-                            chequeList.get(i)
-                                    .getChequeNumber();
+            currentIndex = 0;
 
 
-                    if (selectedChequeNumber.equals(
-                            chequeNumber)) {
-
-                        currentIndex = i;
-
-                        System.out.println(
-                                "SELECTED CHEQUE FOUND AT INDEX = "
-                                        + currentIndex
-                        );
-
-                        break;
-                    }
-                }
-            }
-
-
-            // Display Selected Cheque
+            // ========================================
+            // DISPLAY FIRST CHEQUE
+            // ========================================
 
             displayCurrentCheque();
 
@@ -224,13 +235,14 @@ public class CheckerChequeVerificationController
         } catch (Exception e) {
 
             e.printStackTrace();
+
         }
     }
 
 
-    // =========================================================
+    // ============================================
     // DISPLAY CURRENT CHEQUE
-    // =========================================================
+    // ============================================
 
     private void displayCurrentCheque() {
 
@@ -241,96 +253,153 @@ public class CheckerChequeVerificationController
         }
 
 
+        // ========================================
+        // GET CURRENT CHEQUE
+        // ========================================
+
         OutwardCheque cheque =
                 chequeList.get(currentIndex);
 
 
-        System.out.println("==========================================");
-        System.out.println("DISPLAYING CHEQUE");
+        System.out.println();
         System.out.println(
-                "CHEQUE NUMBER = "
-                        + cheque.getChequeNumber()
-        );
-        System.out.println(
-                "CURRENT INDEX = "
+                "DISPLAYING CHEQUE INDEX = "
                         + currentIndex
         );
-        System.out.println("==========================================");
 
 
-        // =====================================================
-        // BATCH ID
-        // =====================================================
+        // ========================================
+        // BATCH NUMBER
+        // ========================================
 
         verificationBatchId.setValue(
                 batchNumber
         );
 
 
-        // =====================================================
-        // CHEQUE POSITION
-        // =====================================================
+        // ========================================
+        // CHEQUE SEQUENCE
+        // ========================================
 
         chequeSequence.setValue(
 
                 "Cheque "
-                        + (currentIndex + 1)
-                        + " of "
-                        + chequeList.size()
+
+                + (currentIndex + 1)
+
+                + " of "
+
+                + chequeList.size()
+
         );
 
 
-        // =====================================================
+        // ========================================
         // CHEQUE NUMBER
-        // =====================================================
+        // ========================================
 
         chequeNumberLabel.setValue(
 
                 safe(
                         cheque.getChequeNumber()
                 )
+
         );
 
 
-        // =====================================================
+        // ========================================
         // ACCOUNT NUMBER
-        // =====================================================
+        // ========================================
 
         accountNumberLabel.setValue(
 
                 safe(
                         cheque.getDrawerAccountNumber()
                 )
+
         );
+     // ========================================
+     // VERIFY ACCOUNT
+     // ========================================
+
+     boolean accountVerified =
+             batchService.verifyAccount(
+                     cheque.getDrawerAccountNumber()
+             );
+
+     if (accountVerified) {
+
+         accountVerificationIcon.setValue("✓");
+
+         accountVerificationMessage.setValue(
+                 "Account Verified"
+         );
+
+         accountVerificationIcon.setStyle(
+                 "font-size:20px;"
+                 + "font-weight:bold;"
+                 + "color:#039855;"
+         );
+
+         accountVerificationMessage.setStyle(
+                 "font-size:15px;"
+                 + "font-weight:bold;"
+                 + "padding-left:8px;"
+                 + "color:#039855;"
+         );
+
+     } else {
+
+         accountVerificationIcon.setValue("✕");
+
+         accountVerificationMessage.setValue(
+                 "Account Not Verified"
+         );
+
+         accountVerificationIcon.setStyle(
+                 "font-size:20px;"
+                 + "font-weight:bold;"
+                 + "color:#D92D20;"
+         );
+
+         accountVerificationMessage.setStyle(
+                 "font-size:15px;"
+                 + "font-weight:bold;"
+                 + "padding-left:8px;"
+                 + "color:#D92D20;"
+         );
+     }
 
 
-        // =====================================================
+        // ========================================
         // DRAWER NAME
-        // =====================================================
+        // ========================================
 
         drawerNameLabel.setValue(
 
                 safe(
                         cheque.getDrawerName()
                 )
+
         );
 
 
-        // =====================================================
+        // ========================================
         // PAYEE NAME
-        // =====================================================
+        // ========================================
 
         payeeNameLabel.setValue(
 
                 safe(
                         cheque.getPayeeName()
                 )
+
         );
 
 
-        // =====================================================
+        // ========================================
         // AMOUNT
-        // =====================================================
+        // ========================================
 
         if (cheque.getAmount() != null) {
 
@@ -338,29 +407,32 @@ public class CheckerChequeVerificationController
 
                     cheque.getAmount()
                             .toPlainString()
+
             );
 
         } else {
 
             amountLabel.setValue("-");
+
         }
 
 
-        // =====================================================
+        // ========================================
         // AMOUNT IN WORDS
-        // =====================================================
+        // ========================================
 
         amountInWordsLabel.setValue(
 
                 safe(
                         cheque.getAmountInWords()
                 )
+
         );
 
 
-        // =====================================================
+        // ========================================
         // CHEQUE DATE
-        // =====================================================
+        // ========================================
 
         if (cheque.getChequeDate() != null) {
 
@@ -368,74 +440,80 @@ public class CheckerChequeVerificationController
 
                     cheque.getChequeDate()
                             .toString()
+
             );
 
         } else {
 
             chequeDateLabel.setValue("-");
+
         }
 
 
-        // =====================================================
+        // ========================================
         // MICR
-        // =====================================================
+        // ========================================
 
         String micr =
 
-                safeValue(cheque.getCityCode())
-                        + "-"
-                        + safeValue(cheque.getBankCode())
-                        + "-"
-                        + safeValue(cheque.getBranchCode());
+                safe(cheque.getCityCode())
+
+                + "-"
+
+                + safe(cheque.getBankCode())
+
+                + "-"
+
+                + safe(cheque.getBranchCode());
 
 
         micrLabel.setValue(micr);
 
 
-        // =====================================================
-        // STATUS
-        // =====================================================
+     
+        
 
-        statusLabel.setValue(
-
-                getStatus(
-                        cheque.getChequeStatus()
-                )
-        );
-
-
-        // =====================================================
+        // ========================================
         // LOAD CHEQUE IMAGE
-        // =====================================================
+        // ========================================
 
         loadChequeImage(cheque);
 
 
-        // =====================================================
+        // ========================================
         // PREVIOUS BUTTON
-        // =====================================================
+        // ========================================
 
         previousButton.setDisabled(
 
                 currentIndex == 0
+
         );
 
 
-        // =====================================================
+        // ========================================
         // NEXT BUTTON
-        // =====================================================
+        // ========================================
 
         nextButton.setDisabled(
 
                 currentIndex
                         == chequeList.size() - 1
+
         );
+
+
+        System.out.println(
+                "DISPLAYED CHEQUE = "
+                        + cheque.getChequeNumber()
+        );
+
     }
 
 
-    // =========================================================
+    // ============================================
     // LOAD CHEQUE IMAGE
-    // =========================================================
+    // ============================================
 
     private void loadChequeImage(
             OutwardCheque cheque) {
@@ -447,17 +525,19 @@ public class CheckerChequeVerificationController
 
 
             System.out.println(
-                    "FRONT IMAGE PATH = "
+                    "IMAGE PATH = "
                             + imagePath
             );
 
 
-            // No Image Path
+            // ========================================
+            // NO IMAGE
+            // ========================================
 
             if (imagePath == null
                     || imagePath.trim().isEmpty()) {
 
-                chequeImage.setSrc(null);
+                chequeImage.setSrc("");
 
                 return;
             }
@@ -467,9 +547,9 @@ public class CheckerChequeVerificationController
                     new File(imagePath);
 
 
-            // =================================================
-            // IF DATABASE CONTAINS ACTUAL FILE PATH
-            // =================================================
+            // ========================================
+            // LOCAL FILE PATH
+            // ========================================
 
             if (imageFile.exists()
                     && imageFile.isFile()) {
@@ -477,42 +557,42 @@ public class CheckerChequeVerificationController
                 chequeImage.setContent(
 
                         new AImage(imageFile)
+
                 );
 
             }
 
-            // =================================================
-            // IF DATABASE CONTAINS WEB PATH
-            // Example:
-            // /images/cheque.jpg
-            // =================================================
+
+            // ========================================
+            // WEB PATH
+            // ========================================
 
             else {
 
                 chequeImage.setSrc(
                         imagePath
                 );
+
             }
 
 
         } catch (Exception e) {
 
             System.out.println(
-                    "ERROR LOADING CHEQUE IMAGE"
+                    "ERROR LOADING IMAGE"
             );
 
             e.printStackTrace();
 
-            chequeImage.setSrc(null);
         }
     }
 
 
-    // =========================================================
+    // ============================================
     // PREVIOUS CHEQUE
-    // =========================================================
+    // ============================================
 
-    @Listen("onClick=#previousButton")
+    @Listen("onClick = #previousButton")
     public void previousCheque() {
 
         if (currentIndex > 0) {
@@ -520,131 +600,79 @@ public class CheckerChequeVerificationController
             currentIndex--;
 
             displayCurrentCheque();
+
         }
+
     }
 
 
-    // =========================================================
+    // ============================================
     // NEXT CHEQUE
-    // =========================================================
+    // ============================================
 
-    @Listen("onClick=#nextButton")
+    @Listen("onClick = #nextButton")
     public void nextCheque() {
 
-        if (currentIndex
+        if (chequeList != null
+
+                && currentIndex
                 < chequeList.size() - 1) {
 
             currentIndex++;
 
             displayCurrentCheque();
+
         }
+
     }
 
 
-    // =========================================================
-    // BACK TO BATCH
-    // =========================================================
+    // ============================================
+    // BACK BUTTON
+    // ============================================
 
-    @Listen("onClick=#backButton")
+    @Listen("onClick = #backButton")
     public void backButton() {
 
-        goBackToBatch();
+        System.out.println(
+                "BACK TO BATCH QUEUE"
+        );
+
+        goBackToQueue();
+
     }
 
 
-    // =========================================================
-    // BACK TO BATCH PAGE
-    // =========================================================
-
-    private void goBackToBatch() {
-
-        String contextPath =
-
-                Executions.getCurrent()
-                        .getContextPath();
-
-
-        String url =
-
-                contextPath
-                        + "/outward/checker/"
-                        + "batchVerification.zul"
-                        + "?batchId="
-                        + batchNumber;
-
-
-        Executions.sendRedirect(url);
-    }
-
-
-    // =========================================================
-    // BACK TO QUEUE
-    // =========================================================
+    // ============================================
+    // BACK TO BATCH QUEUE
+    // ============================================
 
     private void goBackToQueue() {
 
-        String contextPath =
-
-                Executions.getCurrent()
-                        .getContextPath();
-
-
         Executions.sendRedirect(
 
-                contextPath
-                        + "/outward/checker/"
-                        + "batchesQueue.zul"
+                "/outward/checker/batchesQueue.zul"
+
         );
+
     }
 
 
-    // =========================================================
-    // STATUS
-    // =========================================================
+    // ============================================
+    // SAFE VALUE
+    // ============================================
 
-    private String getStatus(
-            String status) {
-
-        if (status == null
-                || status.trim().isEmpty()) {
-
-            return "PENDING";
-        }
-
-        return status.toUpperCase();
-    }
-
-
-    // =========================================================
-    // SAFE STRING
-    // =========================================================
-
-    private String safe(
-            String value) {
+    private String safe(String value) {
 
         if (value == null
                 || value.trim().isEmpty()) {
 
             return "-";
+
         }
 
         return value;
+
     }
 
-
-    // =========================================================
-    // SAFE VALUE FOR MICR
-    // =========================================================
-
-    private String safeValue(
-            String value) {
-
-        if (value == null
-                || value.trim().isEmpty()) {
-
-            return "-";
-        }
-
-        return value;
-    }
 }

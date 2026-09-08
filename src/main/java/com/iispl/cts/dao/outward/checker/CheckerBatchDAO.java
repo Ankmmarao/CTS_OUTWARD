@@ -358,5 +358,49 @@ public class CheckerBatchDAO {
                 batchId
         );
     }
+ // ============================================================
+ // CHECK WHETHER ACCOUNT EXISTS
+ // ============================================================
+
+ public boolean accountExists(String accountNumber) {
+
+     String sql =
+             "SELECT 1 "
+             + "FROM public.account_master "
+             + "WHERE account_number = ?";
+
+     try (
+             Connection con =
+                     CTSStaticData.getConnection();
+
+             PreparedStatement ps =
+                     con.prepareStatement(sql)
+     ) {
+
+         ps.setString(
+                 1,
+                 accountNumber
+         );
+
+         try (
+                 ResultSet rs =
+                         ps.executeQuery()
+         ) {
+
+             // If account is found → true
+             return rs.next();
+         }
+
+     } catch (Exception e) {
+
+         e.printStackTrace();
+
+         throw new RuntimeException(
+                 "Unable to verify account: "
+                 + accountNumber,
+                 e
+         );
+     }
+ }
 
 }
