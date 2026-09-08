@@ -387,7 +387,6 @@ public class CheckerChequeVerificationController
         // ========================================
         // PAYEE NAME
         // ========================================
-
         payeeNameLabel.setValue(
 
                 safe(
@@ -396,7 +395,7 @@ public class CheckerChequeVerificationController
 
         );
 
-
+   
         // ========================================
         // AMOUNT
         // ========================================

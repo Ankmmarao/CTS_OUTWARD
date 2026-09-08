@@ -8,7 +8,7 @@
         apply="com.iispl.cts.controller.outward.checker.CheckerBatchesQueueController">
 
         <!-- ================= HEADER ================= -->
-
+   
         <north
             size="70px"
             border="0">

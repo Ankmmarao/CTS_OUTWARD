@@ -95,7 +95,7 @@ public class CheckerBatchVerificationController
         loadBatch();
     }
 
-
+   
     // =========================================================
     // LOAD BATCH
     // =========================================================

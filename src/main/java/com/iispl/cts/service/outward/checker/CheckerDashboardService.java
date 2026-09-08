@@ -101,5 +101,5 @@ public class CheckerDashboardService {
         return checkerUserId.equals(
                 batch.getCheckerUserNumber()
         );
-    }
+    }  
 }

@@ -97,7 +97,7 @@ public class CheckerBatchService {
  // ============================================
  // VERIFY ACCOUNT
  // ============================================
-
+    
  public boolean verifyAccount(String accountNumber) {
 
      if (accountNumber == null
