@@ -57,7 +57,7 @@ public class OutwardMakerDataEntryDAO {
                    + "INNER JOIN public.outward_batch_assignment ba ON b.batch_number = ba.batch_number "
                    + "WHERE ba.user_id = ? "
                    + "  AND ba.assignment_role = 'MAKER' "
-                   + "  AND b.batch_status IN ('ASSIGNED', 'IN_PROGRESS') "
+                   + "  AND b.batch_status IN ('MICR_VERIFIED', 'MICR_REPAIR_COMPLETED') "
                    + "ORDER BY b.batch_number ASC";
 
         try (Connection con = CTSStaticData.getConnection();
