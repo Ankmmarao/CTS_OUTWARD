@@ -160,7 +160,7 @@ public class LoginController
 
                 // Outward Maker
                 Executions.sendRedirect(
-                        "/zul/outward-maker/layout.zul");
+                        "/outward-maker-dashboard.zul");
 
                 break;
 
@@ -168,7 +168,7 @@ public class LoginController
 
                 // Outward Checker
                 Executions.sendRedirect(
-                        "/zul/outward-checker/layout.zul");
+                        "/outward/checker/dashboard.zul");
 
                 break;
 
@@ -176,7 +176,7 @@ public class LoginController
 
                 // Capture Operator
                 Executions.sendRedirect(
-                        "/zul/capture-operator/layout.zul");
+                        "/capture-operator-batch-capture.zul");
 
                 break;
 
