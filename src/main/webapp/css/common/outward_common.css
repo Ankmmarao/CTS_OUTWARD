@@ -1,0 +1,706 @@
+/* =========================================================
+   CTS OUTWARD - COMMON CSS
+   Common Header + Sidebar + Application Shell
+   Used by:
+   - Outward Maker
+   - Outward Checker
+   - Capture Operator
+   ========================================================= */
+
+
+/* =========================================================
+   1. APPLICATION SHELL
+   ========================================================= */
+
+.shell-root {
+    width: 100%;
+    height: 100vh;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: #F4F7FB;
+}
+
+
+/* =========================================================
+   2. BODY
+   ========================================================= */
+
+.shell-body {
+    width: 100%;
+
+    height: calc(100vh - 64px);
+
+    margin: 0;
+    padding: 0;
+
+    background: #F4F7FB;
+}
+
+
+/* =========================================================
+   3. MAIN CONTENT AREA
+   ========================================================= */
+
+.shell-content {
+    height: 100%;
+
+    padding: 22px 24px;
+
+    box-sizing: border-box;
+
+    background: #F4F7FB;
+
+    overflow: auto;
+}
+
+
+/* =========================================================
+   4. HEADER
+   ========================================================= */
+
+.shell-header {
+    width: 100%;
+    height: 64px;
+
+    padding: 0 20px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: #0B1F3A;
+
+    color: #FFFFFF;
+
+    border-bottom: 1px solid #1E3A56;
+}
+
+
+/* =========================================================
+   5. HEADER LEFT
+   ========================================================= */
+
+.header-left {
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+}
+
+
+/* Menu icon */
+
+.header-menu-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 5px;
+
+    background: #1769C2;
+
+    color: #FFFFFF;
+
+    font-size: 19px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+}
+
+
+.header-menu-icon:hover {
+    background: #1D78D4;
+}
+
+
+/* Application title */
+
+.header-brand {
+    color: #FFFFFF;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   6. HEADER RIGHT
+   ========================================================= */
+
+.header-right {
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+}
+
+
+/* Date / Last Login */
+
+.header-meta-group {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+}
+
+
+/* Date / clock icons */
+
+.header-meta-icon {
+    color: #AFC1D4;
+
+    font-size: 13px;
+}
+
+
+/* Date / Last Login text */
+
+.header-meta-text {
+    color: #D9E2EC;
+
+    font-size: 12px;
+    font-weight: 400;
+
+    white-space: nowrap;
+}
+
+
+/* Vertical divider */
+
+.header-divider {
+    width: 1px;
+    height: 24px;
+
+    background: #35516E;
+}
+
+
+/* =========================================================
+   7. NOTIFICATION
+   ========================================================= */
+
+.header-notif {
+    position: relative;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+
+.header-notif-icon {
+    color: #FFFFFF;
+
+    font-size: 18px;
+}
+
+
+.header-notif-badge {
+    position: absolute;
+
+    top: -2px;
+    right: -3px;
+
+    min-width: 16px;
+    height: 16px;
+
+    padding: 0 4px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #DC2626;
+
+    color: #FFFFFF;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   8. HEADER USER
+   ========================================================= */
+
+.header-user {
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+/* User avatar */
+
+.header-avatar {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #E5EDF6;
+
+    box-sizing: border-box;
+}
+
+
+.header-avatar-icon {
+    color: #0B1F3A;
+
+    font-size: 16px;
+}
+
+
+/* Username */
+
+.header-user-name {
+    color: #FFFFFF;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   9. LOGOUT BUTTON
+   ========================================================= */
+
+.header-logout {
+    height: 34px;
+
+    padding: 0 15px;
+
+    border: none;
+    border-radius: 4px;
+
+    background: #DC2626;
+
+    color: #FFFFFF;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.header-logout:hover {
+    background: #B91C1C;
+}
+
+
+/* =========================================================
+   10. SIDEBAR
+   =========================================================
+   
+   IMPORTANT:
+   The sidebar uses a fixed viewport-based height.
+   This makes the Capture Operator sidebar fill the
+   entire left side even when it has only two menu items.
+   ========================================================= */
+
+.shell-sidebar {
+    width: 235px;
+    min-width: 235px;
+
+    height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
+
+    padding: 14px 9px;
+
+    box-sizing: border-box;
+
+    background: #102A43;
+
+    border-right: 1px solid #243B53;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   11. SIDEBAR NAVIGATION ITEM
+   ========================================================= */
+
+.nav-item {
+    width: 100%;
+    min-height: 46px;
+
+    margin: 2px 0;
+
+    padding: 0 14px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    border-radius: 5px;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+
+/* =========================================================
+   12. SIDEBAR ICON
+   ========================================================= */
+
+.nav-icon {
+    width: 22px;
+    min-width: 22px;
+
+    text-align: center;
+
+    color: #B8C7D9;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   13. SIDEBAR LABEL
+   ========================================================= */
+
+.nav-label {
+    color: #D9E2EC;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   14. SIDEBAR HOVER
+   ========================================================= */
+
+.nav-item:hover {
+    background: #173F67;
+}
+
+
+.nav-item:hover .nav-icon {
+    color: #FFFFFF;
+}
+
+
+.nav-item:hover .nav-label {
+    color: #FFFFFF;
+}
+
+
+/* =========================================================
+   15. SIDEBAR ACTIVE
+   ========================================================= */
+
+.nav-item-active {
+    background: #1769C2;
+}
+
+
+.nav-item-active .nav-icon {
+    color: #FFFFFF;
+}
+
+
+.nav-item-active .nav-label {
+    color: #FFFFFF;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   16. SIDEBAR ACTIVE HOVER
+   ========================================================= */
+
+.nav-item-active:hover {
+    background: #1D78D4;
+}
+
+
+/* =========================================================
+   17. COMMON PAGE CONTAINER
+   ========================================================= */
+
+.page-container {
+    width: 100%;
+
+    background: #FFFFFF;
+
+    border: 1px solid #D9E2EC;
+
+    border-radius: 6px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   18. COMMON PAGE TITLE
+   ========================================================= */
+
+.page-title {
+    margin: 0;
+
+    color: #172B4D;
+
+    font-size: 21px;
+
+    font-weight: 700;
+}
+
+
+.page-subtitle {
+    margin-top: 5px;
+
+    color: #52606D;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   19. COMMON SECTION
+   ========================================================= */
+
+.section-container {
+    background: #FFFFFF;
+
+    border: 1px solid #D9E2EC;
+
+    border-radius: 6px;
+
+    box-sizing: border-box;
+}
+
+
+.section-title {
+    color: #172B4D;
+
+    font-size: 15px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   20. COMMON PRIMARY BUTTON
+   ========================================================= */
+
+.btn-primary {
+    background: #2563EB;
+
+    color: #FFFFFF;
+
+    border: none;
+
+    border-radius: 4px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.btn-primary:hover {
+    background: #1D4ED8;
+}
+
+
+/* =========================================================
+   21. COMMON SUCCESS BUTTON
+   ========================================================= */
+
+.btn-success {
+    background: #16A34A;
+
+    color: #FFFFFF;
+
+    border: none;
+
+    border-radius: 4px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.btn-success:hover {
+    background: #15803D;
+}
+
+
+/* =========================================================
+   22. COMMON SECONDARY BUTTON
+   ========================================================= */
+
+.btn-secondary {
+    background: #FFFFFF;
+
+    color: #334E68;
+
+    border: 1px solid #BCCCDC;
+
+    border-radius: 4px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.btn-secondary:hover {
+    background: #F4F7FB;
+
+    border-color: #9FB3C8;
+}
+
+
+/* =========================================================
+   23. COMMON STATUS - SUCCESS
+   ========================================================= */
+
+.status-success {
+    color: #15803D;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   24. COMMON STATUS - WARNING
+   ========================================================= */
+
+.status-warning {
+    color: #B45309;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   25. COMMON STATUS - DANGER
+   ========================================================= */
+
+.status-danger {
+    color: #DC2626;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   26. COMMON STATUS - INFO
+   ========================================================= */
+
+.status-info {
+    color: #2563EB;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   27. COMMON FORM LABEL
+   ========================================================= */
+
+.form-label {
+    color: #334E68;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   28. COMMON FORM HELP TEXT
+   ========================================================= */
+
+.form-help {
+    color: #7B8794;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   29. MAIN CONTENT SCROLLBAR
+   ========================================================= */
+
+.shell-content::-webkit-scrollbar {
+    width: 7px;
+}
+
+
+.shell-content::-webkit-scrollbar-track {
+    background: #F4F7FB;
+}
+
+
+.shell-content::-webkit-scrollbar-thumb {
+    background: #BCCCDC;
+
+    border-radius: 5px;
+}
+
+
+.shell-content::-webkit-scrollbar-thumb:hover {
+    background: #9FB3C8;
+}

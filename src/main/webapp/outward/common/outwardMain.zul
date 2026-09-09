@@ -4,7 +4,7 @@
 
 <zk>
 
-    <style src="/css/outward-common.css"/>
+    <style src="/css/outward_common.css"/>
 
     <div
         id="outwardMain"

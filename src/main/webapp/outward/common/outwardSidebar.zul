@@ -5,12 +5,13 @@
     <vlayout
         id="outwardSidebar"
         sclass="shell-sidebar"
-        spacing="0">
+        spacing="0"
+        apply="com.iispl.cts.controller.outward.OutwardSidebarController">
 
 
-        <!-- ==============================
-             DASHBOARD
-             ============================== -->
+        <!-- =================================================
+             MAKER / COMMON DASHBOARD
+             ================================================= -->
 
         <div
             id="navDashboard"
@@ -27,28 +28,9 @@
         </div>
 
 
-        <!-- ==============================
-             DATA ENTRY
-             ============================== -->
-
-        <div
-            id="navDataEntry"
-            sclass="nav-item">
-
-            <label
-                sclass="nav-icon"
-                value="▣"/>
-
-            <label
-                sclass="nav-label"
-                value="Data Entry"/>
-
-        </div>
-
-
-        <!-- ==============================
-             MICR REPAIR
-             ============================== -->
+        <!-- =================================================
+             MAKER
+             ================================================= -->
 
         <div
             id="navMicrRepair"
@@ -65,9 +47,20 @@
         </div>
 
 
-        <!-- ==============================
-             AMOUNT AND ACCOUNT
-             ============================== -->
+        <div
+            id="navDataEntry"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="☑"/>
+
+            <label
+                sclass="nav-label"
+                value="Data Entry"/>
+
+        </div>
+
 
         <div
             id="navAmountAccount"
@@ -84,10 +77,6 @@
         </div>
 
 
-        <!-- ==============================
-             SEND TO CHECKER
-             ============================== -->
-
         <div
             id="navSendToChecker"
             sclass="nav-item">
@@ -99,6 +88,89 @@
             <label
                 sclass="nav-label"
                 value="Send to Checker"/>
+
+        </div>
+
+
+        <!-- =================================================
+             CHECKER
+             ================================================= -->
+
+        <div
+            id="navBatchesQueue"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="☑"/>
+
+            <label
+                sclass="nav-label"
+                value="Batches Queue"/>
+
+        </div>
+
+
+        <div
+            id="navReports"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="▤"/>
+
+            <label
+                sclass="nav-label"
+                value="Reports"/>
+
+        </div>
+
+
+        <div
+            id="navSendToNPCI"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="➤"/>
+
+            <label
+                sclass="nav-label"
+                value="Send to NPCI"/>
+
+        </div>
+
+
+        <!-- =================================================
+             CAPTURE OPERATOR
+             ================================================= -->
+
+        <div
+            id="navBatchCapture"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="▣"/>
+
+            <label
+                sclass="nav-label"
+                value="Batch Capture"/>
+
+        </div>
+
+
+        <div
+            id="navCapturedBatches"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="▦"/>
+
+            <label
+                sclass="nav-label"
+                value="Captured Batches"/>
 
         </div>
 

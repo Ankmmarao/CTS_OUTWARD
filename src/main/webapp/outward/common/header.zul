@@ -2,40 +2,36 @@
 
 <zk>
 
-    <div sclass="shell-header">
+	<style src="/css/outward/common/outward_common.css"/>
+
+    <div id="headerRoot"
+         sclass="shell-header"
+         apply="com.iispl.cts.controller.outward.HeaderController">
 
         <!-- LEFT SIDE -->
-
         <div sclass="header-left">
 
-            <label
-                sclass="header-menu-icon"
-                value="|||"/>
+            <label sclass="header-menu-icon"
+                   value="☰"/>
 
-            <label
-                id="headerBrand"
-                sclass="header-brand"
-                value="CTS INVOICE MAKER"/>
+            <label sclass="header-brand"
+                   value="CTS OUTWARD"/>
 
         </div>
 
 
         <!-- RIGHT SIDE -->
-
         <div sclass="header-right">
 
             <!-- DATE -->
-
             <div sclass="header-meta-group">
 
-                <label
-                    sclass="header-meta-icon"
-                    value="📅"/>
+                <label sclass="header-meta-icon"
+                       value="📅"/>
 
-                <label
-                    id="headerDate"
-                    sclass="header-meta-text"
-                    value=""/>
+                <label id="headerDate"
+                       sclass="header-meta-text"
+                       value=""/>
 
             </div>
 
@@ -44,17 +40,14 @@
 
 
             <!-- LAST LOGIN -->
-
             <div sclass="header-meta-group">
 
-                <label
-                    sclass="header-meta-icon"
-                    value="🕐"/>
+                <label sclass="header-meta-icon"
+                       value="🕐"/>
 
-                <label
-                    id="headerLastLogin"
-                    sclass="header-meta-text"
-                    value="Last Login : --"/>
+                <label id="headerLastLogin"
+                       sclass="header-meta-text"
+                       value="Last Login : --"/>
 
             </div>
 
@@ -63,28 +56,31 @@
 
 
             <!-- NOTIFICATION -->
+            <div sclass="header-notification">
 
-            <div sclass="header-notif">
+                <label sclass="header-notification-icon"
+                       value="🔔"/>
 
-                <label
-                    sclass="header-notif-icon"
-                    value="🔔"/>
-
-                <label
-                    id="headerNotifBadge"
-                    sclass="header-notif-badge"
-                    value="9"/>
+                <label id="headerNotifBadge"
+                       sclass="header-notification-badge"
+                       value="9"/>
 
             </div>
 
 
-            <!-- AVATAR -->
+            <!-- USER -->
+            <div class="header-user">
 
-            <div sclass="header-avatar">
+                <div sclass="header-avatar">
 
-                <label
-                    sclass="header-avatar-icon"
-                    value="👤"/>
+                    <label sclass="header-avatar-icon"
+                           value="👤"/>
+
+                </div>
+
+                <label id="headerUserName"
+                       sclass="header-user-name"
+                       value="User"/>
 
             </div>
 
