@@ -120,22 +120,18 @@ public class OutwardMakerDashboardController
         System.out.println("======================================");
         System.out.println("OUTWARD MAKER DASHBOARD");
         System.out.println("doAfterCompose() START");
-
         System.out.println(
                 "Current Maker User : "
                 + currentUserId
         );
-
         System.out.println(
                 "Username           : "
                 + sessionUser.getUsername()
         );
-
         System.out.println(
                 "Role ID            : "
                 + sessionUser.getRoleId()
         );
-
         System.out.println("======================================");
 
         service =
@@ -540,7 +536,8 @@ public class OutwardMakerDashboardController
     // OPEN + AUTOMATICALLY ASSIGN BATCH
     // =========================================================
 
-    private void openAndAssignBatch(String batchNumber) {
+    private void openAndAssignBatch(
+            String batchNumber) {
 
         // -----------------------------------------------------
         // VALIDATE BATCH NUMBER
@@ -687,8 +684,8 @@ public class OutwardMakerDashboardController
                 );
 
                 /*
-                 * Reload immediately so this Maker
-                 * sees the latest database state.
+                 * Reload immediately so this Maker sees
+                 * the latest database state.
                  */
 
                 loadBatches();
@@ -715,33 +712,14 @@ public class OutwardMakerDashboardController
             // VALIDATION COUNTS
             // =================================================
 
-            int micrErrors =
-                    result.getMicrErrors();
-
             int dataEntry =
                     result.getDataEntryErrors();
 
+            int micr =
+                    result.getMicrErrors();
+
             int amountAccount =
                     result.getAmountAccountErrors();
-
-            // =================================================
-            // MICR REPAIR - FIRST PRIORITY
-            // =================================================
-
-            if (micrErrors > 0) {
-
-                System.out.println(
-                        "MICR errors found = "
-                        + micrErrors
-                        + ". Opening MICR Repair first."
-                );
-
-                openMicrRepair(
-                        cleanBatchNumber
-                );
-
-                return;
-            }
 
             // =================================================
             // DATA ENTRY
@@ -749,13 +727,20 @@ public class OutwardMakerDashboardController
 
             if (dataEntry > 0) {
 
-                System.out.println(
-                        "Data Entry errors found = "
-                        + dataEntry
-                        + ". Opening Data Entry."
+                openDataEntry(
+                        cleanBatchNumber
                 );
 
-                openDataEntry(
+                return;
+            }
+
+            // =================================================
+            // MICR REPAIR
+            // =================================================
+
+            if (micr > 0) {
+
+                openMicrRepair(
                         cleanBatchNumber
                 );
 
@@ -767,12 +752,6 @@ public class OutwardMakerDashboardController
             // =================================================
 
             if (amountAccount > 0) {
-
-                System.out.println(
-                        "Amount / Account errors found = "
-                        + amountAccount
-                        + ". Opening Amount / Account."
-                );
 
                 openAmountAccount(
                         cleanBatchNumber
@@ -823,23 +802,19 @@ public class OutwardMakerDashboardController
             return;
         }
 
-        int micrErrors =
-                result.getMicrErrors();
-
         int dataEntry =
                 result.getDataEntryErrors();
+
+        int micr =
+                result.getMicrErrors();
 
         int amountAccount =
                 result.getAmountAccountErrors();
 
         int totalErrors =
-                micrErrors
-                + dataEntry
+                dataEntry
+                + micr
                 + amountAccount;
-
-        // =====================================================
-        // NO ERRORS
-        // =====================================================
 
         if (totalErrors == 0) {
 
@@ -856,39 +831,21 @@ public class OutwardMakerDashboardController
             return;
         }
 
-        // =====================================================
-        // VALIDATION RESULT
-        // =====================================================
-
         String message =
                 "Batch "
                 + batchNumber
                 + " validation completed.\n\n"
-
                 + "Total Cheques: "
                 + result.getTotalCheques()
-
                 + "\n\n"
-
-                + "MICR Errors: "
-                + micrErrors
-
-                + "\n"
-
                 + "Data Entry Errors: "
                 + dataEntry
-
                 + "\n"
-
+                + "MICR Errors: "
+                + micr
+                + "\n"
                 + "Amount / Account Errors: "
-                + amountAccount
-
-                + "\n\n"
-
-                + "Correction priority:\n"
-                + "1. MICR\n"
-                + "2. Data Entry\n"
-                + "3. Amount / Account";
+                + amountAccount;
 
         Messagebox.show(
                 message,
