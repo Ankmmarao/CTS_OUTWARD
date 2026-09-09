@@ -2,131 +2,89 @@
 
 <zk>
 
-    <window id="capturedBatchesWindow"
-            border="none"
+    <!-- PAGE CSS -->
+    <style src="/css/outward-maker/captured-batches.css"/>
+
+    <window
+        id="capturedBatchesWindow"
+        border="none"
+        width="100%"
+        height="100%"
+        apply="com.iispl.cts.controller.outward.CaptureOperatorCapturedBatchesController"
+        sclass="captured-batches-window">
+
+        <!-- HEADER -->
+        <include
+            src="/header.zul"
+            sclass="captured-batches-header"/>
+
+        <hlayout
             width="100%"
-            height="100%"
-            apply="com.iispl.cts.controller.outward.CaptureOperatorCapturedBatchesController"
-            style="background:#ffffff;">
+            height="calc(100% - 70px)"
+            sclass="captured-batches-layout">
 
-        <!-- =====================================================
-             EXISTING HEADER
-             ===================================================== -->
+            <!-- CAPTURE OPERATOR SIDEBAR -->
+            <div
+                width="305px"
+                height="100%"
+                sclass="captured-batches-sidebar">
 
-        <include src="/header.zul"/>
-
-
-        <hlayout width="100%"
-                 height="calc(100% - 70px)"
-                 style="background:#ffffff;">
-
-            <!-- =================================================
-                 CAPTURE OPERATOR SIDEBAR
-                 ================================================= -->
-
-            <div width="305px"
-                 height="100%"
-                 style="
-                    background:#071b33;
-                    flex-shrink:0;
-                 ">
-
-                <include src="/captureoperatorsidebar.zul"/>
+                <include
+                    src="/captureoperatorsidebar.zul"/>
 
             </div>
 
-
-            <!-- =================================================
-                 MAIN CONTENT
-                 ================================================= -->
-
-            <div width="calc(100% - 305px)"
-                 height="100%"
-                 style="
-                    background:#ffffff;
-                    padding:35px 55px;
-                    overflow:auto;
-                 ">
+            <!-- MAIN CONTENT -->
+            <div
+                width="calc(100% - 305px)"
+                height="100%"
+                sclass="captured-batches-content">
 
                 <!-- PAGE TITLE -->
+                <label
+                    value="Captured Batches"
+                    sclass="captured-batches-page-title"/>
 
-                <label value="Captured Batches"
-                       style="
-                            display:block;
-                            color:#12375b;
-                            font-size:32px;
-                            font-weight:bold;
-                            margin-bottom:30px;
-                       "/>
+                <!-- CAPTURED BATCH TABLE -->
+                <groupbox
+                    width="100%"
+                    sclass="captured-batches-groupbox">
 
+                    <caption
+                        label="Batches"
+                        sclass="captured-batches-caption"/>
 
-                <!-- =================================================
-                     CAPTURED BATCH TABLE
-                     ================================================= -->
+                    <div
+                        sclass="captured-batches-table-container">
 
-                <groupbox width="100%"
-                          style="
-                            border:1px solid #d4dce5;
-                            background:#ffffff;
-                          ">
+                        <listbox
+                            id="capturedBatchesList"
+                            width="100%"
+                            mold="paging"
+                            pageSize="10"
+                            emptyMessage="No captured batches available."
+                            sclass="captured-batches-listbox">
 
-                    <caption label="Batches"
-                             style="
-                                color:#12375b;
-                                font-size:21px;
-                                font-weight:bold;
-                             "/>
+                            <!-- TABLE HEADER -->
+                            <listhead
+                                sizable="true"
+                                height="52px"
+                                sclass="captured-batches-listhead">
 
+                                <listheader
+                                    label="Batch No"
+                                    width="35%"
+                                    sclass="captured-batches-listheader"/>
 
-                    <div style="padding:18px;">
+                                <listheader
+                                    label="Total Cheques"
+                                    width="25%"
+                                    sclass="captured-batches-listheader"/>
 
-                        <listbox id="capturedBatchesList"
-                                 width="100%"
-                                 mold="paging"
-                                 pageSize="10"
-                                 emptyMessage="No captured batches available."
-                                 style="
-                                    border:1px solid #d7dfe8;
-                                    font-size:16px;
-                                 ">
-
-                            <!-- =====================================
-                                 TABLE HEADER
-                                 ===================================== -->
-
-                            <listhead sizable="true"
-                                      height="52px"
-                                      style="
-                                        background:#078fe5;
-                                        color:white;
-                                      ">
-
-                                <listheader label="Batch No"
-                                            width="35%"
-                                            style="
-                                                background:#078fe5;
-                                                color:white;
-                                                font-size:16px;
-                                                font-weight:bold;
-                                            "/>
-
-                                <listheader label="Total Cheques"
-                                            width="25%"
-                                            style="
-                                                background:#078fe5;
-                                                color:white;
-                                                font-size:16px;
-                                                font-weight:bold;
-                                            "/>
-
-                                <listheader label="Status"
-                                            width="25%"
-                                            style="
-                                                background:#078fe5;
-                                                color:white;
-                                                font-size:16px;
-                                                font-weight:bold;
-                                            "/>
+                                <listheader
+                                    label="Status"
+                                    width="25%"
+                                    sclass="captured-batches-listheader"/>
 
                             </listhead>
 

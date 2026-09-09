@@ -1,12 +1,12 @@
 package com.iispl.cts.service.outward;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import com.iispl.cts.dao.outward.OutwardMakerDashboardDAO;
 import com.iispl.cts.model.outward.OutwardBatch;
 import com.iispl.cts.model.outward.OutwardCheque;
 import com.iispl.cts.model.outward.OutwardValidationResult;
-
-import java.sql.SQLException;
-import java.util.List;
 
 public class OutwardMakerDashboardService {
 
@@ -14,10 +14,6 @@ public class OutwardMakerDashboardService {
 
     private final OutwardValidationService validationService;
 
-
-    // ============================================================
-    // CONSTRUCTOR
-    // ============================================================
 
     public OutwardMakerDashboardService() {
 
@@ -29,9 +25,9 @@ public class OutwardMakerDashboardService {
     }
 
 
-    // ============================================================
+    // =========================================================
     // GET BATCHES
-    // ============================================================
+    // =========================================================
 
     public List<OutwardBatch> getBatches()
             throws SQLException {
@@ -40,9 +36,9 @@ public class OutwardMakerDashboardService {
     }
 
 
-    // ============================================================
+    // =========================================================
     // FIND BATCH
-    // ============================================================
+    // =========================================================
 
     public OutwardBatch findBatch(
             String batchNumber)
@@ -62,13 +58,14 @@ public class OutwardMakerDashboardService {
             return null;
         }
 
+        String cleanBatchNumber =
+                batchNumber.trim();
+
         for (OutwardBatch batch : batches) {
 
             if (batch != null
-                    && batchNumber.trim()
-                            .equalsIgnoreCase(
-                                    batch.getBatchNumber()
-                            )) {
+                    && cleanBatchNumber.equalsIgnoreCase(
+                            batch.getBatchNumber())) {
 
                 return batch;
             }
@@ -78,9 +75,9 @@ public class OutwardMakerDashboardService {
     }
 
 
-    // ============================================================
+    // =========================================================
     // ASSIGN BATCH
-    // ============================================================
+    // =========================================================
 
     public boolean assignBatch(
             String batchNumber,
@@ -106,9 +103,9 @@ public class OutwardMakerDashboardService {
     }
 
 
-    // ============================================================
+    // =========================================================
     // GET CHEQUES
-    // ============================================================
+    // =========================================================
 
     public List<OutwardCheque> getCheques(
             String batchNumber)
@@ -126,9 +123,9 @@ public class OutwardMakerDashboardService {
     }
 
 
-    // ============================================================
-    // VALIDATE BATCH
-    // ============================================================
+    // =========================================================
+    // CHECK BATCH
+    // =========================================================
 
     public boolean isBatchValid(
             String batchNumber)
@@ -146,28 +143,14 @@ public class OutwardMakerDashboardService {
     }
 
 
-    // ============================================================
+    // =========================================================
     // ASSIGN + VALIDATE
-    // ============================================================
-    //
-    // Maker clicks OPEN.
-    //
-    // 1. Assign batch to logged-in Maker
-    // 2. Load all cheques
-    // 3. Run current validation service
-    // 4. Update batch status
-    // 5. Return validation result to Controller
-    //
-    // ============================================================
+    // =========================================================
 
     public OutwardValidationResult assignAndValidate(
             String batchNumber,
             String userId)
             throws SQLException {
-
-        // --------------------------------------------------------
-        // BASIC VALIDATION
-        // --------------------------------------------------------
 
         if (batchNumber == null
                 || batchNumber.trim().isEmpty()) {
@@ -181,6 +164,7 @@ public class OutwardMakerDashboardService {
             return null;
         }
 
+
         String cleanBatchNumber =
                 batchNumber.trim();
 
@@ -188,21 +172,18 @@ public class OutwardMakerDashboardService {
                 userId.trim();
 
 
-        // --------------------------------------------------------
-        // STEP 1
-        // ASSIGN BATCH TO CURRENT MAKER
-        // --------------------------------------------------------
-
+        /*
+         * -----------------------------------------------------
+         * STEP 1
+         * -----------------------------------------------------
+         *
+         * Assign the batch to the current Maker.
+         */
         boolean assigned =
                 dao.assignBatch(
                         cleanBatchNumber,
                         cleanUserId
                 );
-
-
-        // --------------------------------------------------------
-        // ASSIGNMENT FAILED
-        // --------------------------------------------------------
 
         if (!assigned) {
 
@@ -210,20 +191,17 @@ public class OutwardMakerDashboardService {
         }
 
 
-        // --------------------------------------------------------
-        // STEP 2
-        // LOAD CHEQUES
-        // --------------------------------------------------------
-
+        /*
+         * -----------------------------------------------------
+         * STEP 2
+         * -----------------------------------------------------
+         *
+         * Get ALL cheques from the batch.
+         */
         List<OutwardCheque> cheques =
                 dao.getCheques(
                         cleanBatchNumber
                 );
-
-
-        // --------------------------------------------------------
-        // NO CHEQUES
-        // --------------------------------------------------------
 
         if (cheques == null
                 || cheques.isEmpty()) {
@@ -232,42 +210,21 @@ public class OutwardMakerDashboardService {
         }
 
 
-        // --------------------------------------------------------
-        // STEP 3
-        // RUN CURRENT VALIDATION SERVICE
-        // --------------------------------------------------------
-        //
-        // IMPORTANT:
-        //
-        // OutwardValidationService now performs:
-        //
-        // Data Entry:
-        //     Cheque Number
-        //     Cheque Date
-        //     City Code
-        //     Bank Code
-        //     Branch Code
-        //
-        // Amount / Account:
-        //     Drawer Account Number
-        //     Payee Account Number
-        //     Amount
-        //
-        // MICR:
-        //     NOT VALIDATED
-        //
-        // --------------------------------------------------------
-
+        /*
+         * -----------------------------------------------------
+         * STEP 3
+         * -----------------------------------------------------
+         *
+         * Validate the entire batch.
+         */
         OutwardValidationResult result =
                 validationService.validate(
                         cheques
                 );
 
 
-        // --------------------------------------------------------
-        // STEP 4
-        // UPDATE BATCH STATUS
-        // --------------------------------------------------------
+        int micrErrors =
+                result.getMicrErrors();
 
         int dataEntryErrors =
                 result.getDataEntryErrors();
@@ -276,37 +233,44 @@ public class OutwardMakerDashboardService {
                 result.getAmountAccountErrors();
 
 
-        // --------------------------------------------------------
-        // DATA ENTRY ERRORS
-        // --------------------------------------------------------
+        /*
+         * -----------------------------------------------------
+         * STEP 4 - BATCH STATUS
+         * -----------------------------------------------------
+         *
+         * MICR gets FIRST PRIORITY.
+         *
+         * If even one MICR error exists,
+         * the batch goes to MICR_REPAIR.
+         *
+         * Only when there are NO MICR errors do
+         * we check Data Entry.
+         *
+         * Only when there are NO MICR and NO Data Entry
+         * errors do we check Amount/Account.
+         */
+        if (micrErrors > 0) {
 
-        if (dataEntryErrors > 0) {
+            dao.updateBatchStatusAfterValidation(
+                    cleanBatchNumber,
+                    "MICR_REPAIR"
+            );
+
+        } else if (dataEntryErrors > 0) {
 
             dao.updateBatchStatusAfterValidation(
                     cleanBatchNumber,
                     "DATA_ENTRY"
             );
 
-        }
-
-        // --------------------------------------------------------
-        // AMOUNT / ACCOUNT ERRORS
-        // --------------------------------------------------------
-
-        else if (amountAccountErrors > 0) {
+        } else if (amountAccountErrors > 0) {
 
             dao.updateBatchStatusAfterValidation(
                     cleanBatchNumber,
                     "AMOUNT_ACCOUNT"
             );
 
-        }
-
-        // --------------------------------------------------------
-        // NO ERRORS
-        // --------------------------------------------------------
-
-        else {
+        } else {
 
             dao.updateBatchStatusAfterValidation(
                     cleanBatchNumber,
@@ -315,17 +279,13 @@ public class OutwardMakerDashboardService {
         }
 
 
-        // --------------------------------------------------------
-        // RETURN VALIDATION RESULT
-        // --------------------------------------------------------
-
         return result;
     }
 
 
-    // ============================================================
-    // EMPTY VALIDATION RESULT
-    // ============================================================
+    // =========================================================
+    // EMPTY RESULT
+    // =========================================================
 
     private OutwardValidationResult
     createEmptyValidationResult() {
@@ -345,9 +305,9 @@ public class OutwardMakerDashboardService {
     }
 
 
-    // ============================================================
+    // =========================================================
     // COMPLETE BATCH
-    // ============================================================
+    // =========================================================
 
     public void completeBatch(
             String batchNumber)

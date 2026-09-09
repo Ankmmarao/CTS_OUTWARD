@@ -41,6 +41,10 @@ public class LoginController
         UserSession existingSession =
                 getCurrentUserSession();
 
+        /*
+         * If the user is already logged in,
+         * directly open the appropriate role screen.
+         */
         if (existingSession != null) {
 
             redirectByRole(
@@ -106,7 +110,7 @@ public class LoginController
             }
 
             /*
-             * Store authenticated user in ZK session
+             * Store authenticated user in ZK session.
              */
             Sessions.getCurrent().setAttribute(
                     SESSION_USER,
@@ -122,7 +126,8 @@ public class LoginController
                     + userSession.getRoleId());
 
             /*
-             * Redirect according to role
+             * Directly open the role-specific
+             * centralized screen.
              */
             redirectByRole(
                     userSession.getRoleId());
@@ -141,28 +146,38 @@ public class LoginController
     }
 
     /**
-     * Redirect user according to role ID
+     * Redirect user according to role ID.
+     *
+     * Role 3 = Outward Maker
+     * Role 4 = Outward Checker
+     * Role 5 = Capture Operator
      */
     private void redirectByRole(int roleId) {
 
         switch (roleId) {
 
             case 3:
+
                 // Outward Maker
                 Executions.sendRedirect(
-                        "/outward-maker-dashboard.zul");
+                        "/zul/outward-maker/layout.zul");
+
                 break;
 
             case 4:
+
                 // Outward Checker
                 Executions.sendRedirect(
-                        "/outward/checker/dashboard.zul");
+                        "/zul/outward-checker/layout.zul");
+
                 break;
 
             case 5:
+
                 // Capture Operator
                 Executions.sendRedirect(
-                        "/capture-operator-batch-capture.zul");
+                        "/zul/capture-operator/layout.zul");
+
                 break;
 
             default:
@@ -182,7 +197,7 @@ public class LoginController
     }
 
     /**
-     * Get logged-in user
+     * Get logged-in user.
      */
     public static UserSession getCurrentUserSession() {
 
@@ -199,7 +214,7 @@ public class LoginController
     }
 
     /**
-     * Get logged-in user ID
+     * Get logged-in user ID.
      */
     public static int getCurrentUserId() {
 
@@ -212,7 +227,7 @@ public class LoginController
     }
 
     /**
-     * Get logged-in role ID
+     * Get logged-in role ID.
      */
     public static int getCurrentRoleId() {
 
@@ -225,7 +240,7 @@ public class LoginController
     }
 
     /**
-     * Check login status
+     * Check login status.
      */
     public static boolean isLoggedIn() {
 
@@ -233,7 +248,7 @@ public class LoginController
     }
 
     /**
-     * Logout
+     * Logout.
      */
     public static void logout() {
 
