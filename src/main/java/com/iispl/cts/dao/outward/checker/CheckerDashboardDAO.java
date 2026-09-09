@@ -54,7 +54,7 @@ public class CheckerDashboardDAO {
                 "    AND UPPER(cba.assignment_status) IN " +
                 "        ('ASSIGNED', 'IN_PROGRESS') " +
                 "WHERE UPPER(ob.batch_status) IN " +
-                "    ('ASSIGNED', " +
+                "    ('SUBMITTED_TO_CHECKER', " +
                 "     'READY_FOR_CHECKER', " +
                 "     'SUBMITTED', " +
                 "     'CHECKER_PENDING', " +

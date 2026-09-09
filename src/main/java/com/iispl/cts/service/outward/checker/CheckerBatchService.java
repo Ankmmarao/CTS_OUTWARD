@@ -1,3 +1,5 @@
+
+
 package com.iispl.cts.service.outward.checker;
 
 import java.util.Collections;
@@ -97,7 +99,7 @@ public class CheckerBatchService {
  // ============================================
  // VERIFY ACCOUNT
  // ============================================
-    
+
  public boolean verifyAccount(String accountNumber) {
 
      if (accountNumber == null

@@ -61,7 +61,7 @@ public class CheckerBatchesQueueController
         super.doAfterCompose(comp);
 
 
-          // ========================================
+        // ========================================
         // GET CURRENT USER
         // ========================================
 
@@ -390,3 +390,5 @@ public class CheckerBatchesQueueController
     }
 
 }
+
+
