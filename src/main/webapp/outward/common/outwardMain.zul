@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="CTS Outward" contentType="text/html;charset=UTF-8"?>
+
+<zk>
+
+    <style src="/css/outward-common.css"/>
+
+    <div
+        id="outwardMain"
+        sclass="shell-root"
+        apply="com.iispl.cts.controller.outward.OutwardMainController">
+
+        <!-- HEADER -->
+        <include
+            id="header"
+            src="/header.zul"/>
+
+        <!-- BODY -->
+        <hlayout
+            id="outwardBody"
+            sclass="shell-body"
+            spacing="0">
+
+            <!-- SIDEBAR -->
+            <include
+                id="sidebar"
+                src="/outwardSidebar.zul"/>
+
+            <!-- CENTER -->
+            <div
+                id="contentContainer"
+                sclass="shell-content">
+
+                <include
+                    id="contentArea"
+                    src="/outward/maker/dashboard.zul"/>
+
+            </div>
+
+        </hlayout>
+
+    </div>
+
+</zk>

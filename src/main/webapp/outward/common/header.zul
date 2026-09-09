@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk>
+
+    <div sclass="shell-header">
+
+        <!-- LEFT SIDE -->
+
+        <div sclass="header-left">
+
+            <label
+                sclass="header-menu-icon"
+                value="|||"/>
+
+            <label
+                id="headerBrand"
+                sclass="header-brand"
+                value="CTS INVOICE MAKER"/>
+
+        </div>
+
+
+        <!-- RIGHT SIDE -->
+
+        <div sclass="header-right">
+
+            <!-- DATE -->
+
+            <div sclass="header-meta-group">
+
+                <label
+                    sclass="header-meta-icon"
+                    value="📅"/>
+
+                <label
+                    id="headerDate"
+                    sclass="header-meta-text"
+                    value=""/>
+
+            </div>
+
+
+            <div sclass="header-divider"/>
+
+
+            <!-- LAST LOGIN -->
+
+            <div sclass="header-meta-group">
+
+                <label
+                    sclass="header-meta-icon"
+                    value="🕐"/>
+
+                <label
+                    id="headerLastLogin"
+                    sclass="header-meta-text"
+                    value="Last Login : --"/>
+
+            </div>
+
+
+            <div sclass="header-divider"/>
+
+
+            <!-- NOTIFICATION -->
+
+            <div sclass="header-notif">
+
+                <label
+                    sclass="header-notif-icon"
+                    value="🔔"/>
+
+                <label
+                    id="headerNotifBadge"
+                    sclass="header-notif-badge"
+                    value="9"/>
+
+            </div>
+
+
+            <!-- AVATAR -->
+
+            <div sclass="header-avatar">
+
+                <label
+                    sclass="header-avatar-icon"
+                    value="👤"/>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</zk>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk>
+
+    <vlayout
+        id="outwardSidebar"
+        sclass="shell-sidebar"
+        spacing="0">
+
+
+        <!-- ==============================
+             DASHBOARD
+             ============================== -->
+
+        <div
+            id="navDashboard"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="⌂"/>
+
+            <label
+                sclass="nav-label"
+                value="Dashboard"/>
+
+        </div>
+
+
+        <!-- ==============================
+             DATA ENTRY
+             ============================== -->
+
+        <div
+            id="navDataEntry"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="▣"/>
+
+            <label
+                sclass="nav-label"
+                value="Data Entry"/>
+
+        </div>
+
+
+        <!-- ==============================
+             MICR REPAIR
+             ============================== -->
+
+        <div
+            id="navMicrRepair"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="⚒"/>
+
+            <label
+                sclass="nav-label"
+                value="MICR Repair"/>
+
+        </div>
+
+
+        <!-- ==============================
+             AMOUNT AND ACCOUNT
+             ============================== -->
+
+        <div
+            id="navAmountAccount"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="▤"/>
+
+            <label
+                sclass="nav-label"
+                value="Amount And Account"/>
+
+        </div>
+
+
+        <!-- ==============================
+             SEND TO CHECKER
+             ============================== -->
+
+        <div
+            id="navSendToChecker"
+            sclass="nav-item">
+
+            <label
+                sclass="nav-icon"
+                value="➤"/>
+
+            <label
+                sclass="nav-label"
+                value="Send to Checker"/>
+
+        </div>
+
+
+    </vlayout>
+
+</zk>
