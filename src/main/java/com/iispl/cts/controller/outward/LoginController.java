@@ -1,10 +1,10 @@
 package com.iispl.cts.controller.outward;
 
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.select.SelectorComposer;
-import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
@@ -12,8 +12,7 @@ import org.zkoss.zul.Textbox;
 import com.iispl.cts.model.outward.UserSession;
 import com.iispl.cts.service.outward.LoginService;
 
-public class LoginController
-        extends SelectorComposer<org.zkoss.zk.ui.Component> {
+public class LoginController extends GenericForwardComposer<Component> {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,71 +29,86 @@ public class LoginController
 
     private LoginService loginService;
 
+
     @Override
-    public void doAfterCompose(
-            org.zkoss.zk.ui.Component comp) throws Exception {
+    public void doAfterCompose(Component comp) throws Exception {
 
         super.doAfterCompose(comp);
 
         loginService = new LoginService();
 
-        UserSession existingSession =
-                getCurrentUserSession();
-
         /*
-         * If the user is already logged in,
-         * directly open the appropriate role screen.
+         * Check if user is already logged in.
          */
-        if (existingSession != null) {
+        UserSession existingSession = getCurrentUserSession();
 
-            redirectByRole(
-                    existingSession.getRoleId());
+        if (existingSession != null) {
+            redirectByRole(existingSession.getRoleId());
         }
     }
 
-    /**
+
+    /*
      * Login button event
+     *
+     * GenericForwardComposer automatically forwards
+     * the onClick event from loginButton to this method.
      */
-    @Listen("onClick=#loginButton")
-    public void login() {
+    public void onClick$loginButton() {
 
-        String userNameValue =
-                username.getValue();
+        String userNameValue = username.getValue();
+        String passwordValue = password.getValue();
 
-        String passwordValue =
-                password.getValue();
 
-        if (userNameValue == null ||
-                userNameValue.trim().isEmpty()) {
+        /*
+         * Username validation
+         */
+        if (userNameValue == null
+                || userNameValue.trim().isEmpty()) {
 
             Messagebox.show(
                     "Please enter username.",
                     "Validation",
                     Messagebox.OK,
-                    Messagebox.EXCLAMATION);
+                    Messagebox.EXCLAMATION
+            );
 
             return;
         }
 
-        if (passwordValue == null ||
-                passwordValue.isEmpty()) {
+
+        /*
+         * Password validation
+         */
+        if (passwordValue == null
+                || passwordValue.isEmpty()) {
 
             Messagebox.show(
                     "Please enter password.",
                     "Validation",
                     Messagebox.OK,
-                    Messagebox.EXCLAMATION);
+                    Messagebox.EXCLAMATION
+            );
 
             return;
         }
 
+
         try {
 
+            /*
+             * Authenticate user.
+             */
             UserSession userSession =
                     loginService.authenticate(
                             userNameValue.trim(),
-                            passwordValue);
+                            passwordValue
+                    );
 
+
+            /*
+             * Authentication failed.
+             */
             if (userSession == null) {
 
                 Messagebox.show(
@@ -102,35 +116,40 @@ public class LoginController
                         + "or user is inactive.",
                         "Login Failed",
                         Messagebox.OK,
-                        Messagebox.ERROR);
+                        Messagebox.ERROR
+                );
 
                 password.setValue("");
 
                 return;
             }
 
+
             /*
-             * Store authenticated user in ZK session.
+             * Store authenticated user
+             * in ZK session.
              */
             Sessions.getCurrent().setAttribute(
                     SESSION_USER,
-                    userSession);
+                    userSession
+            );
+
 
             System.out.println(
                     "LOGIN SUCCESS: "
-                    + "userId="
-                    + userSession.getUserId()
-                    + ", username="
-                    + userSession.getUsername()
-                    + ", roleId="
-                    + userSession.getRoleId());
+                    + "userId=" + userSession.getUserId()
+                    + ", username=" + userSession.getUsername()
+                    + ", roleId=" + userSession.getRoleId()
+            );
+
 
             /*
-             * Directly open the role-specific
-             * centralized screen.
+             * Open common outward shell.
              */
             redirectByRole(
-                    userSession.getRoleId());
+                    userSession.getRoleId()
+            );
+
 
         } catch (Exception e) {
 
@@ -141,44 +160,48 @@ public class LoginController
                     + e.getMessage(),
                     "Login Error",
                     Messagebox.OK,
-                    Messagebox.ERROR);
+                    Messagebox.ERROR
+            );
         }
     }
 
-    /**
-     * Redirect user according to role ID.
+
+    /*
+     * Role-based access.
      *
-     * Role 3 = Outward Maker
-     * Role 4 = Outward Checker
-     * Role 5 = Capture Operator
+     * 3 = Outward Maker
+     * 4 = Outward Checker
+     * 5 = Capture Operator
+     *
+     * All three roles enter the same common shell.
      */
     private void redirectByRole(int roleId) {
 
         switch (roleId) {
 
             case 3:
-
                 // Outward Maker
                 Executions.sendRedirect(
-                        "/outward-maker-dashboard.zul");
-
+                        "/outward/common/outwardMain.zul"
+                );
                 break;
+
 
             case 4:
-
                 // Outward Checker
                 Executions.sendRedirect(
-                        "/outward/checker/dashboard.zul");
-
+                        "/outward/common/outwardMain.zul"
+                );
                 break;
+
 
             case 5:
-
                 // Capture Operator
                 Executions.sendRedirect(
-                        "/capture-operator-batch-capture.zul");
-
+                        "/outward/common/outwardMain.zul"
+                );
                 break;
+
 
             default:
 
@@ -190,13 +213,15 @@ public class LoginController
                         + "for the current application.",
                         "Access Denied",
                         Messagebox.OK,
-                        Messagebox.ERROR);
+                        Messagebox.ERROR
+                );
 
                 break;
         }
     }
 
-    /**
+
+    /*
      * Get logged-in user.
      */
     public static UserSession getCurrentUserSession() {
@@ -213,33 +238,34 @@ public class LoginController
         return null;
     }
 
-    /**
+
+    /*
      * Get logged-in user ID.
      */
     public static int getCurrentUserId() {
 
-        UserSession user =
-                getCurrentUserSession();
+        UserSession user = getCurrentUserSession();
 
         return user == null
                 ? 0
                 : user.getUserId();
     }
 
-    /**
+
+    /*
      * Get logged-in role ID.
      */
     public static int getCurrentRoleId() {
 
-        UserSession user =
-                getCurrentUserSession();
+        UserSession user = getCurrentUserSession();
 
         return user == null
                 ? 0
                 : user.getRoleId();
     }
 
-    /**
+
+    /*
      * Check login status.
      */
     public static boolean isLoggedIn() {
@@ -247,7 +273,8 @@ public class LoginController
         return getCurrentUserSession() != null;
     }
 
-    /**
+
+    /*
      * Logout.
      */
     public static void logout() {
@@ -256,6 +283,7 @@ public class LoginController
                 .removeAttribute(SESSION_USER);
 
         Executions.sendRedirect(
-                "/login.zul");
+                "/outward/common/login.zul"
+        );
     }
 }

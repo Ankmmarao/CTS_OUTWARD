@@ -1,33 +1,51 @@
 package com.iispl.cts.controller.outward;
 
-import org.zkoss.zk.ui.select.SelectorComposer;
-import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Div;
+import org.zkoss.zul.Vlayout;
 
-public class OutwardSidebarController extends SelectorComposer<Div> {
+import com.iispl.cts.model.outward.UserSession;
+
+public class OutwardSidebarController
+        extends GenericForwardComposer<Vlayout> {
 
     private static final long serialVersionUID = 1L;
 
-    @Wire
     private Div navDashboard;
 
-    @Wire
-    private Div navDataEntry;
-
-    @Wire
     private Div navMicrRepair;
-
-    @Wire
+    private Div navDataEntry;
     private Div navAmountAccount;
-
-    @Wire
     private Div navSendToChecker;
+
+    private Div navBatchesQueue;
+    private Div navReports;
+    private Div navSendToNPCI;
+
+    private Div navBatchCapture;
+    private Div navCapturedBatches;
 
 
     @Override
-    public void doAfterCompose(Div component) throws Exception {
+    public void doAfterCompose(Vlayout component)
+            throws Exception {
 
         super.doAfterCompose(component);
+
+        navDashboard = (Div) component.getFellow("navDashboard");
+
+        navMicrRepair = (Div) component.getFellow("navMicrRepair");
+        navDataEntry = (Div) component.getFellow("navDataEntry");
+        navAmountAccount = (Div) component.getFellow("navAmountAccount");
+        navSendToChecker = (Div) component.getFellow("navSendToChecker");
+
+        navBatchesQueue = (Div) component.getFellow("navBatchesQueue");
+        navReports = (Div) component.getFellow("navReports");
+        navSendToNPCI = (Div) component.getFellow("navSendToNPCI");
+
+        navBatchCapture = (Div) component.getFellow("navBatchCapture");
+        navCapturedBatches = (Div) component.getFellow("navCapturedBatches");
 
         loadMenuByRole();
     }
@@ -35,67 +53,62 @@ public class OutwardSidebarController extends SelectorComposer<Div> {
 
     private void loadMenuByRole() {
 
-        int roleId = LoginController.getCurrentRoleId();
+        UserSession userSession =
+                LoginController.getCurrentUserSession();
+
+        if (userSession == null) {
+            return;
+        }
+
+        int roleId = userSession.getRoleId();
+
+        hideAllMenus();
 
 
-        /*
-         * OUTWARD MAKER
-         * Role ID = 3
-         */
+        // Outward Maker
         if (roleId == 3) {
 
             navDashboard.setVisible(true);
-            navDataEntry.setVisible(true);
             navMicrRepair.setVisible(true);
+            navDataEntry.setVisible(true);
             navAmountAccount.setVisible(true);
             navSendToChecker.setVisible(true);
         }
 
 
-        /*
-         * OUTWARD CHECKER
-         * Role ID = 4
-         *
-         * Checker menu will be added later.
-         */
+        // Outward Checker
         else if (roleId == 4) {
 
             navDashboard.setVisible(true);
-
-            navDataEntry.setVisible(false);
-            navMicrRepair.setVisible(false);
-            navAmountAccount.setVisible(false);
-            navSendToChecker.setVisible(false);
+            navBatchesQueue.setVisible(true);
+            navReports.setVisible(true);
+            navSendToNPCI.setVisible(true);
         }
 
 
-        /*
-         * CAPTURE OPERATOR
-         * Role ID = 5
-         *
-         * Capture menu will be added later.
-         */
+        // Capture Operator
         else if (roleId == 5) {
 
-            navDashboard.setVisible(true);
-
-            navDataEntry.setVisible(false);
-            navMicrRepair.setVisible(false);
-            navAmountAccount.setVisible(false);
-            navSendToChecker.setVisible(false);
+            navBatchCapture.setVisible(true);
+            navCapturedBatches.setVisible(true);
         }
+    }
 
 
-        /*
-         * NO VALID ROLE
-         */
-        else {
+    private void hideAllMenus() {
 
-            navDashboard.setVisible(false);
-            navDataEntry.setVisible(false);
-            navMicrRepair.setVisible(false);
-            navAmountAccount.setVisible(false);
-            navSendToChecker.setVisible(false);
-        }
+        navDashboard.setVisible(false);
+
+        navMicrRepair.setVisible(false);
+        navDataEntry.setVisible(false);
+        navAmountAccount.setVisible(false);
+        navSendToChecker.setVisible(false);
+
+        navBatchesQueue.setVisible(false);
+        navReports.setVisible(false);
+        navSendToNPCI.setVisible(false);
+
+        navBatchCapture.setVisible(false);
+        navCapturedBatches.setVisible(false);
     }
 }

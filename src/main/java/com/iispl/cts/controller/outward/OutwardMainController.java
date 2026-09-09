@@ -1,23 +1,22 @@
 package com.iispl.cts.controller.outward;
 
-import org.zkoss.zk.ui.select.SelectorComposer;
-import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zul.Div;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zul.Borderlayout;
 import org.zkoss.zul.Include;
 
 import com.iispl.cts.model.outward.UserSession;
 
-public class OutwardMainController extends SelectorComposer<Div> {
+public class OutwardMainController extends GenericForwardComposer<Borderlayout> {
 
     private static final long serialVersionUID = 1L;
 
-    @Wire
     private Include contentArea;
 
     @Override
-    public void doAfterCompose(Div component) throws Exception {
-
+    public void doAfterCompose(Borderlayout component) throws Exception {
         super.doAfterCompose(component);
+
+        contentArea = (Include) component.getFellow("contentArea");
 
         loadInitialPage();
     }
@@ -38,7 +37,7 @@ public class OutwardMainController extends SelectorComposer<Div> {
             case 3:
                 // Outward Maker
                 contentArea.setSrc(
-                    "/outward/maker/dashboard.zul"
+                    "/outward/maker/outward-maker-dashboard.zul"
                 );
                 break;
 
@@ -52,7 +51,7 @@ public class OutwardMainController extends SelectorComposer<Div> {
             case 5:
                 // Capture Operator
                 contentArea.setSrc(
-                    "/outward/capture/dashboard.zul"
+                    "/capture-operator-batch-capture.zul"
                 );
                 break;
 

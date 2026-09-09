@@ -4,147 +4,196 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.select.SelectorComposer;
-import org.zkoss.zk.ui.select.annotation.Listen;
+import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
-import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Listcell;
+import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Popup;
 
 import com.iispl.cts.model.outward.Notification;
 import com.iispl.cts.model.outward.UserSession;
 import com.iispl.cts.service.outward.NotificationService;
 
-public class HeaderController
-        extends SelectorComposer<org.zkoss.zk.ui.Component> {
+public class HeaderController extends GenericForwardComposer<Component> {
 
     private static final long serialVersionUID = 1L;
 
-    @Wire
-    private Label dateLabel;
+    private static final String LAST_LOGIN =
+            "09-09-2026 09:15 AM";
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm a");
+
 
     @Wire
-    private Label lastLoginLabel;
+    private Label headerDate;
 
     @Wire
-    private Label usernameLabel;
+    private Label headerUserName;
 
     @Wire
-    private Label notificationCountLabel;
+    private Label headerLastLogin;
+
+    @Wire
+    private Label headerNotifBadge;
+
+    @Wire
+    private Div notificationButton;
+
+    @Wire
+    private Popup notificationPopup;
 
     @Wire
     private Listbox notificationListbox;
 
     @Wire
-    private Popup notificationPopup;
+    private Button markAllReadButton;
+
 
     private NotificationService notificationService;
 
-    private static final DateTimeFormatter DATE_FORMAT =
-            DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-    private static final DateTimeFormatter DATE_TIME_FORMAT =
-            DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm a");
-
-
-    // =========================================================
-    // AFTER COMPOSE
-    // =========================================================
 
     @Override
-    public void doAfterCompose(
-            org.zkoss.zk.ui.Component comp) throws Exception {
+    public void doAfterCompose(Component component) throws Exception {
 
-        super.doAfterCompose(comp);
+        super.doAfterCompose(component);
 
+        /*
+         * Wire all components inside headerRoot.
+         */
+        Selectors.wireComponents(
+                component,
+                this,
+                false
+        );
+
+
+        /*
+         * Check logged-in user.
+         */
         UserSession sessionUser =
                 LoginController.getCurrentUserSession();
 
+
         if (sessionUser == null) {
 
-            Executions.sendRedirect("/login.zul");
+            Executions.sendRedirect(
+                    "/outward/common/login.zul"
+            );
 
             return;
         }
 
+
+        /*
+         * Notification service.
+         */
         notificationService =
                 new NotificationService();
 
-        // -----------------------------------------------------
-        // CURRENT DATE
-        // -----------------------------------------------------
 
-        LocalDateTime now =
-                LocalDateTime.now();
-
-        dateLabel.setValue(
-                "▣  Date : "
-                + now.format(DATE_FORMAT));
+        /*
+         * Current date and time.
+         */
+        headerDate.setValue(
+                LocalDateTime.now()
+                        .format(DATE_TIME_FORMATTER)
+        );
 
 
-        // -----------------------------------------------------
-        // LAST LOGIN
-        // -----------------------------------------------------
-
-        LocalDateTime lastLogin =
-                sessionUser.getLastLogin();
-
-        if (lastLogin != null) {
-
-            lastLoginLabel.setValue(
-                    "◷  Last Login : "
-                    + lastLogin.format(DATE_TIME_FORMAT));
-
-        } else {
-
-            lastLoginLabel.setValue(
-                    "◷  Last Login : Not Available");
-        }
+        /*
+         * Logged-in username.
+         */
+        headerUserName.setValue(
+                sessionUser.getUsername()
+        );
 
 
-        // -----------------------------------------------------
-        // DYNAMIC USERNAME
-        // -----------------------------------------------------
+        /*
+         * Last login.
+         */
+        headerLastLogin.setValue(
+                "Last Login: " + LAST_LOGIN
+        );
 
-        usernameLabel.setValue(
-                "♙  " + sessionUser.getUsername());
 
-
-        // -----------------------------------------------------
-        // LOAD NOTIFICATIONS
-        // -----------------------------------------------------
-
+        /*
+         * Load notifications.
+         */
         loadNotifications(
-                sessionUser.getUserId());
+                sessionUser.getUserId()
+        );
+
+
+        /*
+         * Notification button.
+         */
+        notificationButton.addEventListener(
+                "onClick",
+                event -> {
+
+                    try {
+
+                        openNotifications();
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                    }
+                }
+        );
+
+
+        /*
+         * Mark all as read.
+         */
+        markAllReadButton.addEventListener(
+                "onClick",
+                event -> {
+
+                    try {
+
+                        markAllAsRead();
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                    }
+                }
+        );
     }
 
 
-    // =========================================================
-    // LOAD NOTIFICATIONS
-    // =========================================================
-
-    private void loadNotifications(
-            int userId) throws Exception {
+    private void loadNotifications(int userId)
+            throws Exception {
 
         List<Notification> notifications =
-                notificationService
-                        .getNotifications(userId);
+                notificationService.getNotifications(userId);
+
 
         notificationListbox.getItems().clear();
+
 
         for (Notification notification : notifications) {
 
             Listitem item =
                     new Listitem();
 
+
             Listcell cell =
                     new Listcell();
 
+
             String message =
                     notification.getMessage();
+
 
             if (!notification.isRead()) {
 
@@ -152,130 +201,108 @@ public class HeaderController
                         "🔵 " + message;
             }
 
+
             cell.setLabel(message);
+
 
             item.appendChild(cell);
 
+
             item.setAttribute(
                     "notificationId",
-                    notification.getNotificationId());
+                    notification.getNotificationId()
+            );
+
 
             item.setAttribute(
                     "read",
-                    notification.isRead());
+                    notification.isRead()
+            );
+
 
             notificationListbox.appendChild(item);
         }
+
 
         updateUnreadCount(userId);
     }
 
 
-    // =========================================================
-    // UPDATE UNREAD COUNT
-    // =========================================================
-
-    private void updateUnreadCount(
-            int userId) throws Exception {
+    private void updateUnreadCount(int userId)
+            throws Exception {
 
         int unreadCount =
-                notificationService
-                        .getUnreadCount(userId);
+                notificationService.getUnreadCount(userId);
+
 
         if (unreadCount > 0) {
 
-            notificationCountLabel.setValue(
-                    String.valueOf(unreadCount));
+            headerNotifBadge.setValue(
+                    String.valueOf(unreadCount)
+            );
 
-            notificationCountLabel.setVisible(
-                    true);
+            headerNotifBadge.setVisible(true);
 
         } else {
 
-            notificationCountLabel.setValue("0");
-
-            notificationCountLabel.setVisible(
-                    false);
+            headerNotifBadge.setVisible(false);
         }
     }
 
 
-    // =========================================================
-    // OPEN NOTIFICATION POPUP
-    // =========================================================
+    private void openNotifications()
+            throws Exception {
 
-    @Listen("onClick=#notificationButton")
-    public void openNotifications() {
+        UserSession sessionUser =
+                LoginController.getCurrentUserSession();
 
-        try {
 
-            UserSession sessionUser =
-                    LoginController
-                            .getCurrentUserSession();
+        if (sessionUser == null) {
 
-            if (sessionUser == null) {
+            Executions.sendRedirect(
+                    "/outward/common/login.zul"
+            );
 
-                Executions.sendRedirect(
-                        "/login.zul");
-
-                return;
-            }
-
-            loadNotifications(
-                    sessionUser.getUserId());
-
-            notificationPopup.open(
-                    notificationListbox,
-                    "after_start");
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
+            return;
         }
+
+
+        loadNotifications(
+                sessionUser.getUserId()
+        );
+
+
+        notificationPopup.open(
+                notificationButton,
+                "after_start"
+        );
     }
 
 
-    // =========================================================
-    // MARK ALL AS READ
-    // =========================================================
+    private void markAllAsRead()
+            throws Exception {
 
-    @Listen("onClick=#markAllReadButton")
-    public void markAllAsRead() {
+        UserSession sessionUser =
+                LoginController.getCurrentUserSession();
 
-        try {
 
-            UserSession sessionUser =
-                    LoginController
-                            .getCurrentUserSession();
+        if (sessionUser == null) {
 
-            if (sessionUser == null) {
+            Executions.sendRedirect(
+                    "/outward/common/login.zul"
+            );
 
-                Executions.sendRedirect(
-                        "/login.zul");
-
-                return;
-            }
-
-            notificationService.markAllAsRead(
-                    sessionUser.getUserId());
-
-            loadNotifications(
-                    sessionUser.getUserId());
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
+            return;
         }
-    }
 
 
-    // =========================================================
-    // LOGOUT
-    // =========================================================
+        notificationService.markAllAsRead(
+                sessionUser.getUserId()
+        );
 
-    @Listen("onClick=#logoutButton")
-    public void logout() {
 
-        LoginController.logout();
+        loadNotifications(
+                sessionUser.getUserId()
+        );
     }
 }

@@ -1,0 +1,97 @@
+/* ================================
+   CTS OUTWARD LOGIN
+   ================================ */
+
+body {
+    background: #F4F7FB;
+}
+
+
+/* Login Window */
+
+.login-window {
+    margin: 100px auto;
+    border: 1px solid #D9E2EC;
+    border-radius: 8px;
+    background: #FFFFFF;
+    box-shadow: 0 4px 15px rgba(16, 42, 67, 0.12);
+}
+
+
+/* Main Container */
+
+.login-container {
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+
+/* Title */
+
+.login-title {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #0B1F3A;
+}
+
+
+/* Grid */
+
+.login-grid {
+    width: 100%;
+}
+
+
+/* Labels */
+
+.login-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #172B4D;
+}
+
+
+/* Input Fields */
+
+.login-input {
+    width: 100%;
+    height: 38px;
+    box-sizing: border-box;
+}
+
+
+/* Login Button */
+
+.login-button {
+    width: 100%;
+    height: 40px;
+    margin-top: 5px;
+
+    background: #2563EB;
+    border: 1px solid #2563EB;
+    color: #FFFFFF;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    border-radius: 4px;
+}
+
+
+/* Login Button Hover */
+
+.login-button:hover {
+    background: #1D4ED8;
+    border-color: #1D4ED8;
+}
+
+
+/* Login Button Pressed */
+
+.login-button:active {
+    background: #1E40AF;
+    border-color: #1E40AF;
+}

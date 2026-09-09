@@ -2,26 +2,28 @@
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
 
-    <window title="CTS Login"
-            border="normal"
-            width="420px"
-            closable="false"
-            sizable="false"
-            apply="com.iispl.cts.controller.outward.LoginController"
-            style="margin:100px auto;">
+    <style src="/css/common/login.css"/>
 
-        <vlayout spacing="15px"
-                 style="padding:30px;">
+    <window
+        title="CTS Login"
+        border="normal"
+        width="420px"
+        closable="false"
+        sizable="false"
+        apply="com.iispl.cts.controller.outward.LoginController"
+        sclass="login-window">
 
-            <label value="CTS Outward System"
-                   style="font-size:24px;
-                          font-weight:bold;
-                          text-align:center;
-                          width:100%;"/>
+        <vlayout
+            spacing="15px"
+            sclass="login-container">
+
+            <label
+                value="CTS Outward System"
+                sclass="login-title"/>
 
             <separator/>
 
-            <grid>
+            <grid sclass="login-grid">
 
                 <columns>
                     <column width="120px"/>
@@ -31,30 +33,39 @@
                 <rows>
 
                     <row>
-                        <label value="Username"/>
+                        <label
+                            value="Username"
+                            sclass="login-label"/>
 
-                        <textbox id="username"
-                                 width="100%"
-                                 placeholder="Enter username"/>
+                        <textbox
+                            id="username"
+                            width="100%"
+                            placeholder="Enter username"
+                            sclass="login-input"/>
                     </row>
 
                     <row>
-                        <label value="Password"/>
+                        <label
+                            value="Password"
+                            sclass="login-label"/>
 
-                        <textbox id="password"
-                                 type="password"
-                                 width="100%"
-                                 placeholder="Enter password"/>
+                        <textbox
+                            id="password"
+                            type="password"
+                            width="100%"
+                            placeholder="Enter password"
+                            sclass="login-input"/>
                     </row>
 
                 </rows>
 
             </grid>
 
-            <button id="loginButton"
-                    label="Login"
-                    width="100%"
-                    style="font-weight:bold;"/>
+            <button
+                id="loginButton"
+                label="Login"
+                width="100%"
+                sclass="login-button"/>
 
         </vlayout>
 

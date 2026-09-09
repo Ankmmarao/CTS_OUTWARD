@@ -1,53 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <zk>
 
-	<style src="/css/outward/common/outward_common.css"/>
+    <style src="/css/outward/common/outward_common.css"/>
 
-    <div id="headerRoot"
-         sclass="shell-header"
-         apply="com.iispl.cts.controller.outward.HeaderController">
+    <window id="headerRoot"
+            border="none"
+            apply="com.iispl.cts.controller.outward.HeaderController"
+            sclass="shell-header">
 
-        <!-- LEFT SIDE -->
         <div sclass="header-left">
 
-            <label sclass="header-menu-icon"
-                   value="☰"/>
+            <label
+                sclass="header-menu-icon"
+                value="☰"/>
 
-            <label sclass="header-brand"
-                   value="CTS OUTWARD"/>
+            <label
+                sclass="header-brand"
+                value="CTS OUTWARD"/>
 
         </div>
 
 
-        <!-- RIGHT SIDE -->
         <div sclass="header-right">
 
             <!-- DATE -->
             <div sclass="header-meta-group">
 
-                <label sclass="header-meta-icon"
-                       value="📅"/>
+                <label
+                    sclass="header-meta-icon"
+                    value="📅"/>
 
-                <label id="headerDate"
-                       sclass="header-meta-text"
-                       value=""/>
-
-            </div>
-
-
-            <div sclass="header-divider"/>
-
-
-            <!-- LAST LOGIN -->
-            <div sclass="header-meta-group">
-
-                <label sclass="header-meta-icon"
-                       value="🕐"/>
-
-                <label id="headerLastLogin"
-                       sclass="header-meta-text"
-                       value="Last Login : --"/>
+                <label
+                    id="headerDate"
+                    sclass="header-meta-text"
+                    value=""/>
 
             </div>
 
@@ -56,36 +42,89 @@
 
 
             <!-- NOTIFICATION -->
-            <div sclass="header-notification">
+            <div id="notificationButton"
+                 sclass="header-notification">
 
-                <label sclass="header-notification-icon"
-                       value="🔔"/>
+                <label
+                    sclass="header-notification-icon"
+                    value="🔔"/>
 
-                <label id="headerNotifBadge"
-                       sclass="header-notification-badge"
-                       value="9"/>
+                <label
+                    id="headerNotifBadge"
+                    sclass="header-notification-badge"
+                    value=""
+                    visible="false"/>
 
             </div>
 
 
+            <popup
+                id="notificationPopup"
+                width="350px">
+
+                <vlayout
+                    width="100%"
+                    spacing="8px"
+                    sclass="notification-popup-container">
+
+                    <hlayout
+                        width="100%"
+                        sclass="notification-popup-header">
+
+                        <label
+                            value="Notifications"
+                            sclass="notification-popup-title"/>
+
+                        <button
+                            id="markAllReadButton"
+                            label="Mark all as read"
+                            sclass="notification-mark-read-button"/>
+
+                    </hlayout>
+
+
+                    <listbox
+                        id="notificationListbox"
+                        width="100%"
+                        height="300px"
+                        emptyMessage="No notifications"
+                        sclass="notification-listbox"/>
+
+                </vlayout>
+
+            </popup>
+
+
             <!-- USER -->
-            <div class="header-user">
+            <div sclass="header-user">
 
                 <div sclass="header-avatar">
 
-                    <label sclass="header-avatar-icon"
-                           value="👤"/>
+                    <label
+                        sclass="header-avatar-icon"
+                        value="👤"/>
 
                 </div>
 
-                <label id="headerUserName"
-                       sclass="header-user-name"
-                       value="User"/>
+
+                <vlayout spacing="0">
+
+                    <label
+                        id="headerUserName"
+                        sclass="header-user-name"
+                        value=""/>
+
+                    <label
+                        id="headerLastLogin"
+                        sclass="header-last-login"
+                        value=""/>
+
+                </vlayout>
 
             </div>
 
         </div>
 
-    </div>
+    </window>
 
 </zk>

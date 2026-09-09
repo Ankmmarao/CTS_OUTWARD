@@ -6,40 +6,55 @@
 
     <style src="/css/outward_common.css"/>
 
-    <div
+    <borderlayout
         id="outwardMain"
         sclass="shell-root"
         apply="com.iispl.cts.controller.outward.OutwardMainController">
 
+
         <!-- HEADER -->
-        <include
-            id="header"
-            src="/header.zul"/>
 
-        <!-- BODY -->
-        <hlayout
-            id="outwardBody"
-            sclass="shell-body"
-            spacing="0">
+        <north
+            id="headerArea"
+            size="64px"
+            splittable="false"
+            collapsible="false">
 
-            <!-- SIDEBAR -->
+            <include
+                id="header"
+                src="/outward/common/header.zul"/>
+
+        </north>
+
+
+        <!-- SIDEBAR -->
+
+        <west
+            id="sidebarArea"
+            size="235px"
+            splittable="false"
+            collapsible="false">
+
             <include
                 id="sidebar"
-                src="/outwardSidebar.zul"/>
+                src="/outward/common/outwardSidebar.zul"/>
 
-            <!-- CENTER -->
-            <div
-                id="contentContainer"
-                sclass="shell-content">
+        </west>
 
-                <include
-                    id="contentArea"
-                    src="/outward/maker/dashboard.zul"/>
 
-            </div>
+        <!-- DYNAMIC CONTENT -->
 
-        </hlayout>
+        <center
+            id="contentContainer"
+            autoscroll="true"
+            sclass="shell-content">
 
-    </div>
+            <include
+                id="contentArea"
+                src=""/>
+
+        </center>
+
+    </borderlayout>
 
 </zk>

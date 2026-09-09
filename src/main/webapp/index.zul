@@ -3,7 +3,7 @@
 <zk>
 
     <zscript>
-        Executions.sendRedirect("/login.zul");
+        Executions.sendRedirect("/outward/common/login.zul");
     </zscript>
 
 </zk>
