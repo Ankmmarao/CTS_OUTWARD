@@ -10,317 +10,306 @@ import com.iispl.cts.model.outward.OutwardValidationResult;
 
 public class OutwardMakerDashboardService {
 
-    private final OutwardMakerDashboardDAO dao;
+// =========================================================
+// DAO
+// =========================================================
 
-    private final OutwardValidationService validationService;
+private final OutwardMakerDashboardDAO dao;
 
+// =========================================================
+// VALIDATION SERVICE
+// =========================================================
 
-    public OutwardMakerDashboardService() {
+private final OutwardValidationService validationService;
 
-        this.dao =
-                new OutwardMakerDashboardDAO();
+// =========================================================
+// CONSTRUCTOR
+// =========================================================
 
-        this.validationService =
-                new OutwardValidationService();
-    }
+public OutwardMakerDashboardService() {
 
+    this.dao = new OutwardMakerDashboardDAO();
 
-    // =========================================================
-    // GET BATCHES
-    // =========================================================
+    this.validationService = new OutwardValidationService();
+}
 
-    public List<OutwardBatch> getBatches()
-            throws SQLException {
+// =========================================================
+// GET ALL BATCHES
+// =========================================================
 
-        return dao.getBatches();
-    }
+public List<OutwardBatch> getBatches()
+        throws SQLException {
 
+    return dao.getBatches();
+}
 
-    // =========================================================
-    // FIND BATCH
-    // =========================================================
+// =========================================================
+// FIND BATCH
+// =========================================================
 
-    public OutwardBatch findBatch(
-            String batchNumber)
-            throws SQLException {
+public OutwardBatch findBatch(
+        String batchNumber)
+        throws SQLException {
 
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return null;
-        }
-
-        List<OutwardBatch> batches =
-                dao.getBatches();
-
-        if (batches == null) {
-
-            return null;
-        }
-
-        String cleanBatchNumber =
-                batchNumber.trim();
-
-        for (OutwardBatch batch : batches) {
-
-            if (batch != null
-                    && cleanBatchNumber.equalsIgnoreCase(
-                            batch.getBatchNumber())) {
-
-                return batch;
-            }
-        }
+    if (isEmpty(batchNumber)) {
 
         return null;
     }
 
+    List<OutwardBatch> batches =
+            dao.getBatches();
 
-    // =========================================================
-    // ASSIGN BATCH
-    // =========================================================
+    if (batches == null) {
 
-    public boolean assignBatch(
-            String batchNumber,
-            String userId)
-            throws SQLException {
-
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return false;
-        }
-
-        if (userId == null
-                || userId.trim().isEmpty()) {
-
-            return false;
-        }
-
-        return dao.assignBatch(
-                batchNumber.trim(),
-                userId.trim()
-        );
+        return null;
     }
 
+    String cleanBatchNumber =
+            batchNumber.trim();
 
-    // =========================================================
-    // GET CHEQUES
-    // =========================================================
+    for (OutwardBatch batch : batches) {
 
-    public List<OutwardCheque> getCheques(
-            String batchNumber)
-            throws SQLException {
+        if (batch == null) {
 
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return null;
+            continue;
         }
 
-        return dao.getCheques(
-                batchNumber.trim()
-        );
+        String currentBatchNumber =
+                batch.getBatchNumber();
+
+        if (currentBatchNumber != null
+                && cleanBatchNumber.equalsIgnoreCase(
+                        currentBatchNumber.trim())) {
+
+            return batch;
+        }
     }
 
-
-    // =========================================================
-    // CHECK BATCH
-    // =========================================================
-
-    public boolean isBatchValid(
-            String batchNumber)
-            throws SQLException {
-
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return false;
-        }
-
-        return dao.isBatchValid(
-                batchNumber.trim()
-        );
-    }
-
-
-    // =========================================================
-    // ASSIGN + VALIDATE
-    // =========================================================
-
-    public OutwardValidationResult assignAndValidate(
-            String batchNumber,
-            String userId)
-            throws SQLException {
-
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return null;
-        }
-
-        if (userId == null
-                || userId.trim().isEmpty()) {
-
-            return null;
-        }
-
-
-        String cleanBatchNumber =
-                batchNumber.trim();
-
-        String cleanUserId =
-                userId.trim();
-
-
-        /*
-         * -----------------------------------------------------
-         * STEP 1
-         * -----------------------------------------------------
-         *
-         * Assign the batch to the current Maker.
-         */
-        boolean assigned =
-                dao.assignBatch(
-                        cleanBatchNumber,
-                        cleanUserId
-                );
-
-        if (!assigned) {
-
-            return null;
-        }
-
-
-        /*
-         * -----------------------------------------------------
-         * STEP 2
-         * -----------------------------------------------------
-         *
-         * Get ALL cheques from the batch.
-         */
-        List<OutwardCheque> cheques =
-                dao.getCheques(
-                        cleanBatchNumber
-                );
-
-        if (cheques == null
-                || cheques.isEmpty()) {
-
-            return createEmptyValidationResult();
-        }
-
-
-        /*
-         * -----------------------------------------------------
-         * STEP 3
-         * -----------------------------------------------------
-         *
-         * Validate the entire batch.
-         */
-        OutwardValidationResult result =
-                validationService.validate(
-                        cheques
-                );
-
-
-        int micrErrors =
-                result.getMicrErrors();
-
-        int dataEntryErrors =
-                result.getDataEntryErrors();
-
-        int amountAccountErrors =
-                result.getAmountAccountErrors();
-
-
-        /*
-         * -----------------------------------------------------
-         * STEP 4 - BATCH STATUS
-         * -----------------------------------------------------
-         *
-         * MICR gets FIRST PRIORITY.
-         *
-         * If even one MICR error exists,
-         * the batch goes to MICR_REPAIR.
-         *
-         * Only when there are NO MICR errors do
-         * we check Data Entry.
-         *
-         * Only when there are NO MICR and NO Data Entry
-         * errors do we check Amount/Account.
-         */
-        if (micrErrors > 0) {
-
-            dao.updateBatchStatusAfterValidation(
-                    cleanBatchNumber,
-                    "MICR_REPAIR"
-            );
-
-        } else if (dataEntryErrors > 0) {
-
-            dao.updateBatchStatusAfterValidation(
-                    cleanBatchNumber,
-                    "DATA_ENTRY"
-            );
-
-        } else if (amountAccountErrors > 0) {
-
-            dao.updateBatchStatusAfterValidation(
-                    cleanBatchNumber,
-                    "AMOUNT_ACCOUNT"
-            );
-
-        } else {
-
-            dao.updateBatchStatusAfterValidation(
-                    cleanBatchNumber,
-                    "READY_FOR_CHECKER"
-            );
-        }
-
-
-        return result;
-    }
-
-
-    // =========================================================
-    // EMPTY RESULT
-    // =========================================================
-
-    private OutwardValidationResult
-    createEmptyValidationResult() {
-
-        OutwardValidationResult result =
-                new OutwardValidationResult();
-
-        result.setTotalCheques(0);
-
-        result.setDataEntryErrors(0);
-
-        result.setMicrErrors(0);
-
-        result.setAmountAccountErrors(0);
-
-        return result;
-    }
-
-
-    // =========================================================
-    // COMPLETE BATCH
-    // =========================================================
-
-    public void completeBatch(
-            String batchNumber)
-            throws SQLException {
-
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return;
-        }
-
-        dao.updateBatchIfCompleted(
-                batchNumber.trim()
-        );
-    }
+    return null;
 }
+
+// =========================================================
+// ASSIGN + VALIDATE
+//
+// FLOW:
+//
+// Maker clicks Open
+//        ↓
+// Assign batch
+//        ↓
+// Get cheques
+//        ↓
+// Validate MICR
+//        ↓
+// Update cheque status
+//        ↓
+// Update batch status
+//        ↓
+// Return validation result
+//        ↓
+// Controller opens required module
+// =========================================================
+
+public OutwardValidationResult assignAndValidate(
+        String batchNumber,
+        String userId)
+        throws SQLException {
+
+    // =====================================================
+    // VALIDATE INPUT
+    // =====================================================
+
+    if (isEmpty(batchNumber)
+            || isEmpty(userId)) {
+
+        return null;
+    }
+
+    String cleanBatchNumber =
+            batchNumber.trim();
+
+    String cleanUserId =
+            userId.trim();
+
+    // =====================================================
+    // STEP 1: ASSIGN BATCH
+    // =====================================================
+
+    boolean assigned =
+            dao.assignBatch(
+                    cleanBatchNumber,
+                    cleanUserId
+            );
+
+    /*
+     * If assignment failed,
+     * controller treats it as locked/unavailable.
+     */
+
+    if (!assigned) {
+
+        return null;
+    }
+
+    // =====================================================
+    // STEP 2: GET CHEQUES
+    // =====================================================
+
+    List<OutwardCheque> cheques =
+            dao.getCheques(
+                    cleanBatchNumber
+            );
+
+    // =====================================================
+    // STEP 3: VALIDATE BATCH
+    // =====================================================
+
+    OutwardValidationResult result =
+            validationService.validate(
+                    cheques
+            );
+
+    // =====================================================
+    // STEP 4: UPDATE INDIVIDUAL CHEQUE STATUS
+    // =====================================================
+
+    if (cheques != null) {
+
+        for (OutwardCheque cheque : cheques) {
+
+            if (cheque == null) {
+
+                continue;
+            }
+
+            String errorType =
+                    validationService.getMicrErrorType(
+                            cheque
+                    );
+
+            // -------------------------------------------------
+            // MICR ERROR
+            // -------------------------------------------------
+
+            if (errorType != null) {
+
+                dao.updateChequeStatus(
+                        cleanBatchNumber,
+                        cheque.getChequeNumber(),
+                        "MICR_ERROR"
+                );
+
+            }
+            // -------------------------------------------------
+            // MICR VALID
+            // -------------------------------------------------
+            else {
+
+                dao.updateChequeStatus(
+                        cleanBatchNumber,
+                        cheque.getChequeNumber(),
+                        "MICR_VERIFIED"
+                );
+            }
+        }
+    }
+
+    // =====================================================
+    // STEP 5: UPDATE BATCH STATUS
+    // =====================================================
+
+    if (result.getMicrErrors() > 0) {
+
+        dao.updateBatchStatus(
+                cleanBatchNumber,
+                "MICR_REPAIR"
+        );
+
+    } else {
+
+        dao.updateBatchStatus(
+                cleanBatchNumber,
+                "READY_FOR_CHECKER"
+        );
+    }
+
+    // =====================================================
+    // STEP 6: RETURN VALIDATION RESULT
+    // =====================================================
+
+    return result;
+}
+
+// =========================================================
+// GET CHEQUES
+// =========================================================
+
+public List<OutwardCheque> getCheques(
+        String batchNumber)
+        throws SQLException {
+
+    if (isEmpty(batchNumber)) {
+
+        return null;
+    }
+
+    return dao.getCheques(
+            batchNumber.trim()
+    );
+}
+
+// =========================================================
+// CHECK BATCH EXISTS
+// =========================================================
+
+public boolean isBatchValid(
+        String batchNumber)
+        throws SQLException {
+
+    if (isEmpty(batchNumber)) {
+
+        return false;
+    }
+
+    return dao.isBatchValid(
+            batchNumber.trim()
+    );
+}
+
+// =========================================================
+// COMPLETE BATCH
+// =========================================================
+
+public void completeBatch(
+        String batchNumber)
+        throws SQLException {
+
+    if (isEmpty(batchNumber)) {
+
+        return;
+    }
+
+    /*
+     * DAO method is void,
+     * therefore this service method is also void.
+     */
+
+    dao.updateBatchIfCompleted(
+            batchNumber.trim()
+    );
+}
+
+// =========================================================
+// EMPTY CHECK
+// =========================================================
+
+private boolean isEmpty(
+        String value) {
+
+    return value == null
+            || value.trim().isEmpty();
+}
+
+
+}
+

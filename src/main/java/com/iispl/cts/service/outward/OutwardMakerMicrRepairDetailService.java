@@ -7,29 +7,49 @@ import com.iispl.cts.model.outward.OutwardCheque;
 
 public class OutwardMakerMicrRepairDetailService {
 
-    private final OutwardMakerMicrRepairDetailDAO dao;
 
-    public OutwardMakerMicrRepairDetailService() {
+private OutwardMakerMicrRepairDetailDAO dao;
 
-        dao = new OutwardMakerMicrRepairDetailDAO();
-    }
+public OutwardMakerMicrRepairDetailService() {
+    dao = new OutwardMakerMicrRepairDetailDAO();
+}
 
-    public List<OutwardCheque> getCheques(
-            String batchId) {
 
-        return dao.getCheques(batchId);
-    }
+public List<OutwardCheque> getMicrErrorCheques(
+        String batchNumber) {
 
-    public void saveCheque(
-            OutwardCheque cheque) {
+    return dao.getMicrErrorCheques(batchNumber);
+}
 
-        dao.saveCheque(cheque);
-    }
 
-    public void rejectCheque(
-            OutwardCheque cheque,
-            String reason) {
+public boolean updateCorrectedMicr(
+        String batchNumber,
+        String chequeNumber,
+        String cityCode,
+        String bankCode,
+        String branchCode) {
 
-        dao.rejectCheque(cheque, reason);
-    }
+    return dao.updateCorrectedMicr(
+            batchNumber,
+            chequeNumber,
+            cityCode,
+            bankCode,
+            branchCode);
+}
+
+
+public boolean hasRemainingMicrErrors(
+        String batchNumber) {
+
+    return dao.hasRemainingMicrErrors(batchNumber);
+}
+
+
+public boolean updateBatchStatus(
+        String batchNumber) {
+
+    return dao.updateBatchStatus(batchNumber);
+}
+
+
 }

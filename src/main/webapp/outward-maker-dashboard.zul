@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?page title="Outward Maker Dashboard"?>
 
 <zk>
-  <style><![CDATA[
+
+    <style><![CDATA[
+
         /* 1. Remove browser margin and prevent full page scrolling */
+
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -13,7 +17,9 @@
             background: #F4F7FB;
         }
 
+
         /* 2. Strip default ZK Window and Borderlayout margins/paddings */
+
         .z-window-embedded,
         .z-window-embedded-cnt,
         .z-window-content {
@@ -24,33 +30,48 @@
             height: 100% !important;
         }
 
+
         .z-borderlayout {
             background: transparent !important;
             border: none !important;
         }
 
-        .z-north, .z-west, .z-center, .z-south, .z-east {
+
+        .z-north,
+        .z-west,
+        .z-center,
+        .z-south,
+        .z-east {
             border: none !important;
             padding: 0 !important;
             margin: 0 !important;
         }
 
-        .z-north-body, .z-west-body, .z-center-body {
+
+        .z-north-body,
+        .z-west-body,
+        .z-center-body {
             padding: 0 !important;
             margin: 0 !important;
             height: 100% !important;
         }
 
+
         /* 3. Keep sidebar dark background seamless */
+
         .z-west {
             background: #081B33 !important;
         }
 
+
         /* 4. Scrollable listbox body only */
+
         .batch-grid .z-listbox-body {
             overflow-y: auto !important;
         }
+
     ]]></style>
+
 
     <window
         id="outwardMakerDashboardWindow"
@@ -62,23 +83,45 @@
         <borderlayout width="100%" height="100%">
 
             <!-- ================================================= -->
-            <!-- HEADER (Matches exact 62px height of header.zul)  -->
+            <!-- HEADER                                            -->
             <!-- ================================================= -->
-            <north size="62px" border="none" margins="0,0,0,0">
-                <include src="/header.zul" style="display:block; width:100%; height:62px;"/>
+
+            <north
+                size="62px"
+                border="none"
+                margins="0,0,0,0">
+
+                <include
+                    src="/header.zul"
+                    style="display:block; width:100%; height:62px;"/>
+
             </north>
 
-            <!-- ================================================= -->
-            <!-- SIDEBAR (Matches exact 280px width of sidebar)    -->
-            <!-- ================================================= -->
-            <west size="280px" border="none" margins="0,0,0,0">
-                <include src="/makersidebar.zul" style="display:block; width:280px; height:100%;"/>
-            </west>
 
             <!-- ================================================= -->
-            <!-- CENTER (Page fixed; listbox takes remaining space)-->
+            <!-- SIDEBAR                                           -->
             <!-- ================================================= -->
-            <center border="none" margins="0,0,0,0" style="background:#F4F7FB; overflow:hidden;">
+
+            <west
+                size="280px"
+                border="none"
+                margins="0,0,0,0">
+
+                <include
+                    src="/makersidebar.zul"
+                    style="display:block; width:280px; height:100%;"/>
+
+            </west>
+
+
+            <!-- ================================================= -->
+            <!-- CENTER                                             -->
+            <!-- ================================================= -->
+
+            <center
+                border="none"
+                margins="0,0,0,0"
+                style="background:#F4F7FB; overflow:hidden;">
 
                 <vlayout
                     spacing="16px"
@@ -90,7 +133,11 @@
                         overflow: hidden;
                     ">
 
-                    <!-- PAGE TITLE -->
+
+                    <!-- ================================================= -->
+                    <!-- PAGE TITLE                                        -->
+                    <!-- ================================================= -->
+
                     <label
                         value="Outward Maker Dashboard"
                         style="
@@ -100,60 +147,11 @@
                             display: block;
                         "/>
 
-                    <!-- SUMMARY METRIC CARDS (Fixed height) -->
-                    <hlayout spacing="18px" width="100%">
 
-                        <!-- Pending Data Entry -->
-                        <div
-                            hflex="1"
-                            height="115px"
-                            style="
-                                background: white;
-                                border: 1px solid #DCE5F0;
-                                border-radius: 8px;
-                                padding: 18px;
-                                text-align: center;
-                                box-sizing: border-box;
-                            ">
-                            <label value="Pending Data Entry" style="font-size: 15px; color: #51657D; display:block;"/>
-                            <label value="8" style="font-size: 32px; font-weight: bold; color: #F39A00; display:block; margin-top: 4px;"/>
-                        </div>
+                    <!-- ================================================= -->
+                    <!-- BATCHES SECTION                                    -->
+                    <!-- ================================================= -->
 
-                        <!-- MICR Repair -->
-                        <div
-                            hflex="1"
-                            height="115px"
-                            style="
-                                background: white;
-                                border: 1px solid #DCE5F0;
-                                border-radius: 8px;
-                                padding: 18px;
-                                text-align: center;
-                                box-sizing: border-box;
-                            ">
-                            <label value="MICR Repair" style="font-size: 15px; color: #51657D; display:block;"/>
-                            <label value="4" style="font-size: 32px; font-weight: bold; color: #E74C3C; display:block; margin-top: 4px;"/>
-                        </div>
-
-                        <!-- Ready to Submit -->
-                        <div
-                            hflex="1"
-                            height="115px"
-                            style="
-                                background: white;
-                                border: 1px solid #DCE5F0;
-                                border-radius: 8px;
-                                padding: 18px;
-                                text-align: center;
-                                box-sizing: border-box;
-                            ">
-                            <label value="Ready to Submit" style="font-size: 15px; color: #51657D; display:block;"/>
-                            <label value="6" style="font-size: 32px; font-weight: bold; color: #12B76A; display:block; margin-top: 4px;"/>
-                        </div>
-
-                    </hlayout>
-
-                    <!-- BATCHES SECTION (Fills rest of screen, scrolls internally) -->
                     <div
                         vflex="1"
                         width="100%"
@@ -168,6 +166,7 @@
                             min-height: 0;
                         ">
 
+
                         <label
                             value="Batches"
                             style="
@@ -178,7 +177,11 @@
                                 display: block;
                             "/>
 
-                        <!-- Listbox fills the panel and enables vertical scroll on records -->
+
+                        <!-- ================================================= -->
+                        <!-- BATCH LIST                                        -->
+                        <!-- ================================================= -->
+
                         <listbox
                             id="batchListbox"
                             vflex="1"
@@ -189,38 +192,111 @@
                             style="border: none;">
 
                             <listhead>
-                                <listheader label="Batch No" width="26%"/>
-                                <listheader label="Total Cheques" width="16%"/>
-                                <listheader label="Status" width="22%"/>
-                                <listheader label="Action" width="18%"/>
-                                <listheader label="Assignment" width="18%"/>
+
+                                <listheader
+                                    label="Batch No"
+                                    width="26%"/>
+
+                                <listheader
+                                    label="Total Cheques"
+                                    width="16%"/>
+
+                                <listheader
+                                    label="Status"
+                                    width="22%"/>
+
+                                <listheader
+                                    label="Action"
+                                    width="18%"/>
+
+                                <listheader
+                                    label="Assignment"
+                                    width="18%"/>
+
                             </listhead>
 
+
+                            <!-- ================================================= -->
+                            <!-- BATCH 001                                        -->
+                            <!-- ================================================= -->
+
                             <listitem value="BATCH001">
-                                <listcell label="OUT20260907101611469"/>
-                                <listcell label="5"/>
-                                <listcell label="ASSIGNED"/>
+
+                                <listcell
+                                    label="OUT20260907101611469"/>
+
+                                <listcell
+                                    label="5"/>
+
+                                <listcell
+                                    label="ASSIGNED"/>
+
                                 <listcell>
-                                    <label value="🔒 Locked" style="color:#E74C3C; font-weight:bold;"/>
+
+                                    <label
+                                        value="🔒 Locked"
+                                        style="
+                                            color:#E74C3C;
+                                            font-weight:bold;
+                                        "/>
+
                                 </listcell>
-                                <listcell label="Maker 108"/>
+
+                                <listcell
+                                    label="Maker 108"/>
+
                             </listitem>
+
+
+                            <!-- ================================================= -->
+                            <!-- BATCH 002                                        -->
+                            <!-- ================================================= -->
 
                             <listitem value="BATCH002">
-                                <listcell label="OUT20260907101753482"/>
-                                <listcell label="5"/>
-                                <listcell label="ASSIGNED"/>
+
+                                <listcell
+                                    label="OUT20260907101753482"/>
+
+                                <listcell
+                                    label="5"/>
+
+                                <listcell
+                                    label="ASSIGNED"/>
+
                                 <listcell>
-                                    <label value="🔒 Locked" style="color:#E74C3C; font-weight:bold;"/>
+
+                                    <label
+                                        value="🔒 Locked"
+                                        style="
+                                            color:#E74C3C;
+                                            font-weight:bold;
+                                        "/>
+
                                 </listcell>
-                                <listcell label="Maker 103"/>
+
+                                <listcell
+                                    label="Maker 103"/>
+
                             </listitem>
 
+
+                            <!-- ================================================= -->
+                            <!-- BATCH 003                                        -->
+                            <!-- ================================================= -->
+
                             <listitem value="BATCH003">
-                                <listcell label="OUT20260907101855550"/>
-                                <listcell label="5"/>
-                                <listcell label="CAPTURED"/>
+
+                                <listcell
+                                    label="OUT20260907101855550"/>
+
+                                <listcell
+                                    label="5"/>
+
+                                <listcell
+                                    label="CAPTURED"/>
+
                                 <listcell>
+
                                     <button
                                         label="Open"
                                         width="80px"
@@ -234,9 +310,14 @@
                                             cursor:pointer;
                                         "
                                         onClick="openBatch(self.parent.parent.value)"/>
+
                                 </listcell>
-                                <listcell label="Available"/>
+
+                                <listcell
+                                    label="Available"/>
+
                             </listitem>
+
 
                         </listbox>
 
@@ -249,4 +330,5 @@
         </borderlayout>
 
     </window>
+
 </zk>
