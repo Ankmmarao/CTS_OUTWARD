@@ -10,13 +10,11 @@ public class AIChatbotService {
 
     private final AIChatbotDAO aiChatbotDAO;
 
-    private static final String MODEL =
-            "gemini-3.6-flash";
+    private static final String MODEL = "gemini-3.6-flash";
 
     public AIChatbotService() {
 
-        String apiKey =
-                "";
+    	String apiKey = System.getenv("GEMINI_API_KEY");
 
         client = Client.builder()
                 .apiKey(apiKey)

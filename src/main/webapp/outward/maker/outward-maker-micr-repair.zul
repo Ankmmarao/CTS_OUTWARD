@@ -1,68 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
+
 <?page title="MICR Repair"?>
+
+
 
 <zk>
 
+
+
 	<style src="/css/your-common-css-file.css" />
 
-	<window width="100%" height="100%" border="none"
-		apply="com.iispl.cts.controller.outward.OutwardMakerMicrRepairController">
+
+
+	<window
+
+    width="100%"
+
+    height="100%"
+
+    border="none"
+
+    apply="com.iispl.cts.controller.outward.OutwardMakerMicrRepairController">
+
+
 
 		<borderlayout width="100%" height="100%"
+
 			sclass="micr-repair-layout">
 
+
+
 			<!-- HEADER -->
+
 			<north size="62px">
+
 				<include src="/header.zul" />
+
 			</north>
 
+
+
 			<!-- MAKER SIDEBAR -->
+
 			<west size="280px">
+
 				<include src="/makersidebar.zul" />
+
 			</west>
 
+
+
 			<!-- MAIN CONTENT -->
+
 			<center>
 
+
+
 				<vlayout width="100%" height="100%" spacing="20px"
+
 					sclass="micr-repair-content">
 
+
+
 					<!-- PAGE HEADING -->
+
 					<label value="MICR Repair"
+
 						sclass="micr-repair-title" />
 
+
+
 					<!-- BATCH TABLE -->
+
 					<groupbox width="100%" sclass="micr-repair-table">
 
+
+
 						<listbox id="batchListbox" width="100%"
+
 							emptyMessage="No batches available for MICR Repair.">
+
+
 
 							<listhead>
 
+
+
 								<listheader label="Batch ID"
+
 									width="20%" />
 
+
+
 								<listheader label="Total Cheques"
+
 									width="25%" />
 
+
+
 								<listheader label="MICR Error"
+
 									width="25%" />
+
+
 
 								<listheader label="Action" width="20%" />
 
+
+
 							</listhead>
+
+
 
 						</listbox>
 
+
+
 					</groupbox>
+
+
 
 				</vlayout>
 
+
+
 			</center>
+
+
 
 		</borderlayout>
 
+
+
 	</window>
+
+
 
 </zk>

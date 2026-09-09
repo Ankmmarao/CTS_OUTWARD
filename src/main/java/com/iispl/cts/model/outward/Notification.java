@@ -1,6 +1,7 @@
 package com.iispl.cts.model.outward;
 
 import java.io.Serializable;
+
 import java.time.LocalDateTime;
 
 public class Notification implements Serializable {
