@@ -1,115 +1,81 @@
-
-
 package com.iispl.cts.service.outward.checker;
 
-import java.util.Collections;
 import java.util.List;
 
+import com.iispl.cts.dao.outward.checker.CheckerAssignmentDAO;
 import com.iispl.cts.dao.outward.checker.CheckerBatchDAO;
 import com.iispl.cts.model.outward.OutwardBatch;
-import com.iispl.cts.model.outward.OutwardCheque;
 
 public class CheckerBatchService {
 
-    private final CheckerBatchDAO batchDAO;
-
-
-    // ============================================
-    // CONSTRUCTOR
-    // ============================================
+    private final CheckerBatchDAO batchDao;
+    private final CheckerAssignmentDAO assignmentDao;
 
     public CheckerBatchService() {
-
-        batchDAO =
-                new CheckerBatchDAO();
-
+        this.batchDao = new CheckerBatchDAO();
+        this.assignmentDao = new CheckerAssignmentDAO();
     }
 
+    /**
+     * Get batches currently assigned to the Checker.
+     */
+    public List<OutwardBatch> getCheckerBatches(String checkerUserId) {
 
-    // ============================================
-    // GET CHECKER QUEUE BATCHES
-    // ============================================
+        return batchDao.getCheckerBatches(checkerUserId);
+    }
 
-    public List<OutwardBatch> getCheckerQueueBatches(
-            String checkerUserId) {
+    /**
+     * Find a batch by batch number.
+     */
+    public OutwardBatch findBatch(String batchNumber) {
 
-        if (checkerUserId == null
-                || checkerUserId.trim().isEmpty()) {
+        return batchDao.getBatchByNumber(batchNumber);
+    }
 
-            return Collections.emptyList();
+    /**
+     * Take/assign a batch to the current Checker.
+     */
+    public boolean assignBatch(
+            String batchNumber,
+            int checkerUserId) {
 
-        }
-
-
-        return batchDAO.getCheckerBatches(
-
-                checkerUserId.trim()
-
+        return assignmentDao.takeBatch(
+                batchNumber,
+                checkerUserId
         );
-
     }
 
+    /**
+     * Check whether a batch is assigned to any Checker.
+     */
+    public boolean isBatchAssigned(String batchNumber) {
 
-    // ============================================
-    // GET CHEQUES BY BATCH NUMBER
-    // ============================================
+        return assignmentDao.isBatchAssigned(batchNumber);
+    }
 
-    public List<OutwardCheque> getChequesByBatchNumber(
-            String batchNumber) {
+    /**
+     * Check whether the batch belongs to this Checker.
+     */
+    public boolean isAssignedToChecker(
+            String batchNumber,
+            int checkerUserId) {
 
-        if (batchNumber == null
-                || batchNumber.trim().isEmpty()) {
-
-            return Collections.emptyList();
-
-        }
-
-
-        return batchDAO.getChequesByBatchNumber(
-
-                batchNumber.trim()
-
+        return assignmentDao.isBatchAssignedToChecker(
+                batchNumber,
+                checkerUserId
         );
-
     }
 
+    /**
+     * Complete the Checker assignment for a batch.
+     */
+    public boolean completeBatch(
+            String batchNumber,
+            int checkerUserId) {
 
-    // ============================================
-    // GET CHEQUES BY BATCH ID
-    // ============================================
-
-    public List<OutwardCheque> getChequesByBatchId(
-            String batchId) {
-
-        if (batchId == null
-                || batchId.trim().isEmpty()) {
-
-            return Collections.emptyList();
-
-        }
-
-
-        return batchDAO.getChequesByBatchId(
-
-                batchId.trim()
-
+        return assignmentDao.completeBatch(
+                batchNumber,
+                checkerUserId
         );
-
     }
- // ============================================
- // VERIFY ACCOUNT
- // ============================================
-
- public boolean verifyAccount(String accountNumber) {
-
-     if (accountNumber == null
-             || accountNumber.trim().isEmpty()) {
-
-         return false;
-     }
-
-     return batchDAO.accountExists(
-             accountNumber.trim()
-     );
- }
 }

@@ -1,5 +1,3 @@
-
-
 package com.iispl.cts.dao.outward.checker;
 
 import java.math.BigDecimal;
@@ -16,321 +14,333 @@ import com.iispl.cts.model.outward.OutwardCheque;
 
 public class CheckerBatchDAO {
 
-    // ============================================================
-    // GET BATCHES LOCKED BY CURRENT CHECKER
-    // ============================================================
+    /*
+     * Get batches currently assigned to a particular Checker.
+     */
+    public List<OutwardBatch> getCheckerBatches(String checkerUserId) {
 
-    public List<OutwardBatch> getCheckerBatches(
-            String checkerUserId) {
-
-        List<OutwardBatch> batches =
-                new ArrayList<>();
+        List<OutwardBatch> batches = new ArrayList<>();
 
         String sql =
-                "SELECT "
-                + "ob.batch_number, "
-                + "ob.cheque_count, "
-                + "cba.user_id "
-                + "FROM public.outward_batch ob "
-                + "INNER JOIN public.outward_batch_assignment cba "
-                + "ON ob.batch_number = cba.batch_number "
-                + "WHERE cba.user_id = ? "
-                + "AND UPPER(cba.assignment_role) = 'CHECKER' "
-                + "AND UPPER(cba.assignment_status) "
-                + "IN ('ASSIGNED', 'IN_PROGRESS') "
-                + "ORDER BY cba.assigned_at DESC";
+                "SELECT ob.batch_number, " +
+                "       ob.branch_code, " +
+                "       ob.cheque_count, " +
+                "       ob.batch_folder_path, " +
+                "       ob.created_by, " +
+                "       ob.created_at, " +
+                "       ob.batch_status, " +
+                "       oba.user_id, " +
+                "       oba.assignment_status, " +
+                "       oba.assigned_at, " +
+                "       oba.started_at, " +
+                "       oba.completed_at " +
+                "FROM outward_batch ob " +
+                "JOIN outward_batch_assignment oba " +
+                "  ON ob.batch_number = oba.batch_number " +
+                "WHERE oba.user_id = ? " +
+                "  AND UPPER(oba.assignment_role) = 'CHECKER' " +
+                "  AND UPPER(oba.assignment_status) IN ('ASSIGNED', 'IN_PROGRESS') " +
+                "ORDER BY oba.assigned_at DESC";
 
-        try (
-                Connection con =
-                        CTSStaticData.getConnection();
+        try (Connection connection = CTSStaticData.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-                PreparedStatement ps =
-                        con.prepareStatement(sql)
-        ) {
+            statement.setInt(1, Integer.parseInt(checkerUserId));
 
-            ps.setInt(
-                    1,
-                    Integer.parseInt(checkerUserId)
-            );
-
-            try (
-                    ResultSet rs =
-                            ps.executeQuery()
-            ) {
+            try (ResultSet rs = statement.executeQuery()) {
 
                 while (rs.next()) {
 
-                    OutwardBatch batch =
-                            new OutwardBatch();
+                    OutwardBatch batch = new OutwardBatch();
 
-                    // Batch Number
-                    batch.setBatchNumber(
-                            rs.getString("batch_number")
+                    batch.setBatchNumber(rs.getString("batch_number"));
+                    batch.setBranchCode(rs.getString("branch_code"));
+                    batch.setNumberOfCheques(rs.getInt("cheque_count"));
+                    batch.setBatchFolderPath(rs.getString("batch_folder_path"));
+                    batch.setCreatedBy(String.valueOf(rs.getInt("created_by")));
+                    batch.setCreatedAt(
+                            rs.getTimestamp("created_at") != null
+                                    ? rs.getTimestamp("created_at").toLocalDateTime()
+                                    : null
                     );
+                    batch.setBatchStatus(rs.getString("batch_status"));
 
-                    // Total Cheques
-                    batch.setNumberOfCheques(
-                            rs.getInt("cheque_count")
-                    );
+                    /*
+                     * Existing OutwardBatch fields used by Checker UI.
+                     */
+                    batch.setCheckerUserNumber(checkerUserId);
 
-                    // Checker ID
-                    int checkerId =
-                            rs.getInt("user_id");
+                    if (rs.getTimestamp("started_at") != null) {
+                        batch.setCheckerStartedAt(
+                                rs.getTimestamp("started_at").toLocalDateTime()
+                        );
+                    }
 
-                    batch.setCheckerUserNumber(
-                            String.valueOf(checkerId)
-                    );
+                    if (rs.getTimestamp("completed_at") != null) {
+                        batch.setCheckerCompletedAt(
+                                rs.getTimestamp("completed_at").toLocalDateTime()
+                        );
+                    }
 
-                    // Display Status
-                    batch.setBatchStatus(
-                            "Locked by Checker"
-                    );
-
-                    // Lock Information
-                    batch.setLockedBy(
-                            String.valueOf(checkerId)
-                    );
-
-                    batch.setLockStatus(
-                            "LOCKED"
-                    );
+                    batch.setLockStatus(rs.getString("assignment_status"));
 
                     batches.add(batch);
                 }
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
-            throw new RuntimeException(
-                    "Unable to load batches locked by Checker.",
-                    e
-            );
+            throw new RuntimeException("Error while fetching Checker batches", e);
         }
 
         return batches;
     }
 
 
-    // ============================================================
-    // GET CHEQUES BY BATCH NUMBER
-    // ============================================================
+    /*
+     * Get all batches which have been submitted to Checker.
+     * These batches are visible in the common Checker queue.
+     */
+    public List<OutwardBatch> getSubmittedBatches() {
 
-    public List<OutwardCheque> getChequesByBatchNumber(
-            String batchNumber) {
-
-        List<OutwardCheque> cheques =
-                new ArrayList<>();
+        List<OutwardBatch> batches = new ArrayList<>();
 
         String sql =
-                "SELECT "
-                + "batch_number, "
-                + "cheque_number, "
-                + "drawer_account_number, "
-                + "drawer_name, "
-                + "payee_name, "
-                + "amount, "
-                + "amount_in_words, "
-                + "cheque_date, "
-                + "front_image_path, "
-                + "back_image_path, "
-                + "cheque_status, "
-                + "bank_code, "
-                + "branch_code, "
-                + "city_code "
-                + "FROM public.outward_cheque "
-                + "WHERE batch_number = ? "
-                + "ORDER BY cheque_number";
+                "SELECT ob.batch_number, " +
+                "       ob.branch_code, " +
+                "       ob.cheque_count, " +
+                "       ob.batch_folder_path, " +
+                "       ob.created_by, " +
+                "       ob.created_at, " +
+                "       ob.batch_status " +
+                "FROM outward_batch ob " +
+                "WHERE UPPER(ob.batch_status) = 'SUBMITTED_TO_CHECKER' " +
+                "ORDER BY ob.created_at ASC";
 
-        try (
-                Connection con =
-                        CTSStaticData.getConnection();
+        try (Connection connection = CTSStaticData.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet rs = statement.executeQuery()) {
 
-                PreparedStatement ps =
-                        con.prepareStatement(sql)
-        ) {
+            while (rs.next()) {
 
-            // Set batch number
-            ps.setString(
-                    1,
-                    batchNumber
-            );
+                OutwardBatch batch = new OutwardBatch();
 
-            try (
-                    ResultSet rs =
-                            ps.executeQuery()
-            ) {
+                batch.setBatchNumber(rs.getString("batch_number"));
+                batch.setBranchCode(rs.getString("branch_code"));
+                batch.setNumberOfCheques(rs.getInt("cheque_count"));
+                batch.setBatchFolderPath(rs.getString("batch_folder_path"));
+                batch.setCreatedBy(String.valueOf(rs.getInt("created_by")));
+
+                if (rs.getTimestamp("created_at") != null) {
+                    batch.setCreatedAt(
+                            rs.getTimestamp("created_at").toLocalDateTime()
+                    );
+                }
+
+                batch.setBatchStatus(rs.getString("batch_status"));
+
+                batches.add(batch);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while fetching submitted Checker batches", e);
+        }
+
+        return batches;
+    }
+
+
+    /*
+     * Get a single batch by batch number.
+     */
+    public OutwardBatch getBatchByNumber(String batchNumber) {
+
+        String sql =
+                "SELECT batch_number, " +
+                "       branch_code, " +
+                "       cheque_count, " +
+                "       batch_folder_path, " +
+                "       created_by, " +
+                "       created_at, " +
+                "       batch_status " +
+                "FROM outward_batch " +
+                "WHERE batch_number = ?";
+
+        try (Connection connection = CTSStaticData.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, batchNumber);
+
+            try (ResultSet rs = statement.executeQuery()) {
+
+                if (rs.next()) {
+
+                    OutwardBatch batch = new OutwardBatch();
+
+                    batch.setBatchNumber(rs.getString("batch_number"));
+                    batch.setBranchCode(rs.getString("branch_code"));
+                    batch.setNumberOfCheques(rs.getInt("cheque_count"));
+                    batch.setBatchFolderPath(rs.getString("batch_folder_path"));
+                    batch.setCreatedBy(String.valueOf(rs.getInt("created_by")));
+                    batch.setBatchStatus(rs.getString("batch_status"));
+
+                    if (rs.getTimestamp("created_at") != null) {
+                        batch.setCreatedAt(
+                                rs.getTimestamp("created_at").toLocalDateTime()
+                        );
+                    }
+
+                    return batch;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while fetching batch: " + batchNumber, e);
+        }
+
+        return null;
+    }
+
+
+    /*
+     * Get all cheques belonging to a batch.
+     */
+    public List<OutwardCheque> getChequesByBatchNumber(String batchNumber) {
+
+        List<OutwardCheque> cheques = new ArrayList<>();
+
+        String sql =
+                "SELECT batch_number, " +
+                "       cheque_number, " +
+                "       city_code, " +
+                "       bank_code, " +
+                "       branch_code, " +
+                "       drawer_account_number, " +
+                "       drawer_name, " +
+                "       depositor_account_number, " +
+                "       depositor_name, " +
+                "       payee_account_number, " +
+                "       payee_name, " +
+                "       amount, " +
+                "       amount_in_words, " +
+                "       cheque_date, " +
+                "       front_image_path, " +
+                "       back_image_path, " +
+                "       cheque_status, " +
+                "       return_reason_id, " +
+                "       checker_remarks, " +
+                "       created_by, " +
+                "       created_at, " +
+                "       updated_by, " +
+                "       updated_at " +
+                "FROM outward_cheque " +
+                "WHERE batch_number = ? " +
+                "ORDER BY cheque_number";
+
+        try (Connection connection = CTSStaticData.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, batchNumber);
+
+            try (ResultSet rs = statement.executeQuery()) {
 
                 while (rs.next()) {
 
-                    OutwardCheque cheque =
-                            new OutwardCheque();
+                    OutwardCheque cheque = new OutwardCheque();
 
-                    // =========================================
-                    // BATCH NUMBER
-                    // =========================================
+                    cheque.setBatchNumber(rs.getString("batch_number"));
+                    cheque.setChequeNumber(rs.getString("cheque_number"));
 
-                    cheque.setBatchNumber(
-                            rs.getString("batch_number")
-                    );
-
-
-                    // =========================================
-                    // CHEQUE NUMBER
-                    // =========================================
-
-                    cheque.setChequeNumber(
-                            rs.getString("cheque_number")
-                    );
-
-
-                    // =========================================
-                    // DRAWER ACCOUNT NUMBER
-                    // =========================================
+                    cheque.setCityCode(rs.getString("city_code"));
+                    cheque.setBankCode(rs.getString("bank_code"));
+                    cheque.setBranchCode(rs.getString("branch_code"));
 
                     cheque.setDrawerAccountNumber(
-                            rs.getString(
-                                    "drawer_account_number"
-                            )
+                            rs.getString("drawer_account_number")
                     );
-
-
-                    // =========================================
-                    // DRAWER NAME
-                    // =========================================
 
                     cheque.setDrawerName(
                             rs.getString("drawer_name")
                     );
 
+                    cheque.setDepositorAccountNumber(
+                            rs.getString("depositor_account_number")
+                    );
 
-                    // =========================================
-                    // PAYEE NAME
-                    // =========================================
+                    cheque.setDepositorName(
+                            rs.getString("depositor_name")
+                    );
+
+                    cheque.setPayeeAccountNumber(
+                            rs.getString("payee_account_number")
+                    );
 
                     cheque.setPayeeName(
                             rs.getString("payee_name")
                     );
 
-
-                    // =========================================
-                    // AMOUNT
-                    // =========================================
-
-                    BigDecimal amount =
-                            rs.getBigDecimal("amount");
-
+                    BigDecimal amount = rs.getBigDecimal("amount");
                     cheque.setAmount(amount);
 
-
-                    // =========================================
-                    // AMOUNT IN WORDS
-                    // =========================================
-
                     cheque.setAmountInWords(
-                            rs.getString(
-                                    "amount_in_words"
-                            )
+                            rs.getString("amount_in_words")
                     );
 
-
-                    // =========================================
-                    // CHEQUE DATE
-                    // =========================================
-
-                    LocalDate chequeDate =
-                            rs.getObject(
-                                    "cheque_date",
-                                    LocalDate.class
-                            );
-
-                    cheque.setChequeDate(
-                            chequeDate
-                    );
-
-
-                    // =========================================
-                    // FRONT IMAGE PATH
-                    // =========================================
+                    if (rs.getDate("cheque_date") != null) {
+                        cheque.setChequeDate(
+                                rs.getDate("cheque_date").toLocalDate()
+                        );
+                    }
 
                     cheque.setFrontImagePath(
-                            rs.getString(
-                                    "front_image_path"
-                            )
+                            rs.getString("front_image_path")
                     );
-
-
-                    // =========================================
-                    // BACK IMAGE PATH
-                    // =========================================
 
                     cheque.setBackImagePath(
-                            rs.getString(
-                                    "back_image_path"
-                            )
+                            rs.getString("back_image_path")
                     );
-
-
-                    // =========================================
-                    // CHEQUE STATUS
-                    // =========================================
 
                     cheque.setChequeStatus(
-                            rs.getString(
-                                    "cheque_status"
-                            )
+                            rs.getString("cheque_status")
                     );
 
+                    Integer reasonId = (Integer) rs.getObject("return_reason_id");
+                    cheque.setReturnReasonId(reasonId);
 
-                    // =========================================
-                    // BANK CODE
-                    // =========================================
-
-                    cheque.setBankCode(
-                            rs.getString(
-                                    "bank_code"
-                            )
+                    cheque.setCheckerRemarks(
+                            rs.getString("checker_remarks")
                     );
 
-
-                    // =========================================
-                    // BRANCH CODE
-                    // =========================================
-
-                    cheque.setBranchCode(
-                            rs.getString(
-                                    "branch_code"
-                            )
+                    cheque.setCreatedBy(
+                            rs.getString("created_by")
                     );
 
+                    if (rs.getTimestamp("created_at") != null) {
+                        cheque.setCreatedAt(
+                                rs.getTimestamp("created_at").toLocalDateTime()
+                        );
+                    }
 
-                    // =========================================
-                    // CITY CODE
-                    // =========================================
-
-                    cheque.setCityCode(
-                            rs.getString(
-                                    "city_code"
-                            )
+                    cheque.setUpdatedBy(
+                            rs.getString("updated_by")
                     );
 
-
-                    // =========================================
-                    // ADD CHEQUE TO LIST
-                    // =========================================
+                    if (rs.getTimestamp("updated_at") != null) {
+                        cheque.setUpdatedAt(
+                                rs.getTimestamp("updated_at").toLocalDateTime()
+                        );
+                    }
 
                     cheques.add(cheque);
                 }
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
             throw new RuntimeException(
-                    "Unable to load cheques for batch: "
-                    + batchNumber,
+                    "Error while fetching cheques for batch: " + batchNumber,
                     e
             );
         }
@@ -339,70 +349,39 @@ public class CheckerBatchDAO {
     }
 
 
-    // ============================================================
-    // GET CHEQUES BY BATCH ID
-    // ============================================================
-    //
-    // Your controller currently calls:
-    //
-    // batchService.getChequesByBatchId(batchId)
-    //
-    // But your database actually uses batch_number.
-    //
-    // Therefore this method simply calls the
-    // getChequesByBatchNumber() method.
-    // ============================================================
-
-    public List<OutwardCheque> getChequesByBatchId(
-            String batchId) {
-
-        return getChequesByBatchNumber(
-                batchId
-        );
+    /*
+     * Existing compatibility method.
+     */
+    public List<OutwardCheque> getChequesByBatchId(String batchId) {
+        return getChequesByBatchNumber(batchId);
     }
- // ============================================================
- // CHECK WHETHER ACCOUNT EXISTS
- // ============================================================
 
- public boolean accountExists(String accountNumber) {
 
-     String sql =
-             "SELECT 1 "
-             + "FROM public.account_master "
-             + "WHERE account_number = ?";
+    /*
+     * Check whether an account exists in account_master.
+     */
+    public boolean accountExists(String accountNumber) {
 
-     try (
-             Connection con =
-                     CTSStaticData.getConnection();
+        String sql =
+                "SELECT 1 " +
+                "FROM account_master " +
+                "WHERE account_number = ?";
 
-             PreparedStatement ps =
-                     con.prepareStatement(sql)
-     ) {
+        try (Connection connection = CTSStaticData.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-         ps.setString(
-                 1,
-                 accountNumber
-         );
+            statement.setString(1, accountNumber);
 
-         try (
-                 ResultSet rs =
-                         ps.executeQuery()
-         ) {
+            try (ResultSet rs = statement.executeQuery()) {
+                return rs.next();
+            }
 
-             // If account is found → true
-             return rs.next();
-         }
-
-     } catch (Exception e) {
-
-         e.printStackTrace();
-
-         throw new RuntimeException(
-                 "Unable to verify account: "
-                 + accountNumber,
-                 e
-         );
-     }
- }
-
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(
+                    "Error while checking account: " + accountNumber,
+                    e
+            );
+        }
+    }
 }
